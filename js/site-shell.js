@@ -5131,7 +5131,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const tour = reservationTour.value.trim();
                 const clientName = reservationName.value.trim();
                 const date = reservationDate.value;
-                const quantity = Number(reservationQuantity.value) || 1;
+                // Math.max(1, ...) porque o formulário agora usa novalidate (o campo de
+                // data fica escondido — substituído pelo calendário customizado — e o
+                // navegador tentava focar esse required invisível e travava o envio sem
+                // avisar ninguém); sem a checagem nativa min="1" desativada junto, um
+                // valor negativo digitado à mão passaria direto.
+                const quantity = Math.max(1, Number(reservationQuantity.value) || 1);
                 const language = reservationLanguage.value;
                 const phone = reservationPhone.value.trim();
                 const email = reservationEmail.value.trim();
