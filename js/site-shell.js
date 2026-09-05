@@ -4671,6 +4671,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const reservationPhone = document.getElementById('reservationPhone');
         const reservationEmail = document.getElementById('reservationEmail');
         const reservationCancel = document.getElementById('reservationCancel');
+        const reservationSubmitIcon = document.getElementById('reservationSubmitIcon');
+        const reservationSubmitLabel = document.getElementById('reservationSubmitLabel');
         let selectedMeetingPoint = '';
 
         const closeReservationModal = () => {
@@ -5013,6 +5015,17 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             reservationPhone.value = userPhone || '';
             reservationEmail.value = userEmail || '';
             selectedMeetingPoint = (meetingPoint || '').trim();
+
+            // Botão "Confirmar Reserva" avisa visualmente que essa reserva vai
+            // para o WhatsApp em vez de ser salva no site: ícone e texto mudam.
+            if (reservationSubmitIcon) {
+                reservationSubmitIcon.className = isWhatsAppTour ? 'fab fa-whatsapp' : 'fas fa-check-circle';
+            }
+            if (reservationSubmitLabel) {
+                reservationSubmitLabel.textContent = isWhatsAppTour
+                    ? (ui.reservation_confirm_whatsapp_btn || 'Enviar Reserva pelo WhatsApp')
+                    : (ui.reservation_confirm_btn || 'Confirmar Reserva');
+            }
 
             const strings = window.uiTranslations?.[window.getCurrentLang?.() || (document.documentElement.lang || 'pt').slice(0, 2)] || window.uiTranslations?.pt || {};
             const defaultLangs = ['Português', 'Inglês', 'Espanhol'];
