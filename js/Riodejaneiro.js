@@ -5214,23 +5214,14 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
         const matchTourByName = (tourName) => getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tourName));
 
-        // Tours com canal_reserva="whatsapp" pulam o formulário do site: o botão
-        // "Reservar agora" abre direto uma conversa no WhatsApp com o tour já
-        // identificado na mensagem, sem exigir login.
-        const openWhatsAppReservation = (tourName) => {
-            const phone = window.__cidadeContatoPhone || '5521970018590';
-            const mensagem = `Olá! Gostaria de realizar o tour "${tourName}".`;
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(mensagem)}`, '_blank', 'noopener');
-        };
-
+        // Tours com canal_reserva="whatsapp" continuam usando o mesmo formulário
+        // do site (preenche data, idioma, pessoas etc. normalmente) — só o envio
+        // final é diferente: em vez de salvar no banco, "Concluir Reserva" abre o
+        // WhatsApp com todos os dados preenchidos (ver reservationForm.submit).
         const openReservationModal = (tourName, languageText, meetingPoint) => {
             if (!reservationModal) return;
 
             const matchedTour = matchTourByName(tourName);
-            if ((matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp') {
-                openWhatsAppReservation(tourName);
-                return;
-            }
 
             const userRole = localStorage.getItem('userRole');
             const userEmail = localStorage.getItem('userEmail');
@@ -5240,8 +5231,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 ? window.getCurrentLanguage()
                 : (document.documentElement.lang || 'pt').slice(0, 2);
             const ui = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
+            const isWhatsAppTour = (matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp';
 
-            if (!userRole || !userEmail) {
+            // Reserva por WhatsApp não passa pelo banco de dados do site (é só uma
+            // mensagem pronta pro guia), então não exige login — igual já era antes.
+            if (!isWhatsAppTour && (!userRole || !userEmail)) {
                 showGlobalNotification(ui.reservation_login_required || 'É necessário realizar login para fazer uma reserva.', 'error');
                 return;
             }
@@ -5417,6 +5411,29 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 // Formato required para backend: data e hora em campos separados.
                 // Tours sem horários cadastrados mantêm o comportamento anterior (12:00 fixo).
                 const finalTime = horariosDisponiveis.length ? selectedTime : '12:00';
+
+                // Tours com canal_reserva="whatsapp" não vão para o banco do site: o
+                // cliente preenche o mesmo formulário, mas "Concluir Reserva" monta uma
+                // mensagem com todos os dados e abre o WhatsApp do guia, sem passar pela API.
+                if ((matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp') {
+                    const [wYyyy, wMm, wDd] = date.split('-');
+                    const whatsFormattedDate = (wDd && wMm && wYyyy) ? `${wDd}/${wMm}/${wYyyy}` : date;
+                    const whatsPhone = window.__cidadeContatoPhone || '5521970018590';
+                    const whatsMensagem = [
+                        'Olá! Gostaria de confirmar uma reserva:',
+                        `Tour: ${tour}`,
+                        `Nome: ${clientName}`,
+                        `Data: ${whatsFormattedDate}`,
+                        `Hora: ${finalTime}`,
+                        `Pessoas: ${quantity}`,
+                        `Idioma: ${language}`,
+                        `Celular: ${phone}`,
+                        `Email: ${email}`
+                    ].join('\n');
+                    window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
+                    closeReservationModal();
+                    return;
+                }
 
                 const payload = {
                     tour,
