@@ -5151,7 +5151,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const guideName = 'N/S';
                 // Modalidade vem do cadastro do tour (Privado/Free); nunca fica visível/editável
                 // no formulário do cliente. O backend também valida isso de forma independente.
-                const matchedTour = getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tour));
+                // Reusa o mesmo tour já resolvido quando o modal foi aberto (activeReservationTour)
+                // em vez de procurar de novo — evita qualquer divergência entre o que decidiu
+                // mostrar o botão do WhatsApp e o que decide pra onde a reserva vai.
+                const matchedTour = (activeReservationTour && normalizeTourKey(activeReservationTour.name || activeReservationTour.nome_tour) === normalizeTourKey(tour))
+                    ? activeReservationTour
+                    : getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tour));
                 const modality = (matchedTour?.modalidade || 'free').toLowerCase();
                 const horariosDisponiveis = horariosParaData(matchedTour, date);
                 const selectedTime = reservationTime ? reservationTime.value : '';
