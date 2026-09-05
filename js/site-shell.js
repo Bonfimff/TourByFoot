@@ -5204,9 +5204,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     const [wYyyy, wMm, wDd] = date.split('-');
                     const whatsFormattedDate = (wDd && wMm && wYyyy) ? `${wDd}/${wMm}/${wYyyy}` : date;
                     const whatsPhone = window.__cidadeContatoPhone || '5521970018590';
+                    const whatsTourUrl = matchedTour?.id != null ? buildTourShareUrl(matchedTour.id) : '';
                     const whatsMensagem = [
                         'Olá! Gostaria de confirmar uma reserva:',
                         `Tour: ${tour}`,
+                        whatsTourUrl ? `Link do tour: ${whatsTourUrl}` : null,
                         `Nome: ${clientName}`,
                         `Data: ${whatsFormattedDate}`,
                         `Hora: ${finalTime}`,
@@ -5214,7 +5216,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         `Idioma: ${language}`,
                         `Celular: ${phone}`,
                         `Email: ${email}`
-                    ].join('\n');
+                    ].filter(Boolean).join('\n');
                     window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
                     closeReservationModal();
                     return;
