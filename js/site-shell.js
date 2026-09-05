@@ -15,9 +15,22 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // o overlay reaparecer a cada carregamento. Chave por pathname porque
     // cada cidade tem seu próprio texto de aviso.
     const NOTICE_DISMISS_KEY = `rioNoticeDismissed:${window.location.pathname}`;
+    const noticeEarly = document.querySelector('.rio-notice');
     if (window.__tourDirectLinkId || localStorage.getItem(NOTICE_DISMISS_KEY) === '1') {
-        const notice = document.querySelector('.rio-notice');
-        if (notice) notice.style.display = 'none';
+        if (noticeEarly) noticeEarly.style.display = 'none';
+    } else if (noticeEarly) {
+        // Some com o texto padrão (desatualizado) escrito direto no HTML até
+        // loadCidadeAviso() decidir o que mostrar de verdade — evita o "flash"
+        // do texto antigo antes da versão do servidor substituir. Se a busca
+        // falhar ou demorar, loadCidadeAviso() reaparece com esse mesmo texto
+        // padrão (nunca fica sem aviso nenhum).
+        noticeEarly.style.visibility = 'hidden';
+        // Rede de segurança: se a busca travar (sem erro nem resposta —
+        // fetch não tem timeout próprio), reaparece do mesmo jeito depois de
+        // um tempo em vez de ficar escondido pra sempre.
+        setTimeout(() => {
+            if (noticeEarly.style.visibility === 'hidden') noticeEarly.style.visibility = '';
+        }, 4000);
     }
 
     let rolePermissionsMap = {};
@@ -5575,12 +5588,22 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // de idioma depois disso.
         window.__cidadeAvisoCarregado = true;
         noticeEl.style.display = '';
+        noticeEl.style.visibility = '';
     };
     window.applyCidadeAviso = (cidade, aviso) => applyCidadeAviso(aviso);
 
+    // Reaparece com o texto padrão (já escrito no HTML) quando a API não tem
+    // nada configurado pra essa cidade, ou quando todos os endpoints falham —
+    // só fica escondido pra sempre se o dismiss/link direto já tiver escondido
+    // via display:none (nesse caso visibility não faz diferença nenhuma).
+    const revealNoticeFallback = () => {
+        const el = document.querySelector('.rio-notice');
+        if (el) el.style.visibility = '';
+    };
+
     const loadCidadeAviso = async () => {
         const cidade = document.getElementById('relatosGallery')?.dataset.cidade;
-        if (!cidade) return;
+        if (!cidade) { revealNoticeFallback(); return; }
 
         const endpoints = [
             `${API_BASE_URL}/get_cidade_aviso`,
@@ -5594,12 +5617,17 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const lista = await response.json();
                 if (!Array.isArray(lista)) continue;
                 const aviso = lista.find((item) => item && item.cidade === cidade);
-                if (aviso) applyCidadeAviso(aviso);
+                if (aviso) {
+                    applyCidadeAviso(aviso);
+                } else {
+                    revealNoticeFallback();
+                }
                 return;
             } catch (error) {
                 console.warn('Falha ao carregar aviso da cidade em', endpoint, error);
             }
         }
+        revealNoticeFallback();
     };
 
     // Título/texto de SOBRE, CONTATO e AJUDA editáveis por página em
