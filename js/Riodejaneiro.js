@@ -5818,9 +5818,31 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
     window.applyCidadeAviso = (cidade, aviso) => applyCidadeAviso(aviso);
 
+    // Preenchido por js/preload-paineis.js quando o cliente passa pela home
+    // antes de entrar no Rio — aplica na hora, sem esperar a API, e só
+    // revalida em segundo plano (o fetch abaixo roda igual, sempre).
+    const AVISO_CACHE_KEY = 'cidadeAvisoCache';
+    const getCachedAvisoLista = () => {
+        try {
+            const raw = localStorage.getItem(AVISO_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed?.dados) ? parsed.dados : null;
+        } catch (_e) {
+            return null;
+        }
+    };
+
     const loadCidadeAviso = async () => {
         const cidade = 'Rio de Janeiro';
         const apiBase = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+
+        const cachedLista = getCachedAvisoLista();
+        if (cachedLista) {
+            const cachedAviso = cachedLista.find((item) => item && item.cidade === cidade);
+            if (cachedAviso) applyCidadeAviso(cachedAviso);
+        }
+
         const endpoints = [
             `${apiBase}/get_cidade_aviso`,
             'http://127.0.0.1:5000/get_cidade_aviso',
@@ -5832,6 +5854,9 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 if (!response.ok) continue;
                 const lista = await response.json();
                 if (!Array.isArray(lista)) continue;
+                try {
+                    localStorage.setItem(AVISO_CACHE_KEY, JSON.stringify({ ts: Date.now(), dados: lista }));
+                } catch (_e) {}
                 const aviso = lista.find((item) => item && item.cidade === cidade);
                 if (aviso) applyCidadeAviso(aviso);
                 return;

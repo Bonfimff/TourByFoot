@@ -120,13 +120,37 @@
     };
     window.applyCidadeVisual = (_cidade, visual) => applyCidadeVisual(visual);
 
+    // Preenchido por js/preload-paineis.js quando o cliente passa pela home
+    // antes de entrar na cidade — aplica na hora, sem esperar a API, e só
+    // revalida em segundo plano (o fetch abaixo roda igual, sempre).
+    const VISUAL_CACHE_KEY = 'cidadeVisualCache';
+    const getCachedVisualLista = () => {
+        try {
+            const raw = localStorage.getItem(VISUAL_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed?.dados) ? parsed.dados : null;
+        } catch (_e) {
+            return null;
+        }
+    };
+
     const loadCidadeVisual = async () => {
+        const cachedLista = getCachedVisualLista();
+        if (cachedLista) {
+            const cachedVisual = cachedLista.find((item) => item && item.cidade === cidade);
+            if (cachedVisual) applyCidadeVisual(cachedVisual);
+        }
+
         for (const endpoint of endpoints) {
             try {
                 const response = await fetch(endpoint);
                 if (!response.ok) continue;
                 const lista = await response.json();
                 if (!Array.isArray(lista)) continue;
+                try {
+                    localStorage.setItem(VISUAL_CACHE_KEY, JSON.stringify({ ts: Date.now(), dados: lista }));
+                } catch (_e) {}
                 const visual = lista.find((item) => item && item.cidade === cidade);
                 if (visual) applyCidadeVisual(visual);
                 return;

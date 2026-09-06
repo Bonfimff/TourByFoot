@@ -5609,9 +5609,31 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         if (el) el.style.visibility = '';
     };
 
+    // Preenchido por js/preload-paineis.js quando o cliente passa pela home
+    // antes de entrar na cidade — aplica na hora, sem esperar a API, e só
+    // revalida em segundo plano (o fetch abaixo roda igual, sempre).
+    const AVISO_CACHE_KEY = 'cidadeAvisoCache';
+    const getCachedAvisoLista = () => {
+        try {
+            const raw = localStorage.getItem(AVISO_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed?.dados) ? parsed.dados : null;
+        } catch (_e) {
+            return null;
+        }
+    };
+
     const loadCidadeAviso = async () => {
         const cidade = document.getElementById('relatosGallery')?.dataset.cidade;
         if (!cidade) { revealNoticeFallback(); return; }
+
+        const cachedLista = getCachedAvisoLista();
+        if (cachedLista) {
+            const cachedAviso = cachedLista.find((item) => item && item.cidade === cidade);
+            if (cachedAviso) applyCidadeAviso(cachedAviso);
+            else revealNoticeFallback();
+        }
 
         const endpoints = [
             `${API_BASE_URL}/get_cidade_aviso`,
@@ -5624,10 +5646,13 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 if (!response.ok) continue;
                 const lista = await response.json();
                 if (!Array.isArray(lista)) continue;
+                try {
+                    localStorage.setItem(AVISO_CACHE_KEY, JSON.stringify({ ts: Date.now(), dados: lista }));
+                } catch (_e) {}
                 const aviso = lista.find((item) => item && item.cidade === cidade);
                 if (aviso) {
                     applyCidadeAviso(aviso);
-                } else {
+                } else if (!cachedLista) {
                     revealNoticeFallback();
                 }
                 return;
@@ -5635,7 +5660,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 console.warn('Falha ao carregar aviso da cidade em', endpoint, error);
             }
         }
-        revealNoticeFallback();
+        if (!cachedLista) revealNoticeFallback();
     };
 
     // Título/texto de SOBRE, CONTATO e AJUDA editáveis por página em
