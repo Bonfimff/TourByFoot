@@ -500,7 +500,15 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const isNoticeVisible = () => {
             if (!notice) return false;
             if (notice.style.display === 'none') return false;
-            return getComputedStyle(notice).display !== 'none';
+            const computed = getComputedStyle(notice);
+            // visibility:hidden é o estado temporário usado enquanto o aviso
+            // ainda está esperando a resposta do servidor (ver bloco no topo
+            // do arquivo) — nesse meio tempo nada está de fato visível na
+            // tela, então conta como "não visível" pra liberar o card de
+            // premiação em vez de travar esperando um clique que nunca vai
+            // acontecer num elemento invisível.
+            if (computed.visibility === 'hidden') return false;
+            return computed.display !== 'none';
         };
         if (!isNoticeVisible()) {
             setTimeout(trigger, 700);
