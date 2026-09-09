@@ -297,8 +297,7 @@
     };
 
     const redirectToManagementPage = () => {
-        const path = window.location.pathname || '';
-        window.location.href = path.includes('/html/') ? 'Gerenciamento.html' : 'html/Gerenciamento.html';
+        window.location.href = '/html/Gerenciamento.html';
     };
     window.redirectToManagementPage = window.redirectToManagementPage || redirectToManagementPage;
 
