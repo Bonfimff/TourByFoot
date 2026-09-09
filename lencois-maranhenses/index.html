@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css?v=28">
 
-    <link rel="stylesheet" href="../css/Lencoismaranhenses.css?v=81">
+    <link rel="stylesheet" href="../css/Lencoismaranhenses.css?v=82">
     <link rel="stylesheet" href="../css/tour-interacoes.css?v=9">
 <!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
     <link rel="canonical" href="https://www.tourbyfoot.com/lencois-maranhenses/">
@@ -72,6 +72,50 @@
     try { localStorage.setItem("preferredLanguage", "pt"); } catch (e) {}
     </script>
     <!-- fim do bloco gerado -->
+    <!-- FAQPage: mesmas 4 perguntas do Guia de Viagem no rodape (ver
+         rioGuideGrid/rioGuideAnswer). Mantidas identicas de proposito -
+         sinalizar duas perguntas diferentes pro Google e pro visitante
+         seria confuso e quebra a promessa do rich result. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Quando visitar os Lençóis Maranhenses",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A paisagem dos Lençóis muda ao longo do ano. O período após as chuvas costuma proporcionar as lagoas formadas entre as dunas, criando os cenários que tornaram o destino conhecido. A melhor época pode variar conforme as condições de chuva e o nível das lagoas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como chegar aos Lençóis Maranhenses",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "São Luís é uma das principais portas de entrada para quem viaja aos Lençóis Maranhenses. O transfer até Barreirinhas é realizado em micro-ônibus ou van com ar-condicionado, com motorista profissional e duração aproximada de 4h30. O serviço inclui traslado de ida e volta para pousadas, hotéis e hostels localizados na área urbana de Barreirinhas, com uma parada durante o percurso."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "O que fazer nos Lençóis Maranhenses",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Os Lençóis Maranhenses vão muito além de conhecer uma única lagoa. A região oferece diferentes circuitos de dunas e lagoas, além de experiências em Barreirinhas, Santo Amaro e Atins. Entre as opções estão passeios de 4x4, caminhadas pelas dunas, banho nas lagoas, pôr do sol, passeio pelo Rio Preguiças e visitas a Atins."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Onde ficar nos Lençóis Maranhenses",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A escolha da hospedagem influencia diretamente os passeios e a experiência da viagem. Barreirinhas é uma das principais bases para explorar os Lençóis, enquanto Santo Amaro e Atins oferecem acesso a outras áreas e experiências da região. A escolha depende do roteiro e dos lugares que você pretende conhecer."
+          }
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
     <div class="main-container rio-page">
@@ -648,8 +692,8 @@
                     </div>
                 </div>
 
-                <h3 class="rio-guide-title">Explore os Lençóis Maranhenses</h3>
-                <p class="rio-guide-subtitle">Dicas, informações e roteiros para aproveitar melhor sua viagem aos Lençóis Maranhenses.</p>
+                <h3 class="rio-guide-title" id="rioGuideTitle">Explore os Lençóis Maranhenses</h3>
+                <p class="rio-guide-subtitle" id="rioGuideSubtitle">Dicas, informações e roteiros para aproveitar melhor sua viagem aos Lençóis Maranhenses.</p>
 
                 <!-- Conteudo placeholder: titulos, textos e links (#) sao
                      provisorios ate o conteudo real ser definido.
@@ -664,9 +708,9 @@
                      visualmente parece uma correia sem fim. Arrastar nao
                      muda a posicao (nao ha scroll manual aqui: o usuario
                      nao consegue "segurar" a faixa em outro lugar). -->
-                <div class="rio-guide-grid">
+                <div class="rio-guide-grid" id="rioGuideGrid">
                     <div class="rio-guide-track">
-                        <a href="#" class="rio-guide-item">
+                        <a href="#" class="rio-guide-item" data-question="Quando visitar os Lençóis Maranhenses" data-answer="A paisagem dos Lençóis muda ao longo do ano. O período após as chuvas costuma proporcionar as lagoas formadas entre as dunas, criando os cenários que tornaram o destino conhecido. A melhor época pode variar conforme as condições de chuva e o nível das lagoas.">
                             <span class="rio-guide-item-media">
                                 <img src="../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="Lagoa Azul nos Lençóis Maranhenses" loading="lazy">
                                 <span class="rio-guide-item-num">01</span>
@@ -679,7 +723,7 @@
                                 <span class="rio-guide-item-desc">Descubra a melhor época, clima e período das lagoas.</span>
                             </span>
                         </a>
-                        <a href="#" class="rio-guide-item">
+                        <a href="#" class="rio-guide-item" data-question="Como chegar aos Lençóis Maranhenses" data-answer="São Luís é uma das principais portas de entrada para quem viaja aos Lençóis Maranhenses. O transfer até Barreirinhas é realizado em micro-ônibus ou van com ar-condicionado, com motorista profissional e duração aproximada de 4h30. O serviço inclui traslado de ida e volta para pousadas, hotéis e hostels localizados na área urbana de Barreirinhas, com uma parada durante o percurso.">
                             <span class="rio-guide-item-media">
                                 <img src="../imagem/Lencois/Relatos/img-01-1500.webp" alt="Como chegar aos Lençóis Maranhenses" loading="lazy">
                                 <span class="rio-guide-item-num">02</span>
@@ -689,10 +733,10 @@
                                     <span class="rio-guide-item-title">Como chegar aos Lençóis</span>
                                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                                 </span>
-                                <span class="rio-guide-item-desc">Saiba como chegar por Barreirinhas, Santo Amaro e outras rotas.</span>
+                                <span class="rio-guide-item-desc">Transfer de São Luís a Barreirinhas em van com ar-condicionado, direto na sua pousada.</span>
                             </span>
                         </a>
-                        <a href="#" class="rio-guide-item">
+                        <a href="#" class="rio-guide-item" data-question="O que fazer nos Lençóis Maranhenses" data-answer="Os Lençóis Maranhenses vão muito além de conhecer uma única lagoa. A região oferece diferentes circuitos de dunas e lagoas, além de experiências em Barreirinhas, Santo Amaro e Atins. Entre as opções estão passeios de 4x4, caminhadas pelas dunas, banho nas lagoas, pôr do sol, passeio pelo Rio Preguiças e visitas a Atins.">
                             <span class="rio-guide-item-media">
                                 <img src="../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="O que fazer nos Lençóis Maranhenses" loading="lazy">
                                 <span class="rio-guide-item-num">03</span>
@@ -705,7 +749,7 @@
                                 <span class="rio-guide-item-desc">Lagoas, dunas, pôr do sol, passeios e experiências inesquecíveis.</span>
                             </span>
                         </a>
-                        <a href="#" class="rio-guide-item">
+                        <a href="#" class="rio-guide-item" data-question="Onde ficar nos Lençóis Maranhenses" data-answer="A escolha da hospedagem influencia diretamente os passeios e a experiência da viagem. Barreirinhas é uma das principais bases para explorar os Lençóis, enquanto Santo Amaro e Atins oferecem acesso a outras áreas e experiências da região. A escolha depende do roteiro e dos lugares que você pretende conhecer.">
                             <span class="rio-guide-item-media">
                                 <img src="../imagem/Lencois/Relatos/gopr5328-01-1500.webp" alt="Onde ficar nos Lençóis Maranhenses" loading="lazy">
                                 <span class="rio-guide-item-num">04</span>
@@ -771,6 +815,18 @@
                             </span>
                         </a>
                     </div>
+                </div>
+
+                <!-- Painel de resposta: ocupa o lugar do carrossel quando um
+                     card e clicado (ver rioGuideGrid.hidden/rioGuideAnswer.hidden
+                     em js/Lencoismaranhenses.js). O titulo da secao (rioGuideTitle)
+                     muda para a pergunta clicada; o X fecha e devolve o
+                     carrossel e o titulo padrao. -->
+                <div class="rio-guide-answer" id="rioGuideAnswer" hidden>
+                    <button type="button" class="rio-guide-answer-close" id="rioGuideAnswerClose" aria-label="Fechar e voltar ao carrossel">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                    <p class="rio-guide-answer-text" id="rioGuideAnswerText"></p>
                 </div>
 
                 <nav class="rio-guide-links" aria-label="Seções do guia de viagem">
@@ -911,7 +967,7 @@
     <script src="../js/site-shell.js?v=92"></script>
     <script src="../js/presenca.js?v=1"></script>
     <script src="../js/atividade-cliente.js?v=2"></script>
-    <script src="../js/Lencoismaranhenses.js?v=12"></script>
+    <script src="../js/Lencoismaranhenses.js?v=13"></script>
     <script src="../js/cidade-visual.js?v=6"></script>
 </body>
 </html>

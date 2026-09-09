@@ -313,3 +313,60 @@
         startTourSliders();
     }
 })();
+// Guia de Viagem (rodape): clicar num card do carrossel expande no lugar
+// dele, mostrando a resposta, e troca o titulo da secao pela pergunta.
+// O X fecha e devolve o carrossel/titulo padrao. So roda se os elementos
+// existirem (essa secao existe so na pagina em portugues dos Lencois).
+(function () {
+    function iniciarGuiaDeViagem() {
+        const grid = document.getElementById('rioGuideGrid');
+        const painel = document.getElementById('rioGuideAnswer');
+        const textoResposta = document.getElementById('rioGuideAnswerText');
+        const botaoFechar = document.getElementById('rioGuideAnswerClose');
+        const titulo = document.getElementById('rioGuideTitle');
+        const subtitulo = document.getElementById('rioGuideSubtitle');
+
+        if (!grid || !painel || !textoResposta || !botaoFechar || !titulo) return;
+
+        const tituloPadrao = titulo.textContent;
+
+        function abrirResposta(item) {
+            const pergunta = item.getAttribute('data-question');
+            const resposta = item.getAttribute('data-answer');
+            if (!pergunta || !resposta) return;
+
+            titulo.textContent = pergunta;
+            if (subtitulo) subtitulo.hidden = true;
+            textoResposta.textContent = resposta;
+
+            grid.hidden = true;
+            painel.hidden = false;
+            botaoFechar.focus();
+        }
+
+        function fecharResposta() {
+            titulo.textContent = tituloPadrao;
+            if (subtitulo) subtitulo.hidden = false;
+            painel.hidden = true;
+            grid.hidden = false;
+        }
+
+        // So os 4 cards reais tem data-question/data-answer; as copias da
+        // esteira (aria-hidden, usadas so pra fechar o loop visual) nao tem
+        // esses atributos e ficam de fora automaticamente.
+        grid.querySelectorAll('.rio-guide-item[data-question]').forEach((item) => {
+            item.addEventListener('click', (evento) => {
+                evento.preventDefault();
+                abrirResposta(item);
+            });
+        });
+
+        botaoFechar.addEventListener('click', fecharResposta);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarGuiaDeViagem);
+    } else {
+        iniciarGuiaDeViagem();
+    }
+})();

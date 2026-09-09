@@ -4412,3 +4412,58 @@ header {
     margin-top: 0;
     padding-right: 2.6rem;
 }
+
+/* =========================================================
+   PAINEL DE RESPOSTA (clique num card do Guia de Viagem)
+   Ocupa o mesmo espaco/largura do carrossel; ver JS que alterna
+   rioGuideGrid.hidden / rioGuideAnswer.hidden.
+   ========================================================= */
+.rio-guide-answer {
+    position: relative;
+    min-height: 230px;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(2, 65, 90, 0.12);
+    border-radius: 16px;
+    padding: 2.2rem 3rem;
+    margin-bottom: 1.4rem;
+}
+
+.rio-guide-answer-text {
+    margin: 0;
+    color: #02415a;
+    font-size: 1rem;
+    line-height: 1.65;
+    max-width: 60ch;
+}
+
+.rio-guide-answer-close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(2, 65, 90, 0.18);
+    background: #fff;
+    color: #0d5548;
+    font-size: 0.95rem;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.rio-guide-answer-close:hover,
+.rio-guide-answer-close:focus-visible {
+    background: rgba(2, 65, 90, 0.08);
+    transform: scale(1.06);
+}
+
+@media (max-width: 600px) {
+    .rio-guide-answer {
+        padding: 2.6rem 1.3rem 1.3rem;
+        min-height: 190px;
+    }
+}
