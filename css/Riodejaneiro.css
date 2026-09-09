@@ -3377,7 +3377,8 @@ header {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.72rem;
-    color: rgba(44, 62, 80, 0.75);
+    color: #02415a;
+    font-weight: 700;
 }
 
 .rio-footer-destinos-links {
@@ -3388,9 +3389,9 @@ header {
 }
 
 .rio-footer-destinos a {
-    color: #2c3e50;
+    color: #02415a;
     text-decoration: none;
-    opacity: 0.9;
+    opacity: 1;
     transition: opacity 0.2s;
 }
 
