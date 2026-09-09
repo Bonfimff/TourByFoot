@@ -3650,7 +3650,7 @@ header {
 }
 
 .rio-testimonial-author::before {
-  content: '— ';
+  content: '- ';
   color: #c2b280;
 }
 
