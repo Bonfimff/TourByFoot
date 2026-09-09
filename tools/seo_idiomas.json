@@ -1,0 +1,207 @@
+{
+  "_comentario": "Textos de SEO por cidade e idioma, usados por gerar_paginas.py. Title ate ~60 caracteres, description entre 140 e 158. Editar aqui e rodar o gerador de novo.",
+  "_locales": {
+    "pt": "pt_BR",
+    "en": "en_US",
+    "es": "es_ES",
+    "fr": "fr_FR",
+    "it": "it_IT",
+    "zh": "zh_CN"
+  },
+  "_lang_html": {
+    "pt": "pt-br",
+    "en": "en",
+    "es": "es",
+    "fr": "fr",
+    "it": "it",
+    "zh": "zh"
+  },
+  "_alts": {
+    "Relato de viagem nos Lençóis Maranhenses": {
+      "en": "Traveller's photo from the Lençóis Maranhenses",
+      "es": "Foto de viaje en los Lençóis Maranhenses",
+      "fr": "Photo de voyage dans les Lençóis Maranhenses",
+      "it": "Foto di viaggio nei Lençóis Maranhenses",
+      "zh": "游客在马拉尼昂千湖沙漠拍摄的照片"
+    },
+    "Relato de viagem em Salvador": {
+      "en": "Traveller's photo from Salvador",
+      "es": "Foto de viaje en Salvador",
+      "fr": "Photo de voyage à Salvador",
+      "it": "Foto di viaggio a Salvador",
+      "zh": "游客在萨尔瓦多拍摄的照片"
+    },
+    "Relato de viagem em São Luís do Maranhão": {
+      "en": "Traveller's photo from São Luís do Maranhão",
+      "es": "Foto de viaje en São Luís do Maranhão",
+      "fr": "Photo de voyage à São Luís do Maranhão",
+      "it": "Foto di viaggio a São Luís do Maranhão",
+      "zh": "游客在圣路易斯拍摄的照片"
+    },
+    "Prêmio TripAdvisor": {
+      "en": "TripAdvisor award",
+      "es": "Premio TripAdvisor",
+      "fr": "Prix TripAdvisor",
+      "it": "Premio TripAdvisor",
+      "zh": "TripAdvisor 奖项"
+    },
+    "Vista do Rio de Janeiro com o Pão de Açúcar ao fundo": {
+      "en": "View of Rio de Janeiro with Sugarloaf Mountain in the background",
+      "es": "Vista de Río de Janeiro con el Pan de Azúcar al fondo",
+      "fr": "Vue de Rio de Janeiro avec le Pain de Sucre en arrière-plan",
+      "it": "Veduta di Rio de Janeiro con il Pan di Zucchero sullo sfondo",
+      "zh": "里约热内卢景色，背景为糖面包山"
+    },
+    "Casarões coloridos do Pelourinho em Salvador": {
+      "en": "Colourful colonial houses of Pelourinho in Salvador",
+      "es": "Casonas coloridas del Pelourinho en Salvador",
+      "fr": "Maisons colorées du Pelourinho à Salvador",
+      "it": "Case colorate del Pelourinho a Salvador",
+      "zh": "萨尔瓦多佩洛尼奥区的彩色老宅"
+    },
+    "Fachadas de azulejos no Centro Histórico de São Luís": {
+      "en": "Tiled façades in the historic centre of São Luís",
+      "es": "Fachadas de azulejos en el centro histórico de São Luís",
+      "fr": "Façades en azulejos dans le centre historique de São Luís",
+      "it": "Facciate di azulejos nel centro storico di São Luís",
+      "zh": "圣路易斯历史城区的瓷砖立面"
+    },
+    "Dunas e lagoas dos Lençóis Maranhenses": {
+      "en": "Dunes and lagoons of the Lençóis Maranhenses",
+      "es": "Dunas y lagunas de los Lençóis Maranhenses",
+      "fr": "Dunes et lagunes des Lençóis Maranhenses",
+      "it": "Dune e lagune dei Lençóis Maranhenses",
+      "zh": "马拉尼昂千湖沙漠的沙丘与湖泊"
+    }
+  },
+  "": {
+    "pt": {
+      "title": "Tour by Foot — Passeios Guiados a Pé no Brasil",
+      "description": "Passeios guiados a pé com guias credenciados no Rio de Janeiro, Salvador e São Luís, e excursões nos Lençóis Maranhenses. Reserve online ou pelo WhatsApp."
+    },
+    "en": {
+      "title": "Tour by Foot — Guided Walking Tours in Brazil",
+      "description": "Guided walking tours with licensed local guides in Rio de Janeiro, Salvador and São Luís, plus tours of the Lençóis Maranhenses. Book online or on WhatsApp."
+    },
+    "es": {
+      "title": "Tour by Foot — Tours Guiados a Pie en Brasil",
+      "description": "Tours guiados a pie con guías locales acreditados en Río de Janeiro, Salvador y São Luís, y excursiones a los Lençóis Maranhenses. Reserva online o por WhatsApp."
+    },
+    "fr": {
+      "title": "Tour by Foot — Visites Guidées à Pied au Brésil",
+      "description": "Visites guidées à pied avec des guides locaux agréés à Rio de Janeiro, Salvador et São Luís, et excursions dans les Lençóis Maranhenses. Réservez en ligne ou sur WhatsApp."
+    },
+    "it": {
+      "title": "Tour by Foot — Tour Guidati a Piedi in Brasile",
+      "description": "Tour guidati a piedi con guide locali autorizzate a Rio de Janeiro, Salvador e São Luís, ed escursioni nei Lençóis Maranhenses. Prenota online o su WhatsApp."
+    },
+    "zh": {
+      "title": "Tour by Foot — 巴西徒步导览之旅",
+      "description": "由持证本地向导带领，畅游里约热内卢、萨尔瓦多和圣路易斯的徒步导览，以及马拉尼昂千湖沙漠之旅。可在线预订或通过 WhatsApp 预订。"
+    }
+  },
+  "rio-de-janeiro": {
+    "pt": {
+      "title": "Free Walking Tour no Rio de Janeiro | Tour by Foot",
+      "description": "Conheça o Rio a pé com guias credenciados: Centro Histórico, Lapa, Santa Teresa e Pedra do Sal. Free tour por gorjeta ou roteiro privado. Reserve online."
+    },
+    "en": {
+      "title": "Free Walking Tour in Rio de Janeiro | Tour by Foot",
+      "description": "Discover Rio on foot with licensed local guides: Historic Centre, Lapa, Santa Teresa and Pedra do Sal. Tip-based free tour or private route. Book online."
+    },
+    "es": {
+      "title": "Free Walking Tour en Río de Janeiro | Tour by Foot",
+      "description": "Descubre Río a pie con guías locales acreditados: Centro Histórico, Lapa, Santa Teresa y Pedra do Sal. Free tour por propina o ruta privada. Reserva online."
+    },
+    "fr": {
+      "title": "Free Walking Tour à Rio de Janeiro | Tour by Foot",
+      "description": "Découvrez Rio à pied avec des guides locaux agréés : centre historique, Lapa, Santa Teresa et Pedra do Sal. Free tour au pourboire ou visite privée."
+    },
+    "it": {
+      "title": "Free Walking Tour a Rio de Janeiro | Tour by Foot",
+      "description": "Scopri Rio a piedi con guide locali abilitate: Centro Storico, Lapa, Santa Teresa e Pedra do Sal. Free tour a offerta libera o itinerario privato."
+    },
+    "zh": {
+      "title": "里约热内卢徒步导览 | Tour by Foot",
+      "description": "跟随持证本地向导徒步游览里约：历史中心、拉帕、圣特蕾莎与佩德拉杜萨尔。可选自由付费徒步团或私人路线，支持在线预订。"
+    }
+  },
+  "salvador": {
+    "pt": {
+      "title": "Free Walking Tour em Salvador e Pelourinho | Tour by Foot",
+      "description": "Free walking tour pelo Pelourinho e Centro Histórico de Salvador com guia local credenciado. Igrejas, capoeira e história em 2h. Reserve sua vaga."
+    },
+    "en": {
+      "title": "Free Walking Tour in Salvador & Pelourinho | Tour by Foot",
+      "description": "Free walking tour through Pelourinho and Salvador's Historic Centre with a licensed local guide. Churches, capoeira and history in 2h. Book your spot."
+    },
+    "es": {
+      "title": "Free Walking Tour en Salvador y Pelourinho | Tour by Foot",
+      "description": "Free walking tour por el Pelourinho y el Centro Histórico de Salvador con guía local acreditado. Iglesias, capoeira e historia en 2h. Reserva tu plaza."
+    },
+    "fr": {
+      "title": "Free Walking Tour à Salvador et Pelourinho | Tour by Foot",
+      "description": "Free walking tour dans le Pelourinho et le centre historique de Salvador avec un guide local agréé. Églises, capoeira et histoire en 2h. Réservez."
+    },
+    "it": {
+      "title": "Free Walking Tour a Salvador e Pelourinho | Tour by Foot",
+      "description": "Free walking tour nel Pelourinho e nel Centro Storico di Salvador con guida locale abilitata. Chiese, capoeira e storia in 2h. Prenota il tuo posto."
+    },
+    "zh": {
+      "title": "萨尔瓦多与佩洛里尼奥徒步导览 | Tour by Foot",
+      "description": "由持证本地向导带领，徒步游览萨尔瓦多历史中心与佩洛里尼奥。两小时走访教堂、卡波耶拉与城市历史，欢迎在线预订。"
+    }
+  },
+  "sao-luis": {
+    "pt": {
+      "title": "Tour a Pé no Centro Histórico de São Luís | Tour by Foot",
+      "description": "Caminhe pelos azulejos centenários do Centro Histórico de São Luís, Patrimônio da Humanidade, com guia credenciado. Free tour e roteiro privado."
+    },
+    "en": {
+      "title": "Walking Tour of São Luís Historic Centre | Tour by Foot",
+      "description": "Walk among the century-old tiled façades of São Luís' Historic Centre, a UNESCO World Heritage Site, with a licensed guide. Free tour and private routes."
+    },
+    "es": {
+      "title": "Tour a Pie por el Centro Histórico de São Luís | Tour by Foot",
+      "description": "Recorre a pie los azulejos centenarios del Centro Histórico de São Luís, Patrimonio de la Humanidad, con guía acreditado. Free tour y ruta privada."
+    },
+    "fr": {
+      "title": "Visite à Pied du Centre Historique de São Luís | Tour by Foot",
+      "description": "Parcourez à pied les façades d'azulejos centenaires du centre historique de São Luís, patrimoine mondial de l'UNESCO, avec un guide agréé."
+    },
+    "it": {
+      "title": "Tour a Piedi nel Centro Storico di São Luís | Tour by Foot",
+      "description": "Cammina tra le facciate di azulejos centenarie del Centro Storico di São Luís, Patrimonio UNESCO, con guida abilitata. Free tour e itinerari privati."
+    },
+    "zh": {
+      "title": "圣路易斯历史中心徒步导览 | Tour by Foot",
+      "description": "在持证向导带领下漫步圣路易斯历史中心，欣赏百年瓷砖立面建筑群——联合国教科文组织世界遗产。提供自由付费徒步团与私人路线。"
+    }
+  },
+  "lencois-maranhenses": {
+    "pt": {
+      "title": "Passeios nos Lençóis Maranhenses | Tour by Foot",
+      "description": "Lagoa Azul, Lagoa Bonita, quadriciclo, trekking e transfers em Barreirinhas. Passeios nos Lençóis Maranhenses com transporte, guia e seguro inclusos."
+    },
+    "en": {
+      "title": "Lençóis Maranhenses Tours & Excursions | Tour by Foot",
+      "description": "Lagoa Azul, Lagoa Bonita, quad biking, trekking and transfers in Barreirinhas. Lençóis Maranhenses tours with transport, guide and insurance included."
+    },
+    "es": {
+      "title": "Excursiones en los Lençóis Maranhenses | Tour by Foot",
+      "description": "Lagoa Azul, Lagoa Bonita, cuatriciclo, trekking y traslados en Barreirinhas. Excursiones en los Lençóis Maranhenses con transporte, guía y seguro."
+    },
+    "fr": {
+      "title": "Excursions aux Lençóis Maranhenses | Tour by Foot",
+      "description": "Lagoa Azul, Lagoa Bonita, quad, trekking et transferts à Barreirinhas. Excursions aux Lençóis Maranhenses avec transport, guide et assurance inclus."
+    },
+    "it": {
+      "title": "Escursioni nei Lençóis Maranhenses | Tour by Foot",
+      "description": "Lagoa Azul, Lagoa Bonita, quad, trekking e transfer a Barreirinhas. Escursioni nei Lençóis Maranhenses con trasporto, guida e assicurazione inclusi."
+    },
+    "zh": {
+      "title": "马拉尼昂千湖沙漠游览 | Tour by Foot",
+      "description": "蓝湖、美丽湖、沙滩车、徒步与巴雷里尼亚斯接送服务。马拉尼昂千湖沙漠游览，含交通、向导与保险，可在线预订。"
+    }
+  }
+}

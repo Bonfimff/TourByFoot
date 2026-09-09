@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Checagem BLOQUEANTE de manutenção — ver comentário em index.html. -->
+    <script>
+    (function () {
+        try {
+            var role = (localStorage.getItem('userRole') || '').trim().toLowerCase();
+            if (role === 'admin' || role === 'super_admin') return;
+            // Rastreadores de busca e geradores de preview de link nao passam
+            // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
+            // travaria o rastreamento e entra na conta de tempo de carga que o
+            // Google avalia; (2) com a manutencao ligada o crawler seria
+            // redirecionado para manutencao.html, que e noindex — o Google
+            // entenderia que a pagina real saiu do ar e poderia tira-la do
+            // indice. Visitante humano segue com o comportamento de sempre.
+            if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api-tour.exksvol.com/get_site_config', false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                var targets = JSON.parse(xhr.responseText).maintenance_targets || [];
+                if (targets.indexOf('Salvador') !== -1) {
+                    window.location.replace('/manutencao.html');
+                }
+            }
+        } catch (e) {}
+    })();
+    </script>
+    <title>Free Walking Tour à Salvador et Pelourinho | Tour by Foot</title>
+    <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
+         metadados — nada aqui altera o que o visitante vê na página. -->
+    <meta name="description" content="Free walking tour dans le Pelourinho et le centre historique de Salvador avec un guide local agréé. Églises, capoeira et histoire en 2h. Réservez.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tour by Foot">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:title" content="Free Walking Tour à Salvador et Pelourinho | Tour by Foot">
+    <meta property="og:description" content="Free walking tour dans le Pelourinho et le centre historique de Salvador avec un guide local agréé. Églises, capoeira et histoire en 2h. Réservez.">
+    <meta property="og:url" content="https://www.tourbyfoot.com/salvador/fr/">
+    <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/Salvador.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Walking Tour à Salvador et Pelourinho | Tour by Foot">
+    <meta name="twitter:description" content="Free walking tour dans le Pelourinho et le centre historique de Salvador avec un guide local agréé. Églises, capoeira et histoire en 2h. Réservez.">
+    <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/Salvador.jpeg">
+    <link rel="apple-touch-icon" href="../../imagem/Salvador/assets/Logo.png?v=2">
+    <link rel="icon" type="image/png" href="../../imagem/Salvador/assets/Logo.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@400;600;700;900&family=Lato:wght@300;400;600&family=Karla:wght@300..600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css?v=28">
+    <link rel="stylesheet" href="../../css/Riodejaneiro.css?v=67">
+    <link rel="stylesheet" href="../../css/Salvador.css?v=13">
+    <link rel="stylesheet" href="../../css/hero-lockup.css?v=5">
+    <link rel="stylesheet" href="../../css/tour-interacoes.css?v=9">
+<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+    <link rel="canonical" href="https://www.tourbyfoot.com/salvador/fr/">
+    <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/salvador/">
+    <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/salvador/en/">
+    <link rel="alternate" hreflang="es" href="https://www.tourbyfoot.com/salvador/es/">
+    <link rel="alternate" hreflang="fr" href="https://www.tourbyfoot.com/salvador/fr/">
+    <link rel="alternate" hreflang="it" href="https://www.tourbyfoot.com/salvador/it/">
+    <link rel="alternate" hreflang="zh" href="https://www.tourbyfoot.com/salvador/zh/">
+    <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/salvador/">
+    <script>
+    // A URL manda no idioma. Quem abrir /salvador/en/ ve ingles, mesmo com
+    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
+    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
+    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
+    window.rotaIdioma = { base: "/salvador/", atual: "fr", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
+    try { localStorage.setItem("preferredLanguage", "fr"); } catch (e) {}
+    </script>
+    <!-- fim do bloco gerado -->
+</head>
+<body>
+    <div class="main-container rio-page rio-page--lockup rio-page--salvador">
+        <header>
+            <div class="nav-left">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <nav>
+                    <a href="/" data-i18n="nav_home">INÍCIO</a>
+                    <a href="#" data-footer-action="sobre" data-i18n="nav_about">SOBRE</a>
+                    <a href="#" data-footer-action="contato" data-i18n="nav_contact">CONTATO</a>
+                    <a href="#" data-footer-action="ajuda" data-i18n="nav_help">AJUDA</a>
+                </nav>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="header-center">
+                <div class="lang-selector" id="langSelector">
+                    <button class="lang-btn" type="button" id="langBtn">
+                        <span class="flag flag-pt"></span><span class="lang-label" data-i18n="lang_label">Português</span>
+                    </button>
+                    <ul class="lang-list" id="langList">
+                        <li data-lang="pt"><span class="flag flag-pt"></span><span class="lang-label">Português</span></li>
+                        <li data-lang="en"><span class="flag flag-en"></span><span class="lang-label">English</span></li>
+                        <li data-lang="fr"><span class="flag flag-fr"></span><span class="lang-label">Français</span></li>
+                        <li data-lang="es"><span class="flag flag-es"></span><span class="lang-label">Español</span></li>
+                        <li data-lang="it"><span class="flag flag-it"></span><span class="lang-label">Italiano</span></li>
+                        <li data-lang="zh"><span class="flag flag-zh"></span><span class="lang-label">中文(普通话)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="profile-menu">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Conta"><i class="fa fa-user-circle"></i></button>
+                <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Opções de conta">
+                    <a href="#" class="profile-item" data-profile-action="login" data-i18n="profile_login">Entrar</a>
+                    <a href="#" class="profile-item" data-profile-action="register" data-i18n="profile_register">Cadastrar</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-menu-container" id="mobileMenuContainer" aria-hidden="true">
+            <div class="mobile-menu-panel">
+                <div class="mobile-menu-header">
+                    <button class="mobile-menu-back" id="mobileMenuBack" type="button" aria-label="Voltar">←</button>
+                    <span class="mobile-menu-title" id="mobileMenuTitle">Menu</span>
+                    <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Fechar">×</button>
+                </div>
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-view mobile-menu-main" data-view="main"></div>
+                    <div class="mobile-menu-view mobile-menu-lang" data-view="lang"></div>
+                    <div class="mobile-menu-view mobile-menu-user" data-view="user"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERO SALVADOR -->
+        <section class="rio-hero">
+            <div class="rio-hero-overlay"></div>
+            <div class="rio-hero-content">
+                <div class="rio-hero-brand">
+                    <!-- Só o pin é recortado da arte (janela medida em --pin-* no
+                         hero-lockup.css); o texto ao lado é escrito na tipografia
+                         do hero. A imagem mantém a classe .rio-hero-logo para que
+                         cidade-visual.js continue trocando pelo logo do servidor. -->
+                    <span class="rio-hero-brand-mark" aria-hidden="true">
+                        <img src="../../imagem/Salvador/assets/LogoV2.png" alt="" class="rio-hero-logo" loading="eager" decoding="async">
+                    </span>
+                    <span class="rio-hero-brand-word">
+                        <span class="rio-hero-brand-name">Visit Salvador</span>
+                        <p class="rio-hero-logo-sub">Tour by Foot</p>
+                    </span>
+                </div>
+                <div class="rio-hero-text">
+                    <span class="rio-hero-ornament" aria-hidden="true">
+                        <svg viewBox="0 0 60 14" xmlns="http://www.w3.org/2000/svg"><path d="M2 7c4-6 8-6 12 0s8 6 12 0 8-6 12 0 8 6 12 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </span>
+                    <h1 class="rio-hero-title"><span class="rio-city-highlight">Salvador</span></h1>
+                    <p class="rio-hero-location">Bahia • Brasil</p>
+                    <p class="rio-hero-desc">Descubra a alma vibrante do <span class="rio-hero-accent">Pelourinho</span>: ladeiras coloridas, o som do <span class="rio-hero-accent">berimbau</span> ecoando pelas ruas e séculos de história a cada passo. Mais que um passeio, uma imersão nos <span class="rio-hero-accent">sabores, sons e cores da Bahia</span>.</p>
+                    <a href="#tours" class="btn-book">Conhecer Tours</a>
+                </div>
+            </div>
+            <svg class="rio-hero-wave-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 58 C 240 18, 480 18, 720 46 S 1200 82, 1440 40" fill="none" stroke="#e0b653" stroke-width="3"/>
+                <path d="M0 74 C 240 34, 480 34, 720 62 S 1200 98, 1440 56" fill="none" stroke="#e0b653" stroke-width="2" opacity="0.5"/>
+            </svg>
+        </section>
+
+        <!-- AVISO (oculto por padrão; controlado por Gerenciamento > Gerenciamento da página > Aviso "Informações Importantes") -->
+        <section class="rio-notice" style="display:none;">
+            <div class="rio-notice-text">
+                <h2 class="rio-notice-title">Informações Importantes</h2>
+                <!-- Sem texto fixo aqui de propósito: o conteúdo do aviso vem do
+                     servidor (Gerenciamento > Aviso), já traduzido. Texto escrito no
+                     HTML envelhecia sem ninguém perceber e aparecia em português nas
+                     seis versões de idioma. Sem aviso cadastrado, a seção não aparece. -->
+                <div class="rio-notice-actions">
+                    <button class="btn-proceed" type="button">Prosseguir</button>
+                    <button class="btn-dont-show" type="button">Não mostrar novamente</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOURS -->
+        <section class="rio-tours" id="tours">
+            <h2 class="rio-section-title" data-i18n="tours_section_title">Nossas Experiências</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour entram aqui, montados via JS a partir do banco (ver fetchToursFromBackend em site-shell.js) -->
+            </div>
+
+            <!-- Retrato dos tours para o rastreador: os cards de verdade vem da
+                 API por JavaScript, e o Google le o HTML puro. Este bloco e escrito
+                 por tools/snapshot_tours.py e removido da tela pelo JS antes do
+                 primeiro card aparecer — ninguem chega a ve-lo. Nao editar a mao. -->
+            <!-- inicio do retrato de tours -->
+    <div class="tours-snapshot" data-snapshot>
+      <h2>Nos expériences</h2>
+      <article class="tours-snapshot-item">
+        <h3>Pelourinho</h3>
+        <p>Português, Inglês, Espanhol</p>
+        <img src="https://api-tour.exksvol.com/imagem/Salvador/Caminhando%20pelo%20Pelourinho/img1.webp" alt="Pelourinho (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Salvador/Caminhando%20pelo%20Pelourinho/img2.webp" alt="Pelourinho (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Salvador/Caminhando%20pelo%20Pelourinho/img3.webp" alt="Pelourinho (3)" loading="lazy">
+      </article>
+    </div>
+    <script>(function(){var e=document.currentScript.previousElementSibling;if(e&&e.hasAttribute("data-snapshot"))e.style.display="none";})();</script>
+            <!-- fim do retrato de tours -->
+        </section>
+
+        <section class="rio-tours" id="expedicoes-privativas" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="privado_section_title">Experiências exclusivas</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour (modalidade "privado") entram aqui, montados via JS a partir do banco -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="transfers" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="transfers_section_title">Transfers</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de transfer entram aqui -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="depoimentos">
+            <h2 class="rio-section-title">Quem já caminhou com a gente pelo Pelourinho</h2>
+            <div class="rio-section-divider rio-divider-small"></div>
+
+            <div class="rio-testimonials-quotes">
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Guia super atencioso, contou a história do Pelourinho com muita paixão. Recomendo demais!</p>
+                    <span class="rio-testimonial-author">Bruno Castilho</span>
+                </article>
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Passeio incrível, aprendi muito sobre a cultura baiana. Vale cada minuto do tour.</p>
+                    <span class="rio-testimonial-author">Helena Prado</span>
+                </article>
+            </div>
+
+            <div class="rio-relatos-gallery" id="relatosGallery" data-cidade="Salvador">
+                <figure class="rio-relatos-item" data-photo-id="salvador-clientes-1">
+                    <img src="../../imagem/Salvador/Relatos/clientes_dizem_1-min-300.webp" alt="Photo de voyage à Salvador" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="salvador-clientes-2">
+                    <img src="../../imagem/Salvador/Relatos/clientes_dizem_2-jpeg-min-300.webp" alt="Photo de voyage à Salvador" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="salvador-clientes-3">
+                    <img src="../../imagem/Salvador/Relatos/clientes_dizem_3-jpeg-min-300.webp" alt="Photo de voyage à Salvador" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="salvador-clientes-4">
+                    <img src="../../imagem/Salvador/Relatos/clientes_dizem_4-jpeg-min-300.webp" alt="Photo de voyage à Salvador" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="rio-footer">
+            <div class="rio-footer-card" id="rioFooterCard">
+                <button class="footer-card-up" type="button" aria-label="Ir ao topo">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <h3 class="rio-footer-card-title" data-i18n="footer_info_title">Informações</h3>
+                <div class="rio-footer-card-body" id="rioFooterCardBody">
+                    Clique em "CONTATO" para ver as informações dentro deste cartão.
+                </div>
+                <div class="footer-info-icons">
+                    <a href="https://www.instagram.com/tourbyfootbrasil/?hl=en" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/5521964458696" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:riobyfoottour@gmail.com" aria-label="Email"><i class="fa fa-envelope"></i></a>
+                </div>
+                <!-- Links entre destinos: ligam as quatro paginas comerciais
+                     entre si (antes cada uma so linkava de volta pra home).
+                     Ficam depois do CTA e dos contatos, para nao competir
+                     com a conversao. -->
+                <nav class="rio-footer-destinos" aria-label="Outros destinos">
+                    <span class="rio-footer-destinos-titulo" data-i18n="footer_destinos_titulo">Outros destinos</span>
+                    <span class="rio-footer-destinos-links">
+                        <a href="/rio-de-janeiro/fr/" data-i18n="footer_destino_rio">Free Walking Tour no Rio de Janeiro</a>
+                        <a href="/sao-luis/fr/" data-i18n="footer_destino_saoluis">Tour pelo centro histórico de São Luís</a>
+                        <a href="/lencois-maranhenses/fr/" data-i18n="footer_destino_lencois">Passeios nos Lençóis Maranhenses</a>
+                    </span>
+                </nav>
+                <div class="rio-footer-card-credit">
+                    <a href="https://exksvol.com/" target="_blank" rel="noopener noreferrer" aria-label="Exksvol — site do desenvolvedor" title="Exksvol" class="footer-credit-link">
+                        <span class="footer-credit-text" data-i18n="footer_developed_by_text"></span>
+                        <img src="../../imagem/Salvador/assets/exksvol.png" alt="Exksvol" class="footer-credit-logo" / loading="lazy" decoding="async">
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <div class="award-modal" id="awardModal" aria-hidden="true" aria-live="polite" aria-atomic="true">
+            <div class="award-modal__dialog" role="status" aria-labelledby="awardTitle">
+                <div class="award-modal__header">
+                    <span class="award-modal__badge-icon" aria-hidden="true"><i class="fa-solid fa-award"></i></span>
+                    <h3 id="awardTitle" class="award-modal__title" data-i18n="award_title">Reconhecimento Especial</h3>
+                    <button class="award-modal__close" type="button" data-close-award aria-label="Fechar">&times;</button>
+                </div>
+                <div class="hs-modal__body">
+                    <section class="hs-modal__leftImage"><span class="hs-icon js-hs-icon"><img src="https://app.hoversignal.com/AppImage/Signals/4bd5923d-79aa-4fa7-9ac0-e9ecac175d3e" alt="Prix TripAdvisor" loading="lazy" decoding="async"></span></section>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <section class="hs-modal__rightDescr">
+                        <div class="js-hs-description" data-signaltext="" data-i18n="award_text">Sabia que fomos premiados como a <b>melhor escolha</b> pelo <b>TripAdvisor</b> em 2021? 🥰</div>
+                    </section>
+                </div>
+                <div class="award-modal__footer">
+                    <a class="award-modal__cta" id="awardCta" href="#" target="_blank" rel="noopener" data-i18n="award_cta">Ver no TripAdvisor <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <div class="award-modal__countdown-wrap">
+                        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                        <div class="award-modal__countdown" id="awardCountdown" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reservationModal" class="reservation-modal-overlay hidden" role="dialog" aria-modal="true" data-i18n-aria="reservation_modal_title" aria-label="Formulário de reserva">
+            <div class="reservation-modal">
+                <div class="res-modal-header">
+                    <span class="res-modal-icon" aria-hidden="true"><i class="fas fa-calendar-check"></i></span>
+                    <div class="res-modal-heading">
+                        <h2 data-i18n="reservation_modal_title">Reservar Tour</h2>
+                        <p class="res-modal-subtitle" data-i18n="reservation_modal_subtitle">Preencha os dados abaixo para confirmar sua reserva.</p>
+                    </div>
+                </div>
+                <form id="reservationForm" novalidate>
+                    <input type="hidden" id="reservationTour">
+                    <div class="res-tour-box">
+                        <span class="res-tour-icon" aria-hidden="true"><img src="../../imagem/assets/img-tour-selecionado.png" alt="" / loading="lazy" decoding="async"></span>
+                        <div class="res-tour-info">
+                            <span class="res-tour-label" data-i18n="reservation_tour_selected_label">Tour selecionado</span>
+                            <strong id="reservationTourDisplay" class="res-tour-name"></strong>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationName" data-i18n="reservation_name_label">Nome</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-user res-input-icon" aria-hidden="true"></i>
+                                <input type="text" id="reservationName" data-i18n-placeholder="reservation_name_placeholder" placeholder="Seu nome" required>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationDate" data-i18n="reservation_date_label">Data da reserva</label>
+                            <input type="date" id="reservationDate" required>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field" id="reservationTimeField">
+                            <label for="reservationTime" data-i18n="reservation_time_label">Horário</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-clock res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationTime">
+                                    <option value="" data-i18n="reservation_time_placeholder">Selecione um horário</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationQuantity" data-i18n="reservation_quantity_label">Quantidade de pessoas</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-users res-input-icon" aria-hidden="true"></i>
+                                <input type="number" id="reservationQuantity" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationLanguage" data-i18n="reservation_language_label">Idioma</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-globe res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationLanguage" required>
+                                    <option value="" data-i18n="reservation_language_placeholder">Selecione um idioma</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationPhone" data-i18n="reservation_phone_label">Celular/WhatsApp</label>
+                            <div class="res-input-wrap">
+                                <i class="fab fa-whatsapp res-input-icon" aria-hidden="true"></i>
+                                <input type="tel" id="reservationPhone" data-i18n-placeholder="reservation_phone_placeholder" placeholder="(00) 00000-0000" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-field">
+                        <label for="reservationEmail" data-i18n="reservation_email_label">Email</label>
+                        <div class="res-input-wrap">
+                            <i class="fas fa-envelope res-input-icon" aria-hidden="true"></i>
+                            <input type="email" id="reservationEmail" data-i18n-placeholder="reservation_email_placeholder" placeholder="seuemail@exemplo.com" required>
+                        </div>
+                    </div>
+                    <div class="reservation-modal-actions">
+                        <button type="button" id="reservationCancel" class="btn-book" data-i18n="reservation_cancel_btn">Cancelar</button>
+                        <button type="submit" class="btn-book"><i class="fas fa-check-circle" id="reservationSubmitIcon" aria-hidden="true"></i> <span id="reservationSubmitLabel" data-i18n="reservation_confirm_btn">Confirmar Reserva</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api-auth.js?v=1"></script>
+    <script src="../../js/page-translations.js?v=1"></script>
+    <script src="../../js/ui-translations.js?v=12"></script>
+    <script src="../../js/tour-interacoes.js?v=12"></script>
+    <script src="../../js/site-shell.js?v=92"></script>
+    <script src="../../js/presenca.js?v=1"></script>
+    <script src="../../js/atividade-cliente.js?v=2"></script>
+    <script src="../../js/Salvador.js?v=11"></script>
+    <script src="../../js/cidade-visual.js?v=6"></script>
+</body>
+</html>

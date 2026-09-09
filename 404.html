@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- noindex: uma pagina de erro nunca deve entrar no indice. O GitHub Pages
+         serve este arquivo com status HTTP 404 real, entao o Google trata como
+         "nao encontrado" mesmo assim — o noindex e reforco. -->
+    <meta name="robots" content="noindex, nofollow">
+    <title>Página não encontrada · Tour by Foot</title>
+    <link rel="icon" type="image/png" href="/imagem/assets/Logo.png?v=2">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.25rem 3rem;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            /* Mesmo tratamento de fundo da manutencao.html, para o visitante
+               reconhecer que continua dentro do site. */
+            background:
+                radial-gradient(1200px 600px at 80% 10%, rgba(255,255,255,0.08), transparent 60%),
+                radial-gradient(900px 500px at 20% 80%, rgba(255,255,255,0.06), transparent 55%),
+                radial-gradient(800px 600px at 100% 100%, rgba(255,255,255,0.22), transparent 60%),
+                linear-gradient(120deg, rgba(2, 61, 49, 0.884) 0%, rgba(20, 139, 123, 0.774) 55%, rgba(12, 160, 150, 0.788) 100%);
+            color: #fff;
+        }
+        .logo {
+            width: 96px;
+            height: auto;
+            margin-bottom: 1.6rem;
+        }
+        .code {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(3.2rem, 12vw, 5rem);
+            line-height: 1;
+            margin: 0 0 0.4rem;
+            color: #e9dfc7;
+            letter-spacing: 0.02em;
+        }
+        h1 {
+            font-size: clamp(1.15rem, 4vw, 1.55rem);
+            font-weight: 800;
+            margin: 0 0 0.9rem;
+        }
+        p {
+            max-width: 46ch;
+            margin: 0 0 2rem;
+            line-height: 1.6;
+            font-size: 0.98rem;
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .destinos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 2.2rem;
+        }
+        .destinos a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.65rem 1.15rem;
+            border-radius: 999px;
+            border: 1px solid rgba(233, 223, 199, 0.55);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .destinos a:hover,
+        .destinos a:focus-visible {
+            background: rgba(233, 223, 199, 0.22);
+            transform: translateY(-1px);
+        }
+        .destinos i { color: #e9dfc7; }
+        .home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.9rem;
+            border-radius: 999px;
+            background: #e9dfc7;
+            color: #0d5548;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.92rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .home:hover,
+        .home:focus-visible { background: #fff; }
+        a:focus-visible { outline: 2px solid #e9dfc7; outline-offset: 3px; }
+    </style>
+</head>
+<body>
+    <img src="/imagem/assets/Logo.png" alt="Tour by Foot" class="logo">
+
+    <p class="code">404</p>
+    <h1>Não encontramos esta página</h1>
+    <p>O endereço pode ter mudado ou o link estar desatualizado. Escolha um destino abaixo ou volte para a página inicial.</p>
+
+    <nav class="destinos" aria-label="Destinos">
+        <a href="/rio-de-janeiro/"><i class="fa fa-map-marker-alt"></i> Rio de Janeiro</a>
+        <a href="/salvador/"><i class="fa fa-map-marker-alt"></i> Salvador</a>
+        <a href="/sao-luis/"><i class="fa fa-map-marker-alt"></i> São Luís do Maranhão</a>
+        <a href="/lencois-maranhenses/"><i class="fa fa-map-marker-alt"></i> Lençóis Maranhenses</a>
+    </nav>
+
+    <a class="home" href="/"><i class="fa fa-arrow-left"></i> Página inicial</a>
+</body>
+</html>

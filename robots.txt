@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /html/Gerenciamento.html
+Allow: /
+
+Sitemap: https://www.tourbyfoot.com/sitemap.xml

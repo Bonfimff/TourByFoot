@@ -1,0 +1,357 @@
+/* Comentários/avaliações de tour — compartilhado entre cidades. */
+/* Curtidas na galeria de relatos usam as classes .rio-relatos-* já existentes
+   (ver Riodejaneiro.css / Lencoismaranhenses.css) — nada a estilizar aqui. */
+
+.tour-comments-toggle {
+    cursor: pointer;
+    background: none;
+    font: inherit;
+    border: none;
+}
+
+.tour-comments-panel {
+    margin-top: 0.8rem;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tour-comments-summary {
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: inherit;
+}
+
+.tour-comments-list {
+    list-style: none;
+    margin: 0 0 0.8rem 0;
+    padding: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.tour-comment-item {
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tour-comment-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.tour-comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tour-comment-stars {
+    color: #f5a623;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.tour-comment-text {
+    margin: 0.2rem 0;
+    font-size: 0.92rem;
+}
+
+.tour-comment-date {
+    font-size: 0.75rem;
+    opacity: 0.65;
+}
+
+.tour-comment-empty,
+.tour-comments-loading,
+.tour-comments-error,
+.tour-comment-login-hint {
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.tour-comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tour-comment-rating {
+    display: flex;
+    gap: 0.2rem;
+}
+
+.tour-comment-star {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: #f5a623;
+    cursor: pointer;
+    padding: 0;
+}
+
+.tour-comment-input {
+    resize: vertical;
+    min-height: 60px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    font: inherit;
+}
+
+.tour-comment-submit {
+    align-self: flex-start;
+}
+
+.tour-comment-header {
+    flex-wrap: wrap;
+}
+
+.tour-comment-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+.tour-comment-status-pendente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.tour-comment-status-rejeitado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.tour-comment-fotos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.4rem 0;
+}
+
+.tour-comment-fotos img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: zoom-in;
+}
+
+.tour-comment-fotos-label {
+    font-size: 0.82rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.tour-comment-fotos-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: fit-content;
+    background: #fff;
+    color: var(--green-main, #1b4332);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tour-comment-fotos-btn:hover {
+    background: var(--green-main, #1b4332);
+    color: #fff;
+    border-color: var(--green-main, #1b4332);
+}
+
+.tour-comment-submit {
+    background: var(--green-main, #1b4332);
+    color: #fff;
+    padding: 0.55rem 1.4rem;
+    border-radius: 20px;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: normal;
+    text-transform: none;
+    box-shadow: none;
+    margin-top: 0.2rem;
+}
+
+.tour-comment-submit:hover {
+    background: #12301f;
+    transform: none;
+}
+
+.tour-comment-fotos-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.tour-comment-fotos-preview img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.tour-comment-publico-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tour-comment-publico-hint {
+    font-size: 0.78rem;
+    opacity: 0.75;
+    margin: -0.2rem 0 0.2rem;
+}
+
+.tour-review-prompt {
+    position: fixed;
+    left: 50%;
+    bottom: 1.2rem;
+    transform: translateX(-50%);
+    z-index: 3000;
+    background: #fff;
+    color: #1b1b1b;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.35);
+    padding: 1rem 1.2rem;
+    width: min(92vw, 380px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.tour-review-prompt-text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.tour-review-prompt-actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+}
+
+.tour-review-prompt-actions button {
+    border: none;
+    border-radius: 20px;
+    padding: 0.45rem 1.1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tour-review-prompt-yes {
+    background: var(--green-main, #1b4332);
+    color: #fff;
+}
+
+.tour-review-prompt-no {
+    background: #eee;
+    color: #333;
+}
+
+.tour-foto-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    background: rgba(0, 0, 0, 0.85);
+    align-items: center;
+    justify-content: center;
+}
+
+.tour-foto-lightbox.open {
+    display: flex;
+}
+
+.tour-foto-lightbox-img {
+    max-width: min(90vw, 900px);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.tour-foto-lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.tour-foto-lightbox-prev,
+.tour-foto-lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    font-size: 2.2rem;
+    line-height: 1;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.tour-foto-lightbox-prev {
+    left: 1rem;
+}
+
+.tour-foto-lightbox-next {
+    right: 1rem;
+}
+
+.tour-foto-lightbox-prev:hover,
+.tour-foto-lightbox-next:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tour-foto-lightbox-counter {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* Clicar na foto de um card de tour amplia na lightbox (ver o listener de
+   .rio-tour-slide em tour-interacoes.js) — o cursor sinaliza isso. As
+   bolinhas do slideshow continuam com o cursor de clique normal. */
+.rio-tour-slider .rio-tour-slide {
+    cursor: zoom-in;
+}
+
+.rio-tour-slider-dots .rio-tour-dot {
+    cursor: pointer;
+}

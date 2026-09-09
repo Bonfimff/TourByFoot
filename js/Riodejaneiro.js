@@ -1,11 +1,90 @@
+// Retrato dos tours (ver tools/snapshot_tours.py). O bloco existe no HTML para
+// o rastreador de busca, que nao roda JavaScript: sem ele o Google nao ve nem o
+// nome nem as fotos dos tours, que chegam da API. Some assim que os cards de
+// verdade estao na tela, e volta se a busca falhar — o visitante nunca fica sem
+// tour.
+//
+// Vive em window, e nao dentro de um IIFE, porque este arquivo tem dois escopos
+// separados e quem monta os cards nao esta no mesmo que este trecho.
+// Reserva por WhatsApp: alem de abrir a conversa com o guia, registra a reserva
+// como Pendente no painel. Antes disso, nada ficava gravado — se a conversa se
+// perdesse, a reserva se perdia junto.
+//
+// Nao usa await de proposito. O window.open que abre o WhatsApp precisa
+// acontecer no mesmo passo do clique, senao o navegador o trata como popup e
+// bloqueia. Entao o envio sai por fora, com keepalive para sobreviver a saida da
+// pagina, e uma falha aqui nunca atrapalha o cliente: ele segue para o WhatsApp
+// do mesmo jeito, que continua sendo o canal que vale.
+window.registrarReservaWhatsApp = (dados) => {
+    const base = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+    try {
+        fetch(`${base}/add_reserva_whatsapp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados),
+            keepalive: true
+        }).catch((e) => console.warn('Reserva por WhatsApp nao registrada:', e));
+    } catch (e) {
+        console.warn('Reserva por WhatsApp nao registrada:', e);
+    }
+};
 
-// version 1.0 
+window.retratoDeTours = {
+    _blocos: () => document.querySelectorAll('[data-snapshot]'),
+    _prazo: null,
+    descartar() {
+        clearTimeout(this._prazo);
+        this._blocos().forEach((el) => el.remove());
+    },
+    restaurar() {
+        clearTimeout(this._prazo);
+        this._blocos().forEach((el) => { el.style.display = ''; });
+    },
+    // Rede de segurança por tempo, e não por caminho de erro: a busca dos tours
+    // pode falhar em vários pontos deste arquivo, e depender de acertar todos
+    // deixaria a seção vazia justamente no dia em que a API cair. Aqui a
+    // pergunta é só uma — passou o tempo e não existe card na tela? Então o
+    // retrato volta. Um descartar() bem-sucedido cancela isto antes de disparar.
+    armarRede(segundos) {
+        clearTimeout(this._prazo);
+        this._prazo = setTimeout(() => {
+            if (!document.querySelector('.rio-tour-card')) this.restaurar();
+        }, segundos * 1000);
+    }
+};
+
+window.retratoDeTours.armarRede(8);
+
+
+// version 1.0
+// Link direto pra um tour (?tour=<id>, gerado em Gerenciamento > Editar
+// Tour > "Copiar link"): quando presente, o aviso "Informações Importantes"
+// e o card de premiação não aparecem — o cliente veio direto ver aquele
+// tour, não a cidade inteira. Lido uma vez aqui, em vez de em cada IIFE
+// (o arquivo tem duas sem escopo compartilhado), porque tanto
+// applyCidadeAviso/initAwardToast quanto a rolagem até o card precisam dele.
+window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tour') || null;
+
 (() => {
     const pageTranslations = window.pageTranslations || {};
 
     let currentFooterInfo = pageTranslations.pt.footer_info;
     let rolePermissionsMap = {};
     let toursFromDatabase = [];
+
+    // Gerenciamento.html carrega este arquivo só pelas funções globais que
+    // exporta (openMyReservationsModal, openUserDataModal, redirectTo...,
+    // initLoginModal/initRegisterModal) — mas ele tem sua própria
+    // implementação completa de hamburger/menu mobile/dropdown de perfil
+    // (Gerenciamento.js). Rodar as duas juntas duplicava listeners no mesmo
+    // #hamburger/.profile-menu com dois "mobileMenuState" independentes,
+    // deixando os itens do menu mobile ("Principal", "Minhas Reservas" etc.)
+    // com comportamento quebrado/inconsistente.
+    const isGerenciamentoPage = () => document.body.classList.contains('gerenciamento-page');
+    // Exposta em window: o arquivo tem uma segunda IIFE (a partir da linha
+    // ~1469, com initHamburgerMenu) que também precisa dessa checagem e não
+    // compartilha este escopo.
+    window.isGerenciamentoPage = isGerenciamentoPage;
 
     const ALLOW_PUBLIC_NAV_ITEMS_WHEN_LOGGED_OUT = window.ALLOW_PUBLIC_NAV_ITEMS_WHEN_LOGGED_OUT !== false;
     window.ALLOW_PUBLIC_NAV_ITEMS_WHEN_LOGGED_OUT = ALLOW_PUBLIC_NAV_ITEMS_WHEN_LOGGED_OUT;
@@ -56,12 +135,17 @@
     const getCurrentUserEmail = () => (localStorage.getItem('userEmail') || '').toLowerCase();
 
     const redirectToPrincipalPage = () => {
+        // Caminho absoluto, e nao relativo: as páginas de cidade agora vivem em
+        // /salvador/ e as versões de idioma em /salvador/en/, então 'index.html'
+        // relativo apontaria para dentro da própria pasta. E a home tem uma
+        // versão por idioma — de /salvador/en/ o retorno é /en/, não /.
+        const idioma = (window.rotaIdioma && window.rotaIdioma.atual) || 'pt';
+        window.location.href = idioma === 'pt' ? '/' : '/' + idioma + '/';
+    };
+
+    const redirectToManagementPage = () => {
         const path = window.location.pathname || '';
-        if (path.endsWith('/html/Gerenciamento.html') || path.endsWith('Gerenciamento.html')) {
-            window.location.href = '../index.html';
-        } else {
-            window.location.href = 'index.html';
-        }
+        window.location.href = path.includes('/html/') ? 'Gerenciamento.html' : 'html/Gerenciamento.html';
     };
 
     const getCurrentRolePermissions = () => {
@@ -72,10 +156,11 @@
         return DEFAULT_ROLE_PERMISSIONS[currentRole] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
     };
 
-    // Exporta globalmente os helpers jÃ¡ definidos.
+    // Exporta globalmente os helpers já definidos.
     window.normalizeRole = normalizeRole;
     window.getCurrentUserRole = getCurrentUserRole;
     window.getCurrentRolePermissions = getCurrentRolePermissions;
+    window.redirectToManagementPage = redirectToManagementPage;
 
     const canAccessManagement = () => {
         const role = getCurrentUserRole();
@@ -152,23 +237,28 @@
             if (el) el.style.display = tabs.includes('MEUS DADOS') ? '' : 'none';
         });
 
-        // PermissÃµes funcionais adicionais
+        // Permissões funcionais adicionais
         if (!perms.managePerfis) {
             document.querySelectorAll('.profile-item--admin').forEach(el => { if (el) el.style.display = 'none'; });
         }
 
-        // SituaÃ§Ã£o de pÃ¡ginas (principal / gerenciamento)
+        // Situação de páginas (principal / gerenciamento). Só redireciona quem
+        // JÁ tem sessão e não tem permissão — visitante anônimo (sem
+        // localStorage.userRole) fica na página para o gate de login do
+        // Gerenciamento.js (mais abaixo, já com o modal de login pronto)
+        // mostrar o overlay em vez de expulsar direto pra "/".
         const isManagementPage = window.location.pathname.endsWith('/html/Gerenciamento.html') || window.location.pathname.endsWith('Gerenciamento.html');
-        if (isManagementPage && !allowed) {
+        const hasSession = !!localStorage.getItem('userRole');
+        if (isManagementPage && !allowed && hasSession) {
             window.location.href = window.location.origin + '/';
         }
 
         if (!pages.includes('Principal') && !isManagementPage) {
-            // se nÃ£o tiver acesso Ã  pÃ¡gina principal, remove aÃ§Ãµes de tour (sÃ³ para controle leve de UI)
+            // se não tiver acesso à página principal, remove ações de tour (só para controle leve de UI)
             document.querySelectorAll('.rio-btn-reserve, .btn-book').forEach(el => { if (el) el.style.display = 'none'; });
         }
 
-        if (!pages.includes('Gerenciamento') && isManagementPage) {
+        if (!pages.includes('Gerenciamento') && isManagementPage && hasSession) {
             window.location.href = window.location.origin + '/';
         }
     };
@@ -187,11 +277,15 @@
                 savedPermissions = null;
             }
 
+            const defaults = DEFAULT_ROLE_PERMISSIONS[canonicalRole] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+            // O cache em localStorage (gravado no login) pode ser mais antigo
+            // que permissões granulares adicionadas depois — mesclar com os
+            // defaults como base evita perder uma chave nova ausente no cache.
             rolePermissionsMap = {
                 ...rolePermissionsMap,
                 [canonicalRole]: (savedPermissions && typeof savedPermissions === 'object')
-                    ? savedPermissions
-                    : (DEFAULT_ROLE_PERMISSIONS[canonicalRole] || DEFAULT_ROLE_PERMISSIONS.cliente_user)
+                    ? { ...defaults, ...savedPermissions }
+                    : defaults
             };
             applyRoleBasedControls();
             return;
@@ -213,11 +307,11 @@
         applyRoleBasedControls();
     };
 
-    // Exporta controles apÃ³s definiÃ§Ã£o para evitar acesso antecipado (TDZ).
+    // Exporta controles após definição para evitar acesso antecipado (TDZ).
     window.applyRoleBasedControls = applyRoleBasedControls;
     window.loadRolePermissions = loadRolePermissions;
 
-    // 1. DefiniÃ§Ã£o Ãºnica do endereÃ§o da API
+    // 1. Definição única do endereço da API
     const API_BASE_URL = 'https://api-tour.exksvol.com';
 
     // Disponibiliza globalmente para outros scripts e IIFEs
@@ -225,7 +319,11 @@
 
     console.debug('API_BASE_URL configurado para:', API_BASE_URL);
 
-    // 2. MÃ©todo padronizado para adicionar reserva
+    // Modo de manutenção: a checagem que decide isso é o script bloqueante
+    // no <head> da página (redireciona pra /manutencao.html
+    // antes de qualquer conteúdo renderizar — sem flash da página real).
+
+    // 2. Método padronizado para adicionar reserva
     const adicionarReservaNoServidor = async (dadosReserva) => {
         try {
             const response = await fetch(`${API_BASE_URL}/add_agendamento`, {
@@ -242,7 +340,7 @@
                 if (typeof showGlobalNotification === 'function') {
                     showGlobalNotification('Reserva concluída com sucesso.', 'success');
                 } else {
-                    alert('Reserva concluÃ­da com sucesso.');
+                    alert('Reserva concluída com sucesso.');
                 }
                 if (typeof carregarAgendamentosDoBanco === 'function') {
                     carregarAgendamentosDoBanco();
@@ -255,7 +353,7 @@
                 }
             }
         } catch (error) {
-            console.error('Erro na requisiÃ§Ã£o:', error);
+            console.error('Erro na requisição:', error);
             if (typeof showGlobalNotification === 'function') {
                 showGlobalNotification('Ocorreu um erro de conexão com o servidor.', 'error');
             } else {
@@ -277,7 +375,7 @@
         const url = path.startsWith('http') ? path : `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
         const defaultOptions = {
             headers: {
-                // NÃ£o definir Content-Type por padrÃ£o para evitar preflight se possÃ­vel
+                // Não definir Content-Type por padrão para evitar preflight se possível
                 ...(options.headers || {})
             },
             ...options
@@ -319,11 +417,11 @@
         }
     };
 
-    // Expor apiFetch globalmente para evitar erro "apiFetch is not defined" em outros mÃ³dulos
+    // Expor apiFetch globalmente para evitar erro "apiFetch is not defined" em outros módulos
     window.apiFetch = apiFetch;
 
     const login = async (email, password) => {
-        if (!email || !password) throw new Error('Email e senha sÃ£o obrigatÃ³rios');
+        if (!email || !password) throw new Error('Email e senha são obrigatórios');
 
         const params = new URLSearchParams({
             username: email,
@@ -336,8 +434,107 @@
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: params.toString()
-            // sem credentials para reduzir verificaÃ§Ãµes extras CORS
+            // sem credentials para reduzir verificações extras CORS
         });
+    };
+
+    // Casa cada card do Rio ao SEU tour por identidade estável (pasta de
+    // imagens, com nome como fallback) — nunca por posição no array. A API
+    // devolve tours de todas as cidades numa lista só, cuja ordem pode não
+    // bater com a ordem dos cards no HTML; casar por índice bruto faz a
+    // legenda de um card aparecer sobre o slideshow de outro tour. Usado em
+    // TODO lugar que escreve o nome/detalhes de um card a partir do banco
+    // (carregarToursDoBanco E applyPageLanguage — a troca de idioma reaplica
+    // os dados do banco por cima do texto estático, então precisa da mesma
+    // lógica de casamento, senão reintroduz o bug na troca de idioma).
+    const tourNameKey = (value) => String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+
+    const buildRioTourMatchers = (allTours) => {
+        const toursRio = (allTours || []).filter(t => (t.cidade || '').trim() === 'Rio de Janeiro');
+        const tourByFolder = new Map();
+        const tourByName = new Map();
+        toursRio.forEach((t) => {
+            const folder = (t.pasta_imagens || '').trim();
+            if (folder && !tourByFolder.has(folder)) tourByFolder.set(folder, t);
+            const nameKey = tourNameKey(t.nome_tour || t.name);
+            if (nameKey && !tourByName.has(nameKey)) tourByName.set(nameKey, t);
+        });
+        return { toursRio, tourByFolder, tourByName };
+    };
+
+    const matchRioTourForCard = (card, matchers) => {
+        const cardFolder = (card.querySelector('.rio-tour-slider')?.dataset.folder || '').trim();
+        const cardNameKey = tourNameKey(card.querySelector('.rio-tour-name')?.textContent);
+        return matchers.tourByFolder.get(cardFolder) || matchers.tourByName.get(cardNameKey) || null;
+    };
+
+    // Link de compartilhar: não é a URL direta da página (?tour=<id>), e sim
+    // uma rota do backend (/compartilhar/tour/<id>) que gera as meta tags
+    // Open Graph certas pra ESTE tour (nome + primeira foto) e redireciona
+    // pra a página real na hora — o HTML estático da página não tem como
+    // saber qual tour é até o JS rodar, e o crawler do WhatsApp/Facebook não
+    // roda JS. Ver compartilhar_tour() em app.py.
+    const buildTourShareUrl = (tourId) => `${API_BASE_URL}/compartilhar/tour/${tourId}`;
+
+    // Ícone de compartilhar em cada card — some se já existir (cards são
+    // re-processados a cada troca de idioma) pra não duplicar.
+    const ensureShareButton = (card, tour) => {
+        if (!tour || tour.id == null) return;
+        // Fica sobre a foto (canto superior direito), não na barra de ações —
+        // ver .rio-link-share em Riodejaneiro.css (position:absolute).
+        const imagesDiv = card.querySelector('.rio-tour-images');
+        if (!imagesDiv || card.querySelector('.rio-link-share')) return;
+
+        const shareBtn = document.createElement('button');
+        shareBtn.type = 'button';
+        shareBtn.className = 'rio-link-share';
+        shareBtn.setAttribute('aria-label', 'Compartilhar este tour');
+        shareBtn.innerHTML = '<i class="fa fa-share-alt" aria-hidden="true"></i>';
+        shareBtn.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const url = buildTourShareUrl(tour.id);
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: tour.nome_tour || tour.name || '', url });
+                    return;
+                }
+            } catch (error) {
+                return; // usuário cancelou o share nativo — não é erro, não avisa nada.
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                if (typeof showGlobalNotification === 'function') {
+                    showGlobalNotification('Link do tour copiado!', 'success');
+                }
+            } catch (error) {
+                console.warn('Falha ao copiar link do tour:', error);
+            }
+        });
+        getFloatActions(card).appendChild(shareBtn);
+        ensureFavButton(card, tour);
+    };
+
+    // Barra flutuante dos ícones do card (compartilhar + favoritar): vai no
+    // card, e não em .rio-tour-images — essa div recorta a foto no 16/9
+    // (overflow:hidden) e cortaria os botões, que precisam vazar metade pra
+    // dentro do bloco de informações. Ver .rio-tour-float-actions em
+    // Riodejaneiro.css.
+    const getFloatActions = (card) => {
+        let box = card.querySelector('.rio-tour-float-actions');
+        if (!box) {
+            box = document.createElement('div');
+            box.className = 'rio-tour-float-actions';
+            card.appendChild(box);
+        }
+        return box;
+    };
+
+    // Favoritar tour: botão + contagem ficam em tour-interacoes.js (módulo
+    // compartilhado pelas 4 páginas de cidade), que fala com
+    // /get_tour_favoritos e /toggle_tour_favorito.
+    const ensureFavButton = (card, tour) => {
+        if (card.querySelector('.rio-tour-fav')) return;
+        window.TourInteracoes?.mountTourFavButton(getFloatActions(card), tour.id);
     };
 
     const carregarToursDoBanco = async () => {
@@ -382,12 +579,27 @@
                 // ignore
             }
 
+            const matchers = buildRioTourMatchers(tours);
+            const matchedTourIds = new Set();
+
             const cards = document.querySelectorAll('.rio-tour-card');
+            const cardsByParent = new Map();
             cards.forEach((card, index) => {
-                const tour = tours[index];
+                const nameEl = card.querySelector('.rio-tour-name');
+                const tour = matchRioTourForCard(card, matchers);
                 if (!tour) return;
 
-                const nameEl = card.querySelector('.rio-tour-name');
+                if (tour.id != null) {
+                    matchedTourIds.add(tour.id);
+                    card.dataset.tourId = tour.id;
+                }
+                applyTourVisibility(card, tour);
+                ensureShareButton(card, tour);
+
+                const parentEntries = cardsByParent.get(card.parentElement) || [];
+                parentEntries.push({ card, ordem: tour.ordem ?? index, originalIndex: index });
+                cardsByParent.set(card.parentElement, parentEntries);
+
                 if (nameEl) {
                     nameEl.textContent = tour.nome_tour || tour.name || nameEl.textContent;
                 }
@@ -395,38 +607,44 @@
                 const detailsEl = card.querySelector('.rio-tour-details');
                 if (detailsEl) {
                     const currentLang = (typeof window.getCurrentLang === 'function') ? window.getCurrentLang() : 'pt';
-                    const languages = translateTourCardDetailValue('languages', tour.idiomas || tour.languages || 'Português, Inglês e Espanhol', currentLang);
-                    const meeting = translateTourCardDetailValue('meeting', tour.encontro || tour.meeting || 'Não informado', currentLang);
-                    const identification = translateTourCardDetailValue('identification', tour.identificacao || tour.identification || 'Guias com camisetas verdes', currentLang);
-                    const value = tour.valor ?? tour.value;
-                    const estado = (tour.estado || tour.status || '').trim();
-                    let valueLine = '';
-                    if (value != null && value !== '') {
-                        const formatted = Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                        valueLine = `<li><i class="fa fa-dollar-sign"></i> <strong>Valor:</strong> ${formatted}</li>`;
-                    }
-                    let stateLine = '';
-                    if (estado && estado.toLowerCase() !== 'ativo') {
-                        stateLine = `<li><i class="fa fa-info-circle"></i> <strong>Estado:</strong> ${estado}</li>`;
-                    }
-
-                    detailsEl.innerHTML = `
-                        <li><i class="fa fa-language"></i> <strong>Idiomas:</strong> ${languages}</li>
-                        <li><i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> ${meeting}</li>
-                        <li><i class="fa fa-shirt"></i> <strong>Identificação:</strong> ${identification}</li>
-                        ${valueLine}
-                        ${stateLine}
-                    `;
+                    setTourDetailsHtml(detailsEl, tour, currentLang);
                 }
 
                 const mapLink = card.querySelector('.rio-link-map');
                 const mapUrl = tour.link_tour || tour.link || '';
-                if (mapLink && mapUrl) {
-                    mapLink.href = mapUrl;
+                applyMapLinkState(mapLink, mapUrl);
+
+                // Imagens enviadas via admin (Gerenciamento) substituem o slideshow local
+                // hardcoded, casadas pelo mesmo índice de card já usado acima.
+                const folder = card.querySelector('.rio-tour-slider')?.dataset.folder;
+                if (folder && Array.isArray(tour.imagens) && tour.imagens.length) {
+                    window.tourImagesByFolder = window.tourImagesByFolder || {};
+                    window.tourImagesByFolder[folder] = tour.imagens;
+                }
+                if (tour.id && typeof window.TourInteracoes !== 'undefined' && window.TourInteracoes) {
+                    window.TourInteracoes.attachCommentsToggle(card, tour.id);
                 }
             });
 
-            // Reaplica idioma para garantir que conteÃºdo dinÃ¢mico venÃ§a qualquer texto estÃ¡tico.
+            // Reordena os cards conforme a ordem de exibição definida no admin
+            // (Gerenciamento), preservando os atributos/slideshow de cada card.
+            cardsByParent.forEach((entries, parent) => {
+                entries
+                    .sort((a, b) => (a.ordem - b.ordem) || (a.originalIndex - b.originalIndex))
+                    .forEach(({ card }) => parent.appendChild(card));
+            });
+
+            appendMissingRioTourCards(matchers.toursRio, matchedTourIds);
+            toggleEmptyModalitySections();
+
+            if (typeof window.startTourSliders === 'function') {
+                window.startTourSliders();
+            }
+
+            // Cards de verdade na tela: o retrato ja cumpriu o papel dele.
+            window.retratoDeTours.descartar();
+
+            // Reaplica idioma para garantir que conteúdo dinâmico vença qualquer texto estático.
             if (typeof window.dispatchLanguageChange === 'function' && typeof window.getCurrentLang === 'function') {
                 window.dispatchLanguageChange(window.getCurrentLang());
             }
@@ -434,6 +652,9 @@
             return tours;
         } catch (error) {
             console.error('Erro ao conectar com a API:', error);
+            // Sem cards para montar, o retrato dos tours volta a aparecer: é o
+            // mesmo conteúdo, só sem interação — melhor do que a seção vazia.
+            window.retratoDeTours.restaurar();
             throw error;
         }
     };
@@ -496,11 +717,679 @@
         return value;
     };
 
+    // Campos editáveis em Gerenciamento > Gerenciamento da página > Tours da
+    // Página. Cada um só aparece no card se preenchido — em branco ou "N/U"
+    // (não usar) omite a legenda inteira, sem texto de preenchimento padrão.
+    const TOUR_DETAIL_ICONS = {
+        periodo: 'fa-calendar', idiomas: 'fa-language', duracao: 'fa-clock', diasSemana: 'fa-calendar-week', horarios: 'fa-calendar-check', saida: 'fa-route',
+        encontro: 'fa-map-marker-alt', pontoEmbarque: 'fa-bus', pontoDesembarque: 'fa-bus',
+        grupo: 'fa-users', identificacao: 'fa-shirt', inclui: 'fa-check-circle', roteiro: 'fa-list'
+    };
+    const TOUR_DETAIL_LABELS = {
+        pt: { periodo: 'Período', idiomas: 'Idiomas', duracao: 'Duração', diasSemana: 'Dias da semana', saida: 'Saída', encontro: 'Encontro', pontoEmbarque: 'Ponto de embarque', pontoDesembarque: 'Ponto de desembarque', grupo: 'Grupo', identificacao: 'Identificação', inclui: 'Inclui', roteiro: 'Roteiro', horarios: 'Horários disponíveis', valor: 'Valor', estado: 'Estado' },
+        en: { periodo: 'Period', idiomas: 'Languages', duracao: 'Duration', diasSemana: 'Days of the week', saida: 'Departure', encontro: 'Meeting', pontoEmbarque: 'Pick-up point', pontoDesembarque: 'Drop-off point', grupo: 'Group', identificacao: 'Identification', inclui: 'Includes', roteiro: 'Itinerary', horarios: 'Available times', valor: 'Price', estado: 'Status' },
+        fr: { periodo: 'Période', idiomas: 'Langues', duracao: 'Durée', diasSemana: 'Jours de la semaine', saida: 'Départ', encontro: 'Rendez-vous', pontoEmbarque: "Point d'embarquement", pontoDesembarque: 'Point de débarquement', grupo: 'Groupe', identificacao: 'Identification', inclui: 'Inclus', roteiro: 'Itinéraire', horarios: 'Horaires disponibles', valor: 'Prix', estado: 'Statut' },
+        es: { periodo: 'Período', idiomas: 'Idiomas', duracao: 'Duración', diasSemana: 'Días de la semana', saida: 'Salida', encontro: 'Encuentro', pontoEmbarque: 'Punto de embarque', pontoDesembarque: 'Punto de desembarque', grupo: 'Grupo', identificacao: 'Identificación', inclui: 'Incluye', roteiro: 'Itinerario', horarios: 'Horarios disponibles', valor: 'Precio', estado: 'Estado' },
+        it: { periodo: 'Periodo', idiomas: 'Lingue', duracao: 'Durata', diasSemana: 'Giorni della settimana', saida: 'Partenza', encontro: 'Incontro', pontoEmbarque: 'Punto di imbarco', pontoDesembarque: 'Punto di sbarco', grupo: 'Gruppo', identificacao: 'Identificazione', inclui: 'Include', roteiro: 'Itinerario', horarios: 'Orari disponibili', valor: 'Prezzo', estado: 'Stato' },
+        zh: { periodo: '时期', idiomas: '语言', duracao: '时长', diasSemana: '星期几', saida: '出发地', encontro: '集合', pontoEmbarque: '上车点', pontoDesembarque: '下车点', grupo: '团体', identificacao: '识别', inclui: '包含', roteiro: '行程', horarios: '可预订时间', valor: '价格', estado: '状态' }
+    };
+    // "Dias da semana" é um valor DERIVADO (quais dias têm horário
+    // cadastrado), não texto livre — em vez de depender do admin preencher a
+    // tradução manualmente em 6 idiomas (como duracao/inclui/roteiro), o
+    // texto é remontado aqui a partir de tour.horarios_por_dia, no idioma
+    // atual, sempre automático. Mesma lógica de agrupamento (dias seguidos
+    // viram intervalo "Segunda a Sexta") de formatDiasSemanaFromHorarios em
+    // Gerenciamento.js — só os rótulos/conectores mudam por idioma.
+    const DIAS_SEMANA_ORDEM = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+    const DIAS_SEMANA_I18N = {
+        pt: { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado', all: 'Todos os dias', range: ' a ', within: ' e ', join: ', ', last: ' e ' },
+        en: { dom: 'Sunday', seg: 'Monday', ter: 'Tuesday', qua: 'Wednesday', qui: 'Thursday', sex: 'Friday', sab: 'Saturday', all: 'Every day', range: ' to ', within: ' and ', join: ', ', last: ' and ' },
+        fr: { dom: 'Dimanche', seg: 'Lundi', ter: 'Mardi', qua: 'Mercredi', qui: 'Jeudi', sex: 'Vendredi', sab: 'Samedi', all: 'Tous les jours', range: ' à ', within: ' et ', join: ', ', last: ' et ' },
+        es: { dom: 'Domingo', seg: 'Lunes', ter: 'Martes', qua: 'Miércoles', qui: 'Jueves', sex: 'Viernes', sab: 'Sábado', all: 'Todos los días', range: ' a ', within: ' y ', join: ', ', last: ' y ' },
+        it: { dom: 'Domenica', seg: 'Lunedì', ter: 'Martedì', qua: 'Mercoledì', qui: 'Giovedì', sex: 'Venerdì', sab: 'Sabato', all: 'Tutti i giorni', range: ' a ', within: ' e ', join: ', ', last: ' e ' },
+        zh: { dom: '周日', seg: '周一', ter: '周二', qua: '周三', qui: '周四', sex: '周五', sab: '周六', all: '每天', range: '至', within: '和', join: '、', last: '和' }
+    };
+    const formatDiasSemanaPorIdioma = (tour, lang) => {
+        const dic = DIAS_SEMANA_I18N[lang] || DIAS_SEMANA_I18N.pt;
+        let porDia = null;
+        try {
+            porDia = tour?.horarios_por_dia ? JSON.parse(tour.horarios_por_dia) : null;
+        } catch { porDia = null; }
+        // Sem horarios_por_dia (tour antigo, nunca migrado): não há como
+        // derivar por idioma — cai no texto salvo (em português) como último recurso.
+        if (!porDia || typeof porDia !== 'object') {
+            return tour?.dias_semana || tour?.diasSemana || '';
+        }
+        const ativos = DIAS_SEMANA_ORDEM.filter((key) => Array.isArray(porDia[key]) && porDia[key].length > 0);
+        if (!ativos.length) return '';
+        if (ativos.length === 7) return dic.all;
+
+        const grupos = [];
+        let atual = [ativos[0]];
+        for (let i = 1; i < ativos.length; i += 1) {
+            const idxAnterior = DIAS_SEMANA_ORDEM.indexOf(atual[atual.length - 1]);
+            const idxAtual = DIAS_SEMANA_ORDEM.indexOf(ativos[i]);
+            if (idxAtual === idxAnterior + 1) {
+                atual.push(ativos[i]);
+            } else {
+                grupos.push(atual);
+                atual = [ativos[i]];
+            }
+        }
+        grupos.push(atual);
+
+        const partes = grupos.map((grupo) => {
+            if (grupo.length >= 3) return `${dic[grupo[0]]}${dic.range}${dic[grupo[grupo.length - 1]]}`;
+            return grupo.map((key) => dic[key]).join(dic.within);
+        });
+
+        if (partes.length === 1) return partes[0];
+        return `${partes.slice(0, -1).join(dic.join)}${dic.last}${partes[partes.length - 1]}`;
+    };
+    // "Duração" é texto livre digitado pelo admin, mas na prática usa um
+    // vocabulário curto e previsível ("3 a 5 dias", "todos os dias", "2
+    // horas"...) — em vez de exigir que o admin digite a tradução manual
+    // pros 5 idiomas (aba de tradução do tour), troca-se automaticamente
+    // essas palavras/frases conhecidas pelo equivalente no idioma atual.
+    // Números e horários ("2h15", "8:00 - 14:00") não têm nenhuma palavra
+    // nessa lista, então atravessam sem alteração. Se o admin preencheu a
+    // tradução manual daquele idioma mesmo assim, ela sempre tem prioridade
+    // (ver uso abaixo, em buildTourDetailsHtml).
+    const escapeRegExpTerm = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const DURACAO_TERM_TRANSLATIONS = {
+        en: {
+            'todos os dias': 'every day', 'aproximadamente': 'approximately', 'cerca de': 'about',
+            'meio-dia': 'noon', 'meia-noite': 'midnight',
+            'minutos': 'minutes', 'minuto': 'minute', 'semanas': 'weeks', 'semana': 'week',
+            'manhã': 'morning', 'tarde': 'afternoon', 'noite': 'night', 'horas': 'hours', 'meses': 'months',
+            'anos': 'years', 'hora': 'hour', 'dias': 'days', 'ano': 'year', 'dia': 'day', 'mês': 'month', 'a': 'to'
+        },
+        fr: {
+            'todos os dias': 'tous les jours', 'aproximadamente': 'environ', 'cerca de': 'environ',
+            'meio-dia': 'midi', 'meia-noite': 'minuit',
+            'minutos': 'minutes', 'minuto': 'minute', 'semanas': 'semaines', 'semana': 'semaine',
+            'manhã': 'matin', 'tarde': 'après-midi', 'noite': 'soir', 'horas': 'heures', 'meses': 'mois',
+            'anos': 'ans', 'hora': 'heure', 'dias': 'jours', 'ano': 'an', 'dia': 'jour', 'mês': 'mois', 'a': 'à'
+        },
+        es: {
+            'todos os dias': 'todos los días', 'aproximadamente': 'aproximadamente', 'cerca de': 'alrededor de',
+            'meio-dia': 'mediodía', 'meia-noite': 'medianoche',
+            'minutos': 'minutos', 'minuto': 'minuto', 'semanas': 'semanas', 'semana': 'semana',
+            'manhã': 'mañana', 'tarde': 'tarde', 'noite': 'noche', 'horas': 'horas', 'meses': 'meses',
+            'anos': 'años', 'hora': 'hora', 'dias': 'días', 'ano': 'año', 'dia': 'día', 'mês': 'mes'
+        },
+        it: {
+            'todos os dias': 'tutti i giorni', 'aproximadamente': 'circa', 'cerca de': 'circa',
+            'meio-dia': 'mezzogiorno', 'meia-noite': 'mezzanotte',
+            'minutos': 'minuti', 'minuto': 'minuto', 'semanas': 'settimane', 'semana': 'settimana',
+            'manhã': 'mattina', 'tarde': 'pomeriggio', 'noite': 'sera', 'horas': 'ore', 'meses': 'mesi',
+            'anos': 'anni', 'hora': 'ora', 'dias': 'giorni', 'ano': 'anno', 'dia': 'giorno', 'mês': 'mese'
+        },
+        zh: {
+            'todos os dias': '每天', 'aproximadamente': '大约', 'cerca de': '大约',
+            'meio-dia': '中午', 'meia-noite': '午夜',
+            'minutos': '分钟', 'minuto': '分钟', 'semanas': '周', 'semana': '周',
+            'manhã': '上午', 'tarde': '下午', 'noite': '晚上', 'horas': '小时', 'meses': '月',
+            'anos': '年', 'hora': '小时', 'dias': '天', 'ano': '年', 'dia': '天', 'mês': '月', 'a': '至'
+        }
+    };
+    const translateDuracaoAuto = (raw, lang) => {
+        const dic = DURACAO_TERM_TRANSLATIONS[lang];
+        if (!dic || !raw) return raw || '';
+        let out = raw;
+        // Frases/palavras mais longas primeiro, senão "todos os dias" nunca
+        // seria alcançada (o termo "dias" sozinho já teria consumido a frase).
+        Object.keys(dic).sort((a, b) => b.length - a.length).forEach((termo) => {
+            const re = new RegExp(`(?<![a-zA-ZÀ-ÿ])${escapeRegExpTerm(termo)}(?![a-zA-ZÀ-ÿ])`, 'gi');
+            out = out.replace(re, dic[termo]);
+        });
+        return out;
+    };
+    // Textos do botão "Ler mais/Ler menos" usado quando um campo do tour
+    // (ex.: Inclui, Roteiro) é longo o bastante pra estourar o clamp de 3
+    // linhas do card — ver .rio-tour-detail-line no CSS.
+    const TOUR_READ_MORE_LABELS = {
+        pt: { more: 'Ler mais', less: 'Ler menos' },
+        en: { more: 'Read more', less: 'Read less' },
+        fr: { more: 'Lire plus', less: 'Lire moins' },
+        es: { more: 'Leer más', less: 'Leer menos' },
+        it: { more: 'Leggi di più', less: 'Leggi di meno' },
+        zh: { more: '阅读更多', less: '收起' }
+    };
+    // Rótulos fixos de UI que aparecem em todo card de tour, independente do
+    // conteúdo vindo do banco — não usam mais o array pageTranslations[lang].cards
+    // (que era indexado por posição do card e quebrava assim que a lista de
+    // tours deixou de bater com a ordem fixa dos cards estáticos antigos).
+    const TOUR_ACTION_LABELS = {
+        pt: { map: 'Ver no Mapa', reserve: 'Reservar Agora', reviews: 'Avaliações', dontShow: 'Não mostrar novamente' },
+        en: { map: 'View on Map', reserve: 'Book Now', reviews: 'Reviews', dontShow: "Don't show again" },
+        fr: { map: 'Voir sur la carte', reserve: 'Réserver', reviews: 'Avis', dontShow: 'Ne plus afficher' },
+        es: { map: 'Ver en el mapa', reserve: 'Reservar ahora', reviews: 'Reseñas', dontShow: 'No mostrar de nuevo' },
+        it: { map: 'Vedi sulla mappa', reserve: 'Prenota ora', reviews: 'Recensioni', dontShow: 'Non mostrare più' },
+        zh: { map: '查看地图', reserve: '立即预订', reviews: '评价', dontShow: '不再显示' }
+    };
+    window.TOUR_ACTION_LABELS = TOUR_ACTION_LABELS;
+    // Corta o TEXTO em si (não só visualmente) para caber em 3 linhas com
+    // "…" e o botão "Ler mais" terminando NA mesma linha, coladinho no fim
+    // do texto — pedido explícito pra bater com a referência enviada.
+    // -webkit-line-clamp/max-height só escondiam o excesso visualmente,
+    // então o botão nunca conseguia ficar "no fim da 3ª linha": ou ficava
+    // sobreposto (position:absolute) ou empurrado pra linha de baixo (fluxo
+    // normal). Value fica isolado em .rio-tour-detail-value (fora do ícone
+    // e do rótulo em negrito, que nunca são cortados) especificamente pra
+    // essa busca binária ter só o texto variável pra truncar.
+    const CLAMP_LINES = 3;
+    const wireTourDetailToggles = (container) => {
+        if (!container) return;
+        // Medir logo após o innerHTML ser trocado pega o card ainda sem layout
+        // assentado (altura 0 ou desatualizada) — o botão nunca aparecia mesmo
+        // com texto claramente cortado. Adiar pro próximo frame garante que o
+        // navegador já terminou de desenhar antes de medir.
+        requestAnimationFrame(() => {
+            container.querySelectorAll('.rio-tour-detail-line').forEach((lineEl) => {
+                const valueEl = lineEl.querySelector('.rio-tour-detail-value');
+                const toggle = lineEl.querySelector('.rio-tour-detail-toggle');
+                if (!valueEl || !toggle) return;
+
+                // O texto original só é guardado uma vez — chamadas seguintes
+                // (troca de idioma, etc.) sempre recriam o HTML do zero, mas
+                // por segurança evita truncar um texto que já foi truncado.
+                if (valueEl.dataset.fullText === undefined) {
+                    valueEl.dataset.fullText = valueEl.textContent;
+                }
+                const fullText = valueEl.dataset.fullText;
+
+                toggle.classList.remove('rio-detail-visible');
+                lineEl.classList.remove('rio-detail-expanded');
+                valueEl.textContent = fullText;
+                toggle.remove();
+                valueEl.after(toggle);
+
+                const lineHeight = parseFloat(getComputedStyle(lineEl).lineHeight) || 22.5;
+                const maxHeight = lineHeight * CLAMP_LINES + 1;
+
+                if (lineEl.scrollHeight <= maxHeight) {
+                    return; // texto completo já cabe, sem truncar nem mostrar o botão
+                }
+
+                toggle.classList.add('rio-detail-visible');
+                toggle.textContent = toggle.dataset.more;
+
+                // Busca binária pelo maior prefixo de fullText que, com "…" e
+                // o botão logo em seguida (já no DOM, então entra na medição),
+                // ainda cabe nas CLAMP_LINES linhas.
+                const fits = (n) => {
+                    valueEl.textContent = fullText.slice(0, n).trimEnd() + '…';
+                    return lineEl.scrollHeight <= maxHeight;
+                };
+                let lo = 0;
+                let hi = fullText.length;
+                let best = 0;
+                while (lo <= hi) {
+                    const mid = (lo + hi) >> 1;
+                    if (fits(mid)) {
+                        best = mid;
+                        lo = mid + 1;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+                const truncatedText = fullText.slice(0, best).trimEnd() + '…';
+                valueEl.textContent = truncatedText;
+
+                toggle.onclick = () => {
+                    const expanded = lineEl.classList.toggle('rio-detail-expanded');
+                    valueEl.textContent = expanded ? fullText : truncatedText;
+                    toggle.textContent = expanded ? toggle.dataset.less : toggle.dataset.more;
+                };
+            });
+
+            // Inclui/Roteiro viram HTML (parágrafos/listas), então o corte
+            // caractere a caractere do texto puro acima não serve direto.
+            // Mas quando o campo é só parágrafo(s) — sem lista com marcador —
+            // dá pra fazer o mesmo corte "…" + botão colado no fim da 3ª
+            // linha andando pela árvore de nós de texto (em vez de fatiar a
+            // string HTML crua, que quebraria tags no meio). Listas com
+            // marcador (✓/✕/•) continuam no clamp visual (max-height): cortar
+            // um item de lista no meio da palavra ficaria pior que só
+            // esconder o item inteiro.
+            container.querySelectorAll('.rio-tour-detail-rich-item').forEach((itemEl) => {
+                const bodyEl = itemEl.querySelector('.rio-tour-detail-richbody');
+                const toggle = itemEl.querySelector('.rio-tour-detail-toggle-rich');
+                if (!bodyEl || !toggle) return;
+
+                itemEl.classList.remove('rio-detail-expanded');
+                toggle.classList.remove('rio-detail-visible');
+                toggle.textContent = toggle.dataset.more;
+
+                const hasList = !!bodyEl.querySelector('ul');
+                if (hasList) {
+                    bodyEl.classList.remove('rio-tour-detail-richbody-textcut');
+                    if (bodyEl.scrollHeight <= bodyEl.clientHeight + 1) {
+                        return; // conteúdo já cabe no clamp, sem botão
+                    }
+                    toggle.classList.add('rio-detail-visible');
+                    toggle.onclick = () => {
+                        const expanded = itemEl.classList.toggle('rio-detail-expanded');
+                        toggle.textContent = expanded ? toggle.dataset.less : toggle.dataset.more;
+                    };
+                    return;
+                }
+
+                // Só parágrafo(s): mede sem o clamp de CSS (senão o
+                // scrollHeight já viria cortado em 3 linhas mesmo quando o
+                // texto real tem só 2, e a busca binária nunca acharia o
+                // ponto certo) — a classe abaixo desativa o max-height do
+                // CSS e deixa CLAMP_LINES aqui ser a única fonte de verdade.
+                bodyEl.classList.add('rio-tour-detail-richbody-textcut');
+                if (bodyEl.dataset.fullHtml === undefined) {
+                    bodyEl.dataset.fullHtml = bodyEl.innerHTML;
+                }
+                const fullHtml = bodyEl.dataset.fullHtml;
+                bodyEl.innerHTML = fullHtml;
+
+                const lineHeight = parseFloat(getComputedStyle(bodyEl).lineHeight) || 22.5;
+                const maxHeight = lineHeight * CLAMP_LINES + 1;
+                if (bodyEl.scrollHeight <= maxHeight) {
+                    return; // texto completo já cabe, sem truncar nem mostrar o botão
+                }
+
+                // Precisa ficar visível ANTES da busca binária (não só no
+                // final): o botão só ocupa espaço na linha quando não está
+                // "display:none", e a busca precisa medir a altura JÁ COM
+                // esse espaço contado — senão o texto cabe "sem o botão"
+                // durante toda a busca e o botão, ao aparecer só no fim,
+                // empurra a última linha pra uma 4ª linha por fora do clamp.
+                toggle.classList.add('rio-detail-visible');
+
+                const countVisibleChars = (root) => {
+                    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+                    let total = 0;
+                    let node;
+                    while ((node = walker.nextNode())) total += node.textContent.length;
+                    return total;
+                };
+                const totalChars = countVisibleChars(bodyEl);
+
+                // Reconstrói o HTML completo, corta o n-ésimo caractere
+                // visível (percorrendo os text nodes em ordem) e remove tudo
+                // que vem depois — devolve o elemento onde o corte aconteceu,
+                // pra "…" e o botão entrarem bem ali, mesmo dentro de <p>
+                // aninhado, igual o pedido de ficar "colado" no fim do texto.
+                const buildTruncated = (n) => {
+                    bodyEl.innerHTML = fullHtml;
+                    const walker = document.createTreeWalker(bodyEl, NodeFilter.SHOW_TEXT);
+                    let remaining = n;
+                    let cutNode = null;
+                    const nodes = [];
+                    let node;
+                    while ((node = walker.nextNode())) nodes.push(node);
+                    for (let i = 0; i < nodes.length; i += 1) {
+                        const textNode = nodes[i];
+                        const len = textNode.textContent.length;
+                        if (remaining >= len) {
+                            remaining -= len;
+                            continue;
+                        }
+                        textNode.textContent = textNode.textContent.slice(0, remaining).trimEnd();
+                        cutNode = textNode;
+                        // Sobe da textNode até bodyEl removendo os irmãos-depois em CADA
+                        // nível (não só no primeiro) — ex.: quando o corte cai no 1º
+                        // parágrafo de vários (Inclui com "Não Inclui:" embaixo, um <p>
+                        // por linha), tem que remover TODOS os <p> seguintes, não só os
+                        // irmãos dentro do próprio <p> cortado (que normalmente não tem
+                        // nenhum, já que cada parágrafo é só um textNode). A remoção
+                        // precisa rodar mesmo quando "el" já virou bodyEl nesta mesma
+                        // volta — por isso é feita ANTES de checar se deve parar.
+                        let el = textNode.parentNode;
+                        let sibling = textNode.nextSibling;
+                        while (el) {
+                            while (sibling) {
+                                const next = sibling.nextSibling;
+                                sibling.remove();
+                                sibling = next;
+                            }
+                            if (el === bodyEl) break;
+                            sibling = el.nextSibling;
+                            el = el.parentNode;
+                        }
+                        break;
+                    }
+                    return cutNode ? cutNode.parentNode : bodyEl;
+                };
+                const applyTruncated = (n) => {
+                    const cutContainer = buildTruncated(n);
+                    cutContainer.appendChild(document.createTextNode('…'));
+                    cutContainer.appendChild(toggle);
+                    return cutContainer;
+                };
+
+                let lo = 0;
+                let hi = totalChars;
+                let best = 0;
+                while (lo <= hi) {
+                    const mid = (lo + hi) >> 1;
+                    applyTruncated(mid);
+                    if (bodyEl.scrollHeight <= maxHeight) {
+                        best = mid;
+                        lo = mid + 1;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+                applyTruncated(best);
+                toggle.onclick = () => {
+                    const expanded = itemEl.classList.toggle('rio-detail-expanded');
+                    if (expanded) {
+                        bodyEl.innerHTML = fullHtml;
+                        bodyEl.appendChild(toggle);
+                    } else {
+                        applyTruncated(best);
+                    }
+                    toggle.textContent = expanded ? toggle.dataset.less : toggle.dataset.more;
+                };
+            });
+        });
+    };
+    const setTourDetailsHtml = (el, tour, lang) => {
+        if (!el) return;
+        el.innerHTML = buildTourDetailsHtml(tour, lang);
+        wireTourDetailToggles(el);
+    };
+    window.setTourDetailsHtml = setTourDetailsHtml;
+    const tourFieldVisible = (value) => {
+        const v = (value ?? '').toString().trim();
+        return !!v && v.toUpperCase() !== 'N/U';
+    };
+    // Campos de texto livre preenchidos manualmente pelo admin em cada
+    // idioma (aba de edição do tour em Gerenciamento), salvos em
+    // tour.traducoes[idioma][campo].
+    const TOUR_TRANSLATABLE_FIELD_MAP = {
+        periodo: 'periodo', duracao: 'duracao', saida: 'saida',
+        encontro: 'encontro', pontoEmbarque: 'ponto_embarque', pontoDesembarque: 'ponto_desembarque',
+        grupo: 'grupo', identificacao: 'identificacao', inclui: 'inclui', roteiro: 'roteiro'
+    };
+    const translatedTourField = (tour, key, fallback, lang) => {
+        if (lang && lang !== 'pt') {
+            const campo = TOUR_TRANSLATABLE_FIELD_MAP[key];
+            const traduzido = campo && tour.traducoes && tour.traducoes[lang] && tour.traducoes[lang][campo];
+            if (traduzido) return traduzido;
+        }
+        return fallback;
+    };
+    // "Idiomas" não é um campo livre editável por idioma (vem dos checkboxes
+    // de idioma falado do tour) — só os NOMES dos idiomas mudam de um idioma
+    // pro outro, então é uma troca de palavra fixa, não uma tradução manual.
+    const LANGUAGE_NAME_TRANSLATIONS = {
+        en: { 'Português': 'Portuguese', 'Inglês': 'English', 'Espanhol': 'Spanish', 'Francês': 'French', 'Italiano': 'Italian', 'Chinês': 'Chinese' },
+        fr: { 'Português': 'Portugais', 'Inglês': 'Anglais', 'Espanhol': 'Espagnol', 'Francês': 'Français', 'Italiano': 'Italien', 'Chinês': 'Chinois' },
+        es: { 'Português': 'Portugués', 'Inglês': 'Inglés', 'Espanhol': 'Español', 'Francês': 'Francés', 'Italiano': 'Italiano', 'Chinês': 'Chino' },
+        it: { 'Português': 'Portoghese', 'Inglês': 'Inglese', 'Espanhol': 'Spagnolo', 'Francês': 'Francese', 'Italiano': 'Italiano', 'Chinês': 'Cinese' },
+        zh: { 'Português': '葡萄牙语', 'Inglês': '英语', 'Espanhol': '西班牙语', 'Francês': '法语', 'Italiano': '意大利语', 'Chinês': '中文' }
+    };
+    const translateLanguageNames = (raw, lang) => {
+        const map = LANGUAGE_NAME_TRANSLATIONS[lang];
+        if (!map || !raw) return raw;
+        let out = raw;
+        Object.entries(map).forEach(([pt, tr]) => { out = out.replaceAll(pt, tr); });
+        return out;
+    };
+    // Campos como "Inclui"/"Roteiro" aceitam um mini-formato digitado no
+    // admin: quebra de linha vira parágrafo, linhas iniciadas com ✓ / ✕ / *
+    // viram lista com marcador, e **texto** vira negrito. Foge do resto dos
+    // campos (curtos, sempre em uma linha) que continuam em texto puro.
+    const escapeHtmlText = (str) => str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    // "**texto**" e "*texto*" (asterisco duplo ou simples envolvendo o
+    // trecho) viram negrito; só o "* " no INÍCIO da linha (com espaço logo
+    // depois) é tratado como marcador de lista — ver bulletMatch abaixo.
+    const applyRichInlineBold = (str) => str
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<strong>$1</strong>');
+    const isTourRichField = (key) => key === 'inclui' || key === 'roteiro';
+    const formatTourRichText = (raw) => {
+        const lines = escapeHtmlText((raw || '').toString()).split(/\r?\n/);
+        let html = '';
+        let inList = false;
+        const closeList = () => { if (inList) { html += '</ul>'; inList = false; } };
+        lines.forEach((rawLine) => {
+            const line = rawLine.trim();
+            if (!line) { closeList(); return; }
+            const bulletMatch = line.match(/^(✓|✕|\*)\s+(.*)$/);
+            if (bulletMatch) {
+                if (!inList) { html += '<ul class="rio-tour-detail-list">'; inList = true; }
+                const marker = bulletMatch[1];
+                const markerClass = marker === '✓' ? 'rio-tour-list-check' : marker === '✕' ? 'rio-tour-list-cross' : 'rio-tour-list-dot';
+                html += `<li class="${markerClass}">${applyRichInlineBold(bulletMatch[2])}</li>`;
+            } else {
+                closeList();
+                html += `<p class="rio-tour-detail-paragraph">${applyRichInlineBold(line)}</p>`;
+            }
+        });
+        closeList();
+        return html;
+    };
+    const buildTourDetailsHtml = (tour, lang) => {
+        const labels = TOUR_DETAIL_LABELS[lang] || TOUR_DETAIL_LABELS.pt;
+        const rawValues = {
+            periodo: translatedTourField(tour, 'periodo', tour.periodo, lang),
+            idiomas: translateLanguageNames(tour.idiomas || tour.languages || '', lang),
+            duracao: (() => {
+                if (lang === 'pt') return tour.duracao || '';
+                const manual = tour?.traducoes?.[lang]?.duracao;
+                if (manual) return manual;
+                return translateDuracaoAuto(tour.duracao || '', lang);
+            })(),
+            diasSemana: formatDiasSemanaPorIdioma(tour, lang),
+            saida: translatedTourField(tour, 'saida', tour.saida, lang),
+            encontro: translatedTourField(tour, 'encontro', tour.encontro || tour.meeting, lang),
+            pontoEmbarque: translatedTourField(tour, 'pontoEmbarque', tour.ponto_embarque || tour.pontoEmbarque, lang),
+            pontoDesembarque: translatedTourField(tour, 'pontoDesembarque', tour.ponto_desembarque || tour.pontoDesembarque, lang),
+            grupo: translatedTourField(tour, 'grupo', tour.grupo, lang),
+            identificacao: translatedTourField(tour, 'identificacao', tour.identificacao || tour.identification, lang),
+            inclui: translatedTourField(tour, 'inclui', tour.inclui, lang),
+            roteiro: translatedTourField(tour, 'roteiro', tour.roteiro, lang),
+            horarios: (tour.horarios || '').split(',').map(h => h.trim()).filter(Boolean).join(', ')
+        };
+        const translateKeyByField = { idiomas: 'languages', encontro: 'meeting', identificacao: 'identification' };
+
+        const readMoreLabel = TOUR_READ_MORE_LABELS[lang] || TOUR_READ_MORE_LABELS.pt;
+        const valorRaw = tour.valor ?? tour.value;
+        const valorLi = (valorRaw != null && valorRaw !== '' && Number(valorRaw) !== 0)
+            ? `<li><i class="fa fa-dollar-sign"></i> <strong>${labels.valor}:</strong> ${Number(valorRaw).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</li>`
+            : '';
+        let html = '';
+        let horariosRendered = false;
+        Object.keys(TOUR_DETAIL_ICONS).forEach((key) => {
+            const raw = rawValues[key];
+            if (!tourFieldVisible(raw)) return;
+            let value = raw.toString().trim();
+            if (translateKeyByField[key]) {
+                value = translateTourCardDetailValue(translateKeyByField[key], value, lang);
+            }
+            if (isTourRichField(key)) {
+                html += `<li class="rio-tour-detail-rich-item"><i class="fa ${TOUR_DETAIL_ICONS[key]}"></i> <strong>${labels[key]}:</strong><div class="rio-tour-detail-richbody">${formatTourRichText(value)}</div><button type="button" class="rio-tour-detail-toggle rio-tour-detail-toggle-rich" data-more="${readMoreLabel.more}" data-less="${readMoreLabel.less}">${readMoreLabel.more}</button></li>`;
+            } else {
+                html += `<li><span class="rio-tour-detail-line"><i class="fa ${TOUR_DETAIL_ICONS[key]}"></i> <strong>${labels[key]}:</strong> <span class="rio-tour-detail-value">${value}</span><button type="button" class="rio-tour-detail-toggle" data-more="${readMoreLabel.more}" data-less="${readMoreLabel.less}">${readMoreLabel.more}</button></span></li>`;
+            }
+            // "Valor" vai logo depois de "Horários disponíveis" em vez de sempre
+            // no final da lista — pedido explícito, já que ambos os campos
+            // costumam ser lidos juntos ("quando" e "quanto").
+            if (key === 'horarios') {
+                horariosRendered = true;
+                if (valorLi) html += valorLi;
+            }
+        });
+        if (valorLi && !horariosRendered) html += valorLi;
+
+        const estado = (tour.estado || tour.status || '').toString().trim();
+        if (estado && estado.toLowerCase() !== 'ativo') {
+            html += `<li><i class="fa fa-info-circle"></i> <strong>${labels.estado}:</strong> ${estado}</li>`;
+        }
+        return html;
+    };
+
+    // O botão "Ver no Mapa" só faz sentido — e só fica habilitado — quando o
+    // tour tem um "Link do local de encontro" preenchido no admin.
+    const applyMapLinkState = (mapLink, url) => {
+        if (!mapLink) return;
+        if (url) {
+            mapLink.href = url;
+            mapLink.style.display = '';
+            mapLink.classList.remove('disabled');
+            mapLink.removeAttribute('aria-disabled');
+            mapLink.style.pointerEvents = '';
+        } else {
+            mapLink.removeAttribute('href');
+            mapLink.style.display = 'none';
+        }
+    };
+
+    // Tour com estado "Oculto" some da página pública (diferente de "Pausado",
+    // que mantém o card visível mas desabilita a reserva).
+    const applyTourVisibility = (card, tour) => {
+        const estado = (tour.estado || tour.status || '').toString().trim().toLowerCase();
+        card.style.display = (estado === 'oculto' || estado === 'hidden') ? 'none' : '';
+    };
+
+    // Cada legenda de modalidade (#tours, #transfers, #expedicoes-privativas)
+    // só deve aparecer se a página tiver ao menos um tour visível daquele tipo.
+    const toggleEmptyModalitySections = () => {
+        ['#tours', '#transfers', '#expedicoes-privativas', '#expedicoes-compartilhadas'].forEach((sel) => {
+            const section = document.querySelector(sel);
+            if (!section) return;
+            const hasVisibleCard = Array.from(section.querySelectorAll('.rio-tour-card'))
+                .some((card) => card.style.display !== 'none');
+            section.style.display = hasVisibleCard ? '' : 'none';
+        });
+    };
+
+    // Tour criado em Gerenciamento > "+ Adicionar Tour" sem card correspondente
+    // no HTML estático da página: monta um card do zero e insere na grid certa
+    // (grid[0] = tours gratuitos, grid[1] = pagos — mesma convenção das duas
+    // divs .rio-tours-grid já existentes em #tours).
+    const createRioTourCardElement = (tour, lang) => {
+        const actionLabels = TOUR_ACTION_LABELS[lang] || TOUR_ACTION_LABELS.pt;
+        const card = document.createElement('article');
+        card.className = 'rio-tour-card';
+        if (tour.id != null) card.dataset.tourId = tour.id;
+
+        const imagesDiv = document.createElement('div');
+        imagesDiv.className = 'rio-tour-images';
+        const slider = document.createElement('div');
+        slider.className = 'rio-tour-slider';
+        slider.dataset.folder = (tour.pasta_imagens || '').trim() || `tour-${tour.id}`;
+        slider.setAttribute('aria-label', `Slideshow ${tour.nome_tour || ''}`);
+        imagesDiv.appendChild(slider);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'rio-tour-info';
+
+        const nameEl = document.createElement('h4');
+        nameEl.className = 'rio-tour-name';
+        nameEl.textContent = tour.nome_tour || tour.name || '';
+
+        const detailsEl = document.createElement('ul');
+        detailsEl.className = 'rio-tour-details';
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'rio-tour-actions';
+
+        const mapLink = document.createElement('a');
+        mapLink.target = '_blank';
+        mapLink.rel = 'noopener';
+        mapLink.className = 'rio-link-map';
+        mapLink.innerHTML = `<i class="fa fa-map"></i> ${actionLabels.map}`;
+
+        const reserveLink = document.createElement('a');
+        reserveLink.href = '#';
+        reserveLink.target = '_blank';
+        reserveLink.rel = 'noopener';
+        reserveLink.className = 'btn-book rio-btn-reserve';
+        const reserveIsWhatsApp = (tour.canal_reserva || tour.canalReserva || 'web').toLowerCase() === 'whatsapp';
+        reserveLink.innerHTML = reserveIsWhatsApp ? `<i class="fab fa-whatsapp"></i> ${actionLabels.reserve}` : actionLabels.reserve;
+
+        actionsDiv.appendChild(mapLink);
+        actionsDiv.appendChild(reserveLink);
+        infoDiv.appendChild(nameEl);
+        infoDiv.appendChild(detailsEl);
+        infoDiv.appendChild(actionsDiv);
+
+        card.appendChild(imagesDiv);
+        card.appendChild(infoDiv);
+
+        window.__bindRioReserveButton?.(reserveLink);
+        ensureShareButton(card, tour);
+
+        return card;
+    };
+
+    // Insere cards para tours cadastrados no admin que ainda não têm um
+    // bloco correspondente no HTML estático (ver createRioTourCardElement).
+    const appendMissingRioTourCards = (toursRio, matchedTourIds) => {
+        const pending = toursRio.filter((t) => t.id != null && !matchedTourIds.has(t.id));
+        if (!pending.length) return;
+
+        // Páginas com seções dedicadas (ex.: Lençóis tem #transfers e
+        // #expedicoes-privativas) recebem o tour diretamente nelas; páginas
+        // sem essas seções caem no comportamento antigo: 2 grids dentro de
+        // #tours (free + paga).
+        const findGridForTour = (tour) => {
+            const modalidade = (tour.modalidade || 'free').toLowerCase();
+            if (modalidade === 'transfer') {
+                const dedicated = document.querySelector('#transfers .rio-tours-grid');
+                if (dedicated) return dedicated;
+            }
+            if (modalidade === 'privado') {
+                const dedicated = document.querySelector('#expedicoes-privativas .rio-tours-grid')
+                    || document.querySelector('#expedicoes-compartilhadas .rio-tours-grid');
+                if (dedicated) return dedicated;
+            }
+            const grids = document.querySelectorAll('#tours .rio-tours-grid');
+            if (!grids.length) return null;
+            const isPaid = modalidade !== 'free';
+            return (isPaid && grids[1]) ? grids[1] : grids[0];
+        };
+
+        pending.forEach((tour) => {
+            const isPaid = (tour.modalidade || 'free').toLowerCase() !== 'free';
+            const grid = findGridForTour(tour);
+            if (!grid) return;
+            const currentLang = (typeof window.getCurrentLang === 'function') ? window.getCurrentLang() : 'pt';
+            const card = createRioTourCardElement(tour, currentLang);
+            if (isPaid) card.classList.add('rio-tour-paid');
+
+            setTourDetailsHtml(card.querySelector('.rio-tour-details'), tour, currentLang);
+            applyMapLinkState(card.querySelector('.rio-link-map'), tour.link_tour || tour.link || '');
+            applyTourVisibility(card, tour);
+
+            const folder = card.querySelector('.rio-tour-slider')?.dataset.folder;
+            if (folder && Array.isArray(tour.imagens) && tour.imagens.length) {
+                window.tourImagesByFolder = window.tourImagesByFolder || {};
+                window.tourImagesByFolder[folder] = tour.imagens;
+            }
+
+            grid.appendChild(card);
+
+            if (tour.id && typeof window.TourInteracoes !== 'undefined' && window.TourInteracoes) {
+                window.TourInteracoes.attachCommentsToggle(card, tour.id);
+            }
+        });
+
+        if (typeof window.startTourSliders === 'function') {
+            window.startTourSliders();
+        }
+
+        // Cards de verdade na tela: o retrato ja cumpriu o papel dele.
+        window.retratoDeTours.descartar();
+    };
+
     const applyPageLanguage = (lang) => {
         const t = pageTranslations[lang] || pageTranslations.pt;
         currentFooterInfo = t.footer_info || currentFooterInfo;
         const cards = document.querySelectorAll('.rio-tour-card');
-        const noticeItems = document.querySelectorAll('.rio-notice-text p');
         const subtitles = document.querySelectorAll('.rio-section-subtitle');
 
         const heroTitle = document.querySelector('.rio-hero-title');
@@ -510,20 +1399,32 @@
         if (heroLocation) heroLocation.textContent = t.hero_location;
 
         const heroDesc = document.querySelector('#rioHeroDesc');
-        if (heroDesc) heroDesc.textContent = t.hero_desc;
+        // innerHTML (e não textContent) para preservar os <span class="rio-hero-accent">
+        // que marcam os trechos dourados da descrição no design em lockup.
+        if (heroDesc) heroDesc.innerHTML = t.hero_desc;
 
         const heroButton = document.querySelector('.rio-hero-content .btn-book');
         if (heroButton) heroButton.textContent = t.hero_button;
 
-        const noticeTitle = document.querySelector('.rio-notice-title');
-        if (noticeTitle) noticeTitle.textContent = t.notice_title;
-
-        noticeItems.forEach((item, index) => {
-            if (t.notice_lines[index]) item.innerHTML = `<i class="fa fa-circle-info"></i> ${t.notice_lines[index]}`;
-        });
+        if (!window.__cidadeAvisoCarregado) {
+            const noticeTitle = document.querySelector('.rio-notice-title');
+            if (noticeTitle) noticeTitle.textContent = t.notice_title;
+        } else if (window.__cidadeAvisoData && typeof window.applyCidadeAviso === 'function') {
+            // Reaplica o aviso já carregado do banco, agora com a tradução
+            // automática do novo idioma (em vez do fallback hardcoded).
+            window.applyCidadeAviso(null, window.__cidadeAvisoData);
+        }
 
         const proceedButton = document.querySelector('.rio-notice .btn-proceed');
         if (proceedButton) proceedButton.textContent = t.proceed;
+
+        const dontShowButton = document.querySelector('.rio-notice .btn-dont-show');
+        if (dontShowButton) dontShowButton.textContent = (TOUR_ACTION_LABELS[lang] || TOUR_ACTION_LABELS.pt).dontShow;
+
+        document.querySelectorAll('.tour-comments-toggle').forEach((btn) => {
+            const icon = btn.querySelector('i')?.outerHTML || '<i class="fa fa-comment"></i>';
+            btn.innerHTML = `${icon} ${(TOUR_ACTION_LABELS[lang] || TOUR_ACTION_LABELS.pt).reviews}`;
+        });
 
         const sectionTitle = document.querySelector('.rio-section-title');
         if (sectionTitle) sectionTitle.textContent = t.section_title;
@@ -538,50 +1439,40 @@
         const footerTitle = document.querySelector('.rio-footer-card-title');
         if (footerTitle) footerTitle.textContent = footerTitleByLang[lang] || footerTitleByLang.pt || 'Informações';
 
+        const actionLabels = TOUR_ACTION_LABELS[lang] || TOUR_ACTION_LABELS.pt;
+        const languageMatchers = buildRioTourMatchers(toursFromDatabase);
         cards.forEach((card, index) => {
-            const dbTour = toursFromDatabase[index];
+            const dbTour = matchRioTourForCard(card, languageMatchers);
             if (dbTour) {
-                const labels = {
-                    pt: { idiomas: 'Idiomas', encontro: 'Encontro', identificacao: 'Identificação' },
-                    en: { idiomas: 'Languages', encontro: 'Meeting', identificacao: 'Identification' },
-                    fr: { idiomas: 'Langues', encontro: 'Rendez-vous', identificacao: 'Identification' },
-                    es: { idiomas: 'Idiomas', encontro: 'Encuentro', identificacao: 'Identificación' },
-                    it: { idiomas: 'Lingue', encontro: 'Incontro', identificacao: 'Identificazione' },
-                    zh: { idiomas: '语言', encontro: '集合', identificacao: '识别' }
-                }[lang] || { idiomas: 'Idiomas', encontro: 'Encontro', identificacao: 'Identificação' };
+                applyTourVisibility(card, dbTour);
 
                 const nameEl = card.querySelector('.rio-tour-name');
                 if (nameEl) nameEl.textContent = dbTour.nome_tour || dbTour.name || '-';
 
                 const detailList = card.querySelector('.rio-tour-details');
                 if (detailList) {
-                    const languages = translateTourCardDetailValue('languages', dbTour.idiomas || dbTour.languages || 'Português, Inglês e Espanhol', lang);
-                    const meeting = translateTourCardDetailValue('meeting', dbTour.encontro || dbTour.meeting || 'Não informado', lang);
-                    const identification = translateTourCardDetailValue('identification', dbTour.identificacao || dbTour.identification || 'Guias com camisetas verdes', lang);
-                    detailList.innerHTML = `
-                        <li><i class="fa fa-language"></i> <strong>${labels.idiomas}:</strong> ${languages}</li>
-                        <li><i class="fa fa-map-marker-alt"></i> <strong>${labels.encontro}:</strong> ${meeting}</li>
-                        <li><i class="fa fa-shirt"></i> <strong>${labels.identificacao}:</strong> ${identification}</li>
-                    `;
+                    setTourDetailsHtml(detailList, dbTour, lang);
                 }
 
                 const actions = card.querySelectorAll('.rio-tour-actions a');
                 if (actions[0]) {
-                    actions[0].innerHTML = (t.cards[index] && t.cards[index].map) ? t.cards[index].map : '<i class="fa fa-map"></i> Ver no Mapa';
-                    if (dbTour.link_tour) actions[0].href = dbTour.link_tour;
+                    actions[0].innerHTML = `<i class="fa fa-map"></i> ${actionLabels.map}`;
+                    applyMapLinkState(actions[0], dbTour.link_tour || '');
                 }
                 if (actions[1]) {
                     const tourStatus = (dbTour.estado || dbTour.status || '').toString().trim().toLowerCase();
                     const isAvailable = tourStatus === 'ativo' || tourStatus === 'active';
+                    const isWhatsApp = (dbTour.canal_reserva || dbTour.canalReserva || 'web').toLowerCase() === 'whatsapp';
                     if (!isAvailable) {
-                        const unavailableText = t.reserve_unavailable || 'Temporariamente indisponÃ­vel';
+                        const unavailableText = t.reserve_unavailable || 'Temporariamente indisponível';
                         actions[1].textContent = unavailableText;
                         actions[1].removeAttribute('href');
                         actions[1].classList.add('disabled');
                         actions[1].setAttribute('aria-disabled', 'true');
                         actions[1].style.pointerEvents = 'none';
                     } else {
-                        actions[1].textContent = (t.cards[index] && t.cards[index].reserve) ? t.cards[index].reserve : 'Reservar Agora';
+                        const reserveText = actionLabels.reserve;
+                        actions[1].innerHTML = isWhatsApp ? `<i class="fab fa-whatsapp"></i> ${reserveText}` : reserveText;
                         if (dbTour.link_tour) {
                             actions[1].href = dbTour.link_tour;
                         }
@@ -642,8 +1533,8 @@
 
                 const tourCardDefaultByLang = window.translationCatalog?.tourCardDefaultByLang || {};
                 const defaultsByLang = tourCardDefaultByLang[lang] || tourCardDefaultByLang.pt || {
-                    languages: 'PortuguÃªs, InglÃªs e Espanhol',
-                    meeting: 'NÃ£o informado',
+                    languages: 'Português, Inglês e Espanhol',
+                    meeting: 'Não informado',
                     identification: 'Guias com camisetas verdes'
                 };
 
@@ -663,7 +1554,15 @@
 
             const actions = card.querySelectorAll('.rio-tour-actions a');
             if (actions[0]) actions[0].innerHTML = cardData.map;
-            if (actions[1]) actions[1].textContent = cardData.reserve;
+            if (actions[1]) {
+                // Este card não bateu com nenhum tour do banco (fallback de
+                // texto estático abaixo) — sem dbTour.canal_reserva não dá
+                // pra saber se é reserva via WhatsApp, então preserva o
+                // ícone que já estivesse no botão em vez de apagá-lo ao
+                // trocar de idioma.
+                const hadWhatsAppIcon = !!actions[1].querySelector('.fa-whatsapp');
+                actions[1].innerHTML = hadWhatsAppIcon ? `<i class="fab fa-whatsapp"></i> ${cardData.reserve}` : cardData.reserve;
+            }
         });
 
         const footerText = document.querySelector('.rio-footer-text');
@@ -676,9 +1575,20 @@
     function updateFooterCardContent(key = 'contato') {
         const body = document.getElementById('rioFooterCardBody');
         if (!body) return;
+
+        // O texto padrão do cartão (antes do usuário clicar em SOBRE/CONTATO/AJUDA)
+        // é editável em Gerenciamento > Textos SOBRE/CONTATO/AJUDA, seção
+        // "Informações". Se cadastrado, tem prioridade sobre o texto de contato
+        // usado como padrão histórico (ver window.updateFooterInfo em baixo).
+        if (window.__paginaSecaoOverrides?.informacoes && typeof window.updateFooterInfo === 'function') {
+            window.updateFooterInfo('informacoes');
+            return;
+        }
+
         const info = currentFooterInfo?.[key];
-        body.innerHTML = info || '<p>Selecione uma opÃ§Ã£o para ver mais informações.</p>';
+        body.innerHTML = info || '<p>Selecione uma opção para ver mais informações.</p>';
     }
+    window.__refreshFooterCardDefault = () => updateFooterCardContent();
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
@@ -724,17 +1634,65 @@
         }, durationMs);
     };
 
-    const initAwardToast = () => {
+    // Link/ícone e ativo/inativo são editáveis em Gerenciamento > Card de
+    // Premiação. O card só aparece DEPOIS do aviso "Informações Importantes"
+    // ser fechado (ou de imediato se esse aviso não existir/já estiver
+    // escondido) — window.__showAwardCard é chamado pelos handlers do aviso
+    // mais abaixo, não por um timer cego.
+    const initAwardToast = async () => {
+        // Link direto pra um tour: nunca monta o toast nem define
+        // window.__showAwardCard — qualquer chamada a ela vira no-op sozinha.
+        if (window.__tourDirectLinkId) return;
         const toast = document.getElementById('awardToast');
         if (!toast) return;
+
+        let awardConfig = { ativo: true, link: '', imagem: '', titulo: '', texto: '' };
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_cidade_award`);
+            if (response.ok) {
+                const lista = await response.json();
+                const found = Array.isArray(lista) ? lista.find((item) => item && item.cidade === 'Rio de Janeiro') : null;
+                if (found) awardConfig = found;
+            }
+        } catch (error) {
+            console.warn('Falha ao carregar card de premiação em', error);
+        }
+
+        if (awardConfig.ativo === false) return;
+
+        if (awardConfig.imagem) {
+            const img = toast.querySelector('.award-toast__icon img');
+            if (img) img.src = awardConfig.imagem;
+        }
+        if (awardConfig.titulo) {
+            const titleEl = toast.querySelector('.award-toast__title');
+            if (titleEl) titleEl.textContent = awardConfig.titulo;
+        }
+        if (awardConfig.texto) {
+            const messageEl = toast.querySelector('.award-toast__message');
+            if (messageEl) messageEl.textContent = awardConfig.texto;
+        }
 
         toast.addEventListener('click', (event) => {
             const close = event.target.closest('[data-close-award]');
             if (close) {
                 toast.classList.remove('visible');
                 if (awardToastTimer) clearTimeout(awardToastTimer);
+                return;
             }
+            if (awardConfig.link) window.open(awardConfig.link, '_blank', 'noopener');
         });
+
+        let alreadySeen = false;
+        try { alreadySeen = sessionStorage.getItem('awardModalSeen') === '1'; } catch (e) {}
+        if (alreadySeen) return;
+
+        window.__showAwardCard = () => {
+            if (window.__awardCardShown) return;
+            window.__awardCardShown = true;
+            showAwardToast();
+            try { sessionStorage.setItem('awardModalSeen', '1'); } catch (e) {}
+        };
     };
 
     initAwardToast();
@@ -773,6 +1731,7 @@
                 <div class="profile-user-info" style="padding:8px 12px; font-weight: 600; border-bottom: 1px solid #e0e0e0;"><span data-i18n="profile_hello">Olá</span>, ${userName}</div>
                 ${showManagement ? `<a href="#" class="profile-item profile-item--admin" data-profile-action="${managementAction}">${managementLabel}</a>` : ''}
                 <a href="#" class="profile-item" data-profile-action="my-reservations" data-i18n="profile_my_reservations">Minhas Reservas</a>
+                <a href="#" class="profile-item" data-profile-action="my-favorites" data-i18n="profile_my_favorites">Tours Favoritos</a>
                 <a href="#" class="profile-item" data-profile-action="my-data" data-i18n="profile_my_data">Meus Dados</a>
                 <a href="#" class="profile-item" data-profile-action="logout" data-i18n="profile_logout">Sair</a>
             `;
@@ -797,6 +1756,8 @@
                 window.syncMobileProfileUserView?.();
             }
         }
+
+        window.updateProfileAvatar?.();
     };
 
     // Exposto para uso em callbacks no segundo IIFE.
@@ -804,6 +1765,7 @@
 
 
     const initProfileMenu = () => {
+        if (isGerenciamentoPage()) return;
         const menu = document.querySelector('.profile-menu');
         const button = document.querySelector('.profile-btn');
         if (!menu || !button) return;
@@ -814,7 +1776,7 @@
         loadRolePermissions().then(() => {
             updateProfileMenuUI();
         }).catch((error) => {
-            console.warn('Erro ao carregar permissÃµes de role:', error);
+            console.warn('Erro ao carregar permissões de role:', error);
             updateProfileMenuUI();
         });
 
@@ -841,7 +1803,7 @@
             if (action === 'manage') {
                 menu.classList.remove('open');
                 button.setAttribute('aria-expanded', 'false');
-                window.location.href = 'html/Gerenciamento.html';
+                redirectToManagementPage();
             } else if (action === 'principal') {
                 menu.classList.remove('open');
                 button.setAttribute('aria-expanded', 'false');
@@ -854,15 +1816,20 @@
                 menu.classList.remove('open');
                 button.setAttribute('aria-expanded', 'false');
                 window.openMyReservationsModal?.();
+            } else if (action === 'my-favorites') {
+                menu.classList.remove('open');
+                button.setAttribute('aria-expanded', 'false');
+                window.openMyFavoritesModal?.();
             } else if (action === 'logout') {
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('userName');
+                localStorage.removeItem('userPhoto');
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('currentRolePermissions');
 
-                // Remove possÃ­veis variÃ¡veis de UI internas (cache temporÃ¡rio, etc.)
-                // e forÃ§a reload para limpar tudo da pÃ¡gina.
+                // Remove possíveis variáveis de UI internas (cache temporário, etc.)
+                // e força reload para limpar tudo da página.
                 menu.classList.remove('open');
                 button.setAttribute('aria-expanded', 'false');
 
@@ -937,8 +1904,17 @@
         return saved || htmlLang || navLang || 'pt';
     };
 
+    // Codigo de idioma valido para o atributo lang. A forma antiga montava
+    // `${lang}-${lang.toUpperCase()}`, o que produzia "pt-PT" (portugues de
+    // Portugal, nao do Brasil) e "en-EN", que nem existe. O Google le este
+    // atributo junto com o hreflang; um valor invalido aqui contradiz o que a
+    // pagina declara no <head> e enfraquece o conjunto de idiomas.
+    const TAG_IDIOMA = {
+        pt: 'pt-BR', en: 'en', es: 'es', fr: 'fr', it: 'it', zh: 'zh'
+    };
+
     const setDocumentLang = (lang) => {
-        document.documentElement.lang = `${lang}-${lang.toUpperCase()}`;
+        document.documentElement.lang = TAG_IDIOMA[lang] || lang;
     };
 
     const applyTranslations = (lang) => {
@@ -1023,7 +1999,7 @@
         document.dispatchEvent(ev);
     };
 
-    // Expor para a primeira IIFE poder re-disparar apÃ³s carregar tours do banco
+    // Expor para a primeira IIFE poder re-disparar após carregar tours do banco
     window.dispatchLanguageChange = dispatchLanguageChange;
     window.getCurrentLang = getCurrentLang;
 
@@ -1039,9 +2015,38 @@
         updateLangSelectorButton(normalized);
         dispatchLanguageChange(normalized);
 
+        // Numa pagina que existe em varias URLs por idioma, trocar de idioma e
+        // NAVEGAR, nao recarregar: recarregar deixaria a URL dizendo /en/ com o
+        // conteudo em outro idioma — exatamente o que o hreflang promete que nao
+        // acontece, e o que faria o Google indexar o idioma errado.
+        // window.rotaIdioma e definido no <head> de cada pagina gerada; onde ele
+        // nao existe (paginas ainda sem versao por idioma), recarrega como antes.
+        const rota = window.rotaIdioma;
+        if (rota && rota.base) {
+            const destino = normalized === 'pt' ? rota.base : `${rota.base}${normalized}/`;
+            window.location.assign(destino + window.location.search + window.location.hash);
+            return;
+        }
+
         // Reload the page after switching language so all content reflects the selection.
         window.location.reload();
     };
+
+    // Troca de idioma feita em OUTRA aba (ex.: home ou outra cidade aberta ao
+    // mesmo tempo): o evento "storage" só dispara nas abas que NÃO fizeram a
+    // mudança. Recarrega para reaplicar tudo (tours, textos, cartão de
+    // informações etc.) do mesmo jeito que já acontece na aba que trocou.
+    // Importante: por essa altura o localStorage já mudou (é por isso que o
+    // evento disparou), então comparar com getCurrentLang() de novo compararia
+    // o valor novo com ele mesmo — por isso o idioma já aplicado nesta aba é
+    // capturado uma única vez aqui, no carregamento.
+    const langAppliedOnLoad = getCurrentLang();
+    window.addEventListener('storage', (event) => {
+        if (event.key !== storageKey || !event.newValue) return;
+        if (normalizeLang(event.newValue) !== langAppliedOnLoad) {
+            window.location.reload();
+        }
+    });
 
     const initLanguageSelector = () => {
         const wrapper = document.querySelector('#langSelector');
@@ -1159,12 +2164,15 @@
                 } else if (action === 'my-reservations') {
                     closeMobileMenu();
                     window.openMyReservationsModal?.();
+                } else if (action === 'my-favorites') {
+                    closeMobileMenu();
+                    window.openMyFavoritesModal?.();
                 } else if (action === 'my-data') {
                     closeMobileMenu();
                     window.openUserDataModal?.();
                 } else if (action === 'manage') {
                     closeMobileMenu();
-                    window.location.href = 'html/Gerenciamento.html';
+                    redirectToManagementPage();
                 } else if (action === 'principal') {
                     closeMobileMenu();
                     redirectToPrincipalPage();
@@ -1194,6 +2202,7 @@
     window.syncMobileProfileUserView = syncMobileProfileUserView;
 
     const initMobileMenuContent = () => {
+        if (window.isGerenciamentoPage()) return;
         const container = getMobileMenuContainer();
         const nav = document.querySelector('nav');
         const langList = document.querySelector('#langList');
@@ -1206,15 +2215,9 @@
 
         mainView.innerHTML = nav.innerHTML;
 
-        const accountEntry = document.createElement('button');
-        accountEntry.type = 'button';
-        accountEntry.className = 'mobile-menu-launcher';
-        accountEntry.textContent = 'Conta';
-        accountEntry.addEventListener('click', (event) => {
-            event.stopPropagation();
-            toggleMobileMenu('user');
-        });
-        mainView.insertBefore(accountEntry, mainView.firstChild);
+        // Botão "Conta" removido do menu mobile: o ícone de perfil já fica
+        // visível separadamente no cabeçalho em qualquer tamanho de tela,
+        // então essa entrada era um acesso duplicado a mesma função.
 
         mainView.querySelectorAll('a').forEach((link) => {
             link.addEventListener('click', () => {
@@ -1280,6 +2283,7 @@
     };
 
     const initHamburgerMenu = () => {
+        if (window.isGerenciamentoPage()) return;
         const burger = document.querySelector('.hamburger');
         const nav = document.querySelector('nav');
         if (!burger || !nav) return;
@@ -1368,6 +2372,7 @@
                         <button type="submit" class="login-modal__submit" data-i18n="login_button">${strings.login_button}</button>
                         <button type="button" class="login-modal__forgot" data-i18n="login_forgot">${strings.login_forgot}</button>
                     </div>
+                    <p class="login-modal__switch"><span data-i18n="register_prompt">${strings.register_prompt || 'Não tem conta?'}</span> <button type="button" data-profile-action="register" data-i18n="register_title">${strings.register_title || 'Cadastrar'}</button></p>
                 </form>
                 <form id="passwordResetForm" class="login-modal__form" style="display:none;">
                     <div class="login-modal__field">
@@ -1795,7 +2800,8 @@
                         </div>
                     </div>
                     <div class="register-step register-step--2">
-                        <div class="login-modal__field">
+                        <p class="register-code-spam-hint" data-i18n="register_code_spam_hint" style="font-size:0.85rem; color:#374151; background:#fff8e1; border:1px solid #ffe082; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.register_code_spam_hint}</p>
+                        <div class="login-modal__field register-code-field">
                             <label data-i18n="register_code">${strings.register_code}</label>
                             <div class="register-code-group">
                                 <input id="registerCode1" class="register-code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" required />
@@ -1812,6 +2818,11 @@
                                 ${strings.register_resend_code}
                             </button>
                         </div>
+                        <div class="register-liberacao-request" style="margin:0 0 0.75rem;">
+                            <button type="button" class="register-request-liberation-button" data-i18n="register_request_liberation" style="background:none; border:none; color:#1f6feb; text-decoration:underline; cursor:pointer; font-size:0.85rem; padding:0;">${strings.register_request_liberation}</button>
+                            <span class="register-liberacao-status" style="display:block; font-size:0.8rem; margin-top:0.25rem; color:#374151;"></span>
+                        </div>
+                        <div class="register-liberado-hint" data-i18n="register_liberado_hint" style="display:none; font-size:0.85rem; color:#1a7f37; background:#e6f4ea; border:1px solid #a6d8b5; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.register_liberado_hint}</div>
                         <div class="login-modal__field login-modal__field--password">
                             <label for="registerPassword" data-i18n="register_password">${strings.register_password}</label>
                             <div class="login-modal__password-wrapper">
@@ -1874,12 +2885,36 @@
         let pendingRegisterEmail = '';
         let isCodeVerified = false;
         let lastVerifiedCode = '';
+        // true quando o suporte já liberou este e-mail manualmente (ver
+        // /solicitar_liberacao_cadastro) — nesse caso não existe código real
+        // pra digitar, o campo/reenvio ficam escondidos e isCodeVerified é
+        // forçado a true direto, sem chamar /verify_confirmation_code.
+        let isLiberadoFlow = false;
         const submitButton = overlay.querySelector('.login-modal__submit');
 
         const updateSubmitButtonState = () => {
             if (submitButton) {
                 submitButton.disabled = !isCodeVerified;
             }
+        };
+
+        const applyLiberadoState = (liberado) => {
+            isLiberadoFlow = liberado;
+            const codeField = overlay.querySelector('.register-code-field');
+            const resendDiv = overlay.querySelector('.login-modal__resend');
+            const liberacaoDiv = overlay.querySelector('.register-liberacao-request');
+            const spamHint = overlay.querySelector('.register-code-spam-hint');
+            const liberadoHint = overlay.querySelector('.register-liberado-hint');
+            if (codeField) codeField.style.display = liberado ? 'none' : '';
+            if (resendDiv) resendDiv.style.display = liberado ? 'none' : '';
+            if (liberacaoDiv) liberacaoDiv.style.display = liberado ? 'none' : '';
+            if (spamHint) spamHint.style.display = liberado ? 'none' : '';
+            if (liberadoHint) liberadoHint.style.display = liberado ? 'block' : 'none';
+            if (liberado) {
+                isCodeVerified = true;
+                stopResendCountdown();
+            }
+            updateSubmitButtonState();
         };
 
         const setNextButtonLoading = (isLoading) => {
@@ -1931,7 +2966,7 @@
         const verifyConfirmationCodeApi = async (email, code) => {
             const fetchFn = typeof apiFetch !== 'undefined' ? apiFetch : window.apiFetch;
         if (typeof fetchFn === 'undefined') {
-            throw new Error('apiFetch nÃ£o encontrado.');
+            throw new Error('apiFetch não encontrado.');
         }
 
         const payload = await fetchFn('/verify_confirmation_code', {
@@ -2215,7 +3250,12 @@
 
                 pendingRegisterEmail = emailValue;
                 showStep(2);
-                startResendCountdown(60);
+                if (payload?.liberado) {
+                    applyLiberadoState(true);
+                } else {
+                    applyLiberadoState(false);
+                    startResendCountdown(60);
+                }
             } catch (err) {
                 console.error('Erro ao enviar código de confirmação:', err);
                 const message = strings.register_code_send_fail || 'Erro ao enviar o código de confirmação.';
@@ -2229,25 +3269,62 @@
             }
         });
 
+        overlay.querySelector('.register-request-liberation-button')?.addEventListener('click', async () => {
+            if (!pendingRegisterEmail) return;
+            const statusEl = overlay.querySelector('.register-liberacao-status');
+            const button = overlay.querySelector('.register-request-liberation-button');
+            if (button) button.disabled = true;
+            if (statusEl) statusEl.textContent = strings.register_liberation_requesting || 'Enviando solicitação...';
+            try {
+                const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:5000';
+                const nome = [
+                    overlay.querySelector('#registerFirstName')?.value.trim(),
+                    overlay.querySelector('#registerLastName')?.value.trim()
+                ].filter(Boolean).join(' ');
+                const response = await fetch(`${apiBaseUrl}/solicitar_liberacao_cadastro`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: pendingRegisterEmail,
+                        nome,
+                        celular: overlay.querySelector('#registerPhone')?.value.trim() || '',
+                        pais: overlay.querySelector('#registerCountry')?.value.trim() || ''
+                    })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (statusEl) {
+                    statusEl.textContent = response.ok && result?.success
+                        ? (strings.register_liberation_sent || 'Solicitação enviada! Nossa equipe vai analisar e em breve o acesso estará disponível.')
+                        : (result.message || 'Erro ao solicitar.');
+                    statusEl.style.color = response.ok && result?.success ? '#1a7f37' : '#dc3545';
+                }
+                if (result?.liberado) applyLiberadoState(true);
+            } catch (error) {
+                if (statusEl) statusEl.textContent = strings.register_liberation_request_fail || 'Não foi possível enviar a solicitação. Tente novamente.';
+            } finally {
+                if (button) button.disabled = false;
+            }
+        });
+
         const resendBtn = overlay.querySelector('.register-resend-button');
         resendBtn?.addEventListener('click', () => {
             if (!pendingRegisterEmail) {
-                alert('E-mail nÃ£o encontrado. RefaÃ§a o passo anterior.');
+                alert(strings.register_email_missing || 'E-mail não encontrado. Refaça o passo anterior.');
                 return;
             }
 
             sendConfirmationCodeApi(pendingRegisterEmail)
                 .then(({ ok, payload }) => {
                     if (!ok) {
-                        alert(payload.message || 'Falha ao reenviar cÃ³digo.');
+                        alert(payload.message || 'Falha ao reenviar código.');
                         return;
                     }
                     alert(strings.register_code_sent);
                     startResendCountdown(60);
                 })
                 .catch((err) => {
-                    console.error('Erro ao reenviar cÃ³digo de confirmaÃ§Ã£o:', err);
-                    alert('Erro ao reenviar cÃ³digo. Tente novamente.');
+                    console.error('Erro ao reenviar código de confirmação:', err);
+                    alert(strings.register_resend_error || 'Erro ao reenviar código. Tente novamente.');
                 });
         });
 
@@ -2262,7 +3339,7 @@
             const password = overlay.querySelector('#registerPassword');
             const confirm = overlay.querySelector('#registerConfirm');
 
-            if (!/^[0-9]{6}$/.test(code)) {
+            if (!isLiberadoFlow && !/^[0-9]{6}$/.test(code)) {
                 alert(strings.register_invalid_code);
                 return;
             }
@@ -2273,11 +3350,11 @@
             }
 
             if (!pendingRegisterEmail) {
-                alert('Email nÃ£o confirmado. Volte ao primeiro passo.');
+                alert(strings.register_email_unconfirmed || 'Email não confirmado. Volte ao primeiro passo.');
                 return;
             }
 
-            if (!isCodeVerified) {
+            if (!isLiberadoFlow && !isCodeVerified) {
                 try {
                     const verify = await verifyConfirmationCodeApi(pendingRegisterEmail, code);
                     if (!verify.ok || !verify.payload?.success) {
@@ -2288,8 +3365,8 @@
                     setCodeInputsState('valid');
                     updateSubmitButtonState();
                 } catch (err) {
-                    console.error('Erro na verificaÃ§Ã£o de cÃ³digo:', err);
-                    alert('Erro ao verificar o cÃ³digo. Tente novamente.');
+                    console.error('Erro na verificação de código:', err);
+                    alert(strings.register_code_verify_error || 'Erro ao verificar o código. Tente novamente.');
                     return;
                 }
             }
@@ -2328,7 +3405,7 @@
                 closeModal();
             } catch (err) {
                 console.error('Erro no cadastro:', err);
-                alert('Erro ao concluir cadastro. Tente novamente.');
+                alert(strings.register_complete_error || 'Erro ao concluir cadastro. Tente novamente.');
             }
         });
 
@@ -2475,7 +3552,7 @@
 
                 if (!email || !password) {
                 
-                    alert('Por favor, preencha email e senha.');
+                    alert(strings.login_fill_all || 'Por favor, preencha email e senha.');
                     return;
                 }
 
@@ -2503,6 +3580,7 @@
                     const name = data.name || email;
                     localStorage.setItem('userRole', role);
                     localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userPhoto', data.foto_perfil || await getGravatarUrl(email));
                     localStorage.setItem('userName', name);
                     if (data.phone) {
                         localStorage.setItem('userPhone', data.phone);
@@ -2529,7 +3607,7 @@
                     }
 
                     if (role === 'admin' || role === 'super_admin') {
-                        window.location.href = 'html/Gerenciamento.html';
+                        window.redirectToManagementPage();
                     } else {
                         const loginOverlay = document.querySelector('.login-modal-overlay');
                         if (loginOverlay) {
@@ -2539,7 +3617,7 @@
                         window.location.reload();
                     }
                 } catch (error) {
-                    console.error('Erro na conexÃ£o:', error);
+                    console.error('Erro na conexão:', error);
 
                     const isOnline = navigator.onLine;
                     const loginOverlay = document.querySelector('.login-modal-overlay');
@@ -2578,7 +3656,7 @@
                                     <button type="button" class="login-modal__close" id="auth-support-overlay-close" aria-label="Fechar">&times;</button>
                                 </div>
                                 <div class="login-modal__body" style="padding:16px; color:#333; line-height:1.5;">
-                                    <img class="login-modal__image" src="imagem/assets/erro.gif" alt="${escapeHtml(imageAlt)}" loading="lazy" />
+                                    <img class="login-modal__image" src="/imagem/assets/erro.gif" alt="${escapeHtml(imageAlt)}" loading="lazy" />
                                     <p>${bodyMessage}</p>
                                     <p>${actionMessage}</p>
                                     <p><a href="${whatsUrl}" target="_blank" rel="noopener" style="color:#007bff; text-decoration:underline;">WhatsApp</a> ou <a href="${mailUrl}" id="auth-support-email-link" style="color:#007bff; text-decoration:underline;">Email</a>.</p>
@@ -2632,20 +3710,42 @@
         const lang = getCurrentLang();
         const strings = translations[lang] || translations.pt;
         const fallbackFooterInfoTitle = window.translationCatalog?.fallbackTexts?.footerInfoTitle || 'Informações';
-        const fallbackFooterInfoBody = window.translationCatalog?.fallbackTexts?.footerInfoBody || '<p>Selecione uma opÃ§Ã£o para ver mais informações.</p>';
+        const fallbackFooterInfoBody = window.translationCatalog?.fallbackTexts?.footerInfoBody || '<p>Selecione uma opção para ver mais informações.</p>';
         const titleEl = document.querySelector('.footer-info-title') || document.querySelector('.rio-footer-card-title');
         const body = document.getElementById('footerInfoBody') || document.getElementById('rioFooterCardBody');
 
+        // Título/texto de SOBRE, CONTATO e AJUDA são editáveis por página em
+        // Gerenciamento > Gerenciamento da página > Textos SOBRE/CONTATO/AJUDA.
+        // Se houver override cadastrado, ele tem prioridade sobre o catálogo de tradução.
+        // O admin só digita em português; nos outros idiomas usamos a tradução
+        // automática cacheada em override.traducoes[lang] (ver app.py).
+        const override = window.__paginaSecaoOverrides?.[key];
+        const overrideTraducao = override && lang !== 'pt' ? override.traducoes?.[lang] : null;
+        const overrideTitulo = (overrideTraducao && overrideTraducao.titulo) || override?.titulo;
+        const overrideTexto = (overrideTraducao && typeof overrideTraducao.texto === 'string') ? overrideTraducao.texto : override?.texto;
+
         if (titleEl) {
             const titleKey = `footer_${key}_title`;
-            titleEl.textContent = strings[titleKey] || strings.footer_info_title || fallbackFooterInfoTitle;
+            titleEl.textContent = overrideTitulo || strings[titleKey] || strings.footer_info_title || fallbackFooterInfoTitle;
         }
 
         if (!body) return;
 
+        if (overrideTexto) {
+            const linhas = overrideTexto.split('\n').map((l) => l.trim()).filter(Boolean);
+            body.innerHTML = '';
+            linhas.forEach((linha) => {
+                const p = document.createElement('p');
+                p.textContent = linha;
+                body.appendChild(p);
+            });
+            return;
+        }
+
         const bodyKey = `footer_${key}`;
         body.innerHTML = strings[bodyKey] || fallbackFooterInfoBody;
     };
+    window.updateFooterInfo = updateFooterInfo;
 
     const getReservations = () => {
         try {
@@ -2718,28 +3818,60 @@
             identification: tour?.identificacao || '',
             link: tour?.link_tour || tour?.mapUrl || '',
             value: tour?.valor ?? 0,
-            status: tour?.estado || ''
+            status: tour?.estado || '',
+            cidade: tour?.cidade || '',
+            modalidade: (tour?.modalidade || 'free').toLowerCase(),
+            imagens: Array.isArray(tour?.imagens) ? tour.imagens : [],
+            horarios: tour?.horarios || '',
+            horarios_por_dia: tour?.horarios_por_dia || ''
         };
     };
 
+    const normalizeTourKey = (value) => String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+
+    // Mescla listas de tours sem descartar os tours das outras páginas/cidades:
+    // entradas de mesmo nome são atualizadas, as demais são preservadas.
+    const mergeTours = (baseTours, incomingTours) => {
+        const merged = Array.isArray(baseTours) ? [...baseTours] : [];
+        (Array.isArray(incomingTours) ? incomingTours : []).forEach((tour) => {
+            const key = normalizeTourKey(tour && tour.name);
+            if (!key) return;
+            const cleaned = Object.fromEntries(Object.entries(tour).filter(([, v]) => v !== '' && v != null));
+            const existingIndex = merged.findIndex(t => normalizeTourKey(t && t.name) === key);
+            if (existingIndex >= 0) {
+                merged[existingIndex] = { ...merged[existingIndex], ...cleaned };
+            } else {
+                merged.push(tour);
+            }
+        });
+        return merged;
+    };
+
+
     const fetchToursFromBackend = async () => {
-        try {
-            const response = await fetch('/get_tours_pagina');
-            if (!response.ok) {
-                console.warn('Falha ao buscar tours no backend:', response.status, response.statusText);
-                return null;
+        const endpoints = [
+            `${API_BASE_URL}/get_tours_pagina`,
+            'http://127.0.0.1:5000/get_tours_pagina',
+            'https://api.exksvol.com/get_tours_pagina'
+        ];
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) continue;
+                const payload = await response.json();
+                if (!Array.isArray(payload)) continue;
+                const tours = mergeTours(getTours(), payload.map(mapBackendTourToPageTour));
+                setTours(tours);
+                return tours;
+            } catch (error) {
+                console.warn('Erro ao buscar tours no backend:', endpoint, error);
             }
-            const payload = await response.json();
-            if (!Array.isArray(payload)) {
-                return null;
-            }
-            const tours = payload.map(mapBackendTourToPageTour);
-            setTours(tours);
-            return tours;
-        } catch (error) {
-            console.warn('Erro ao buscar tours no backend:', error);
-            return null;
         }
+        // Nenhum endereço respondeu: sem cards para montar, o retrato volta a
+        // aparecer. É o mesmo conteúdo, só sem interação — melhor do que a
+        // seção de tours vazia.
+        window.retratoDeTours.restaurar();
+        return null;
     };
 
     const syncToursFromIndex = () => {
@@ -2764,8 +3896,9 @@
             };
         });
 
-        setTours(tours);
-        return tours;
+        const merged = mergeTours(getTours(), tours);
+        setTours(merged);
+        return merged;
     };
 
     // Expose reservation helpers so other scripts (eg. Gerenciamento) can access them
@@ -2827,6 +3960,44 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
+    // Foto de perfil padrão do usuário: usa o Gravatar associado ao email
+    // (mesmo serviço usado por WordPress/GitHub — hash SHA-256 do email, sem
+    // precisar de nenhuma API/consentimento do provedor de email). Se o
+    // usuário nunca configurou um Gravatar, cai num avatar gerado
+    // (identicon) em vez de imagem quebrada.
+    const getGravatarUrl = async (email, size = 80) => {
+        const normalized = (email || '').trim().toLowerCase();
+        const data = new TextEncoder().encode(normalized);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashHex = Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+        return `https://www.gravatar.com/avatar/${hashHex}?s=${size}&d=identicon`;
+    };
+
+    const updateProfileAvatar = async () => {
+        const button = document.querySelector('.profile-btn');
+        if (!button) return;
+        const userRole = localStorage.getItem('userRole');
+        if (!userRole) {
+            button.innerHTML = '<i class="fa fa-user-circle"></i>';
+            return;
+        }
+        let userPhoto = localStorage.getItem('userPhoto');
+        // Backfill para sessões abertas antes deste recurso existir.
+        if (!userPhoto) {
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail) {
+                userPhoto = await getGravatarUrl(userEmail);
+                localStorage.setItem('userPhoto', userPhoto);
+            }
+        }
+        if (userPhoto) {
+            button.innerHTML = `<img src="${escapeHtml(userPhoto)}" alt="Foto de perfil" class="profile-btn-avatar" />`;
+        } else {
+            button.innerHTML = '<i class="fa fa-user-circle"></i>';
+        }
+    };
+    window.updateProfileAvatar = updateProfileAvatar;
+
     const showGlobalNotification = (message, type = 'info', options = {}) => {
         const currentLang = typeof window.getCurrentLanguage === 'function'
             ? window.getCurrentLanguage()
@@ -2876,7 +4047,7 @@
                         ></video>
                     `;
                 } else {
-                    media.innerHTML = `<img src="${escapeHtml(gifUrl)}" alt="ConfirmaÃ§Ã£o" loading="lazy">`;
+                    media.innerHTML = `<img src="${escapeHtml(gifUrl)}" alt="Confirmação" loading="lazy">`;
                 }
                 media.hidden = false;
             } else {
@@ -2901,6 +4072,148 @@
     };
 
     window.showAppNotification = showGlobalNotification;
+
+    // ─── Aviso pós-tour para avaliar (e botão "Avaliar" em Minhas Reservas) ──
+    const REVIEW_PROMPT_DISMISSED_KEY = 'reviewPromptDismissedIds';
+    const FINALIZED_STATUS_REGEX = /finalizado|finalized|terminado|terminé|completed|concluído|concluido|concluída|concluida|conclu|完了|已完成/i;
+
+    const getDismissedReviewPromptIds = () => {
+        try {
+            return new Set(JSON.parse(localStorage.getItem(REVIEW_PROMPT_DISMISSED_KEY) || '[]'));
+        } catch {
+            return new Set();
+        }
+    };
+
+    const markReviewPromptDismissed = (id) => {
+        const dismissed = getDismissedReviewPromptIds();
+        dismissed.add(String(id));
+        try {
+            localStorage.setItem(REVIEW_PROMPT_DISMISSED_KEY, JSON.stringify(Array.from(dismissed)));
+        } catch {
+            // ignore
+        }
+    };
+
+    const findTourIdByName = (tourName) => {
+        const tours = Array.isArray(getTours()) ? getTours() : [];
+        const normalizedTarget = normalizeTourKey(tourName);
+        const match = tours.find((t) => normalizeTourKey(t.name || t.nome_tour) === normalizedTarget);
+        return match ? match.id : null;
+    };
+
+    // Cada cidade tem sua própria página; um tour pode não estar nos cards
+    // desta página (ex.: usuário está no Rio, mas a avaliação pendente é de
+    // um tour de Lençóis). Nesse caso, navega até a página certa e pede pra
+    // ela abrir o painel de avaliação assim que os tours carregarem.
+    const CITY_PAGE_BY_CIDADE = {
+        'rio de janeiro': 'rio-de-janeiro',
+        'lencois': 'lencois-maranhenses',
+        'sao luis': 'sao-luis',
+        'salvador': 'salvador'
+    };
+
+    // Monta a URL de uma cidade a partir do slug. Absoluta a partir da raiz
+    // porque a pagina atual pode estar em /<cidade>/ ou em /<cidade>/<idioma>/
+    // — um caminho relativo estaria certo numa profundidade e errado na outra.
+    // Preserva o idioma da pagina atual (window.rotaIdioma e definido no
+    // <head> de cada pagina gerada); sem ele, cai no portugues, que e a raiz.
+    const urlDaCidade = (slug) => {
+        const idioma = window.rotaIdioma?.atual || 'pt';
+        return idioma === 'pt' ? `/${slug}/` : `/${slug}/${idioma}/`;
+    };
+
+    const findTourByName = (tourName) => {
+        const tours = Array.isArray(getTours()) ? getTours() : [];
+        const normalizedTarget = normalizeTourKey(tourName);
+        return tours.find((t) => normalizeTourKey(t.name || t.nome_tour) === normalizedTarget) || null;
+    };
+
+    const goToTourReview = (tourName) => {
+        const tour = findTourByName(tourName);
+        if (!tour || tour.id == null) return;
+
+        const abertoAqui = window.TourInteracoes?.openReviewPanel?.(tour.id);
+        if (abertoAqui) return;
+
+        const paginaAlvo = CITY_PAGE_BY_CIDADE[normalizeTourKey(tour.cidade || '')];
+        if (!paginaAlvo) return;
+
+        window.location.href = `${urlDaCidade(paginaAlvo)}?avaliar_tour=${tour.id}`;
+    };
+
+    // Ao chegar numa página vinda desse redirecionamento (?avaliar_tour=ID),
+    // abre o painel de avaliação assim que os tours/cards estiverem prontos.
+    const openReviewFromUrlIfNeeded = () => {
+        const params = new URLSearchParams(window.location.search);
+        const tourId = params.get('avaliar_tour');
+        if (!tourId) return;
+
+        window.TourInteracoes?.openReviewPanel?.(Number(tourId));
+
+        params.delete('avaliar_tour');
+        const query = params.toString();
+        const novaUrl = window.location.pathname + (query ? `?${query}` : '') + window.location.hash;
+        window.history.replaceState(null, '', novaUrl);
+    };
+
+    const checkPendingTourReviewPrompt = async () => {
+        const email = (localStorage.getItem('userEmail') || '').trim();
+        if (!email) return;
+
+        let data = null;
+        const endpoints = [
+            `${API_BASE_URL}/get_meus_agendamentos?email=${encodeURIComponent(email)}`,
+            `${API_BASE_URL}/get_agendamentos?email=${encodeURIComponent(email)}`
+        ];
+        for (const url of endpoints) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    data = await res.json();
+                    break;
+                }
+            } catch {
+                // tenta próximo endpoint
+            }
+        }
+        if (!data) return;
+
+        const reservations = Array.isArray(data) ? data : (Array.isArray(data?.agendamentos) ? data.agendamentos : []);
+        const dismissed = getDismissedReviewPromptIds();
+        const finalizadas = reservations.filter((r) => (
+            r.id != null && !dismissed.has(String(r.id)) && FINALIZED_STATUS_REGEX.test(String(r.status || ''))
+        ));
+
+        for (const reserva of finalizadas) {
+            const tourId = findTourIdByName(reserva.tour);
+            if (tourId == null) {
+                markReviewPromptDismissed(reserva.id);
+                continue;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/get_tour_comentarios/${tourId}?email=${encodeURIComponent(email)}`);
+                const info = res.ok ? await res.json() : null;
+                if (!info || !info.success || info.ja_avaliou || !info.pode_avaliar) {
+                    markReviewPromptDismissed(reserva.id);
+                    continue;
+                }
+            } catch {
+                continue; // tenta de novo na próxima visita à página
+            }
+
+            window.TourInteracoes?.showReviewPromptBanner?.({
+                tourName: reserva.tour,
+                onAccept: () => {
+                    markReviewPromptDismissed(reserva.id);
+                    goToTourReview(reserva.tour);
+                },
+                onDismiss: () => markReviewPromptDismissed(reserva.id)
+            });
+            break; // só um aviso por vez
+        }
+    };
 
     const openMyReservationsModal = async () => {
         const currentLang = typeof window.getCurrentLanguage === 'function'
@@ -2948,7 +4261,7 @@
         const email = (localStorage.getItem('userEmail') || '').trim();
         const normalizedEmail = email.toLowerCase();
         if (!normalizedEmail) {
-            listEl.innerHTML = '<p class="my-reservations-empty">NÃ£o foi possÃ­vel identificar o usuÃ¡rio.</p>';
+            listEl.innerHTML = '<p class="my-reservations-empty">Não foi possível identificar o usuário.</p>';
             return;
         }
 
@@ -2982,7 +4295,7 @@
         }
 
         if (!data) {
-            listEl.innerHTML = '<p class="my-reservations-empty">NÃ£o foi possÃ­vel carregar as reservas. Tente novamente mais tarde.</p>';
+            listEl.innerHTML = '<p class="my-reservations-empty">Não foi possível carregar as reservas. Tente novamente mais tarde.</p>';
             return;
         }
 
@@ -2990,7 +4303,7 @@
             ? data
             : (Array.isArray(data?.agendamentos) ? data.agendamentos : []);
 
-        // SeguranÃ§a extra no frontend: garante exibiÃ§Ã£o apenas das reservas do usuÃ¡rio atual.
+        // Segurança extra no frontend: garante exibição apenas das reservas do usuário atual.
         const userReservations = rawReservations.filter((reservation) => {
             const reservationEmail = String(
                 reservation?.email || reservation?.cliente_email || reservation?.user_email || ''
@@ -3056,8 +4369,8 @@
             const showActions = !(isCancelled || isFinalized);
             return `
             <div class="my-reservations-item" data-reservation-id="${escapeHtml(String(r.id || ''))}">
-                <strong class="my-reservations-tour">${escapeHtml(r.tour || 'â€”')}</strong>
-                <span class="my-reservations-date">${ui.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || 'â€”')}</span>
+                <strong class="my-reservations-tour">${escapeHtml(r.tour || '—')}</strong>
+                <span class="my-reservations-date">${ui.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '—')}</span>
                 ${r.hora ? `<span class="my-reservations-detail">${ui.reservation_list_time_label || 'Hora'}: ${escapeHtml(r.hora)}</span>` : ''}
                 ${r.idioma ? `<span class="my-reservations-detail">${ui.reservation_list_language_label || 'Idioma'}: ${escapeHtml(r.idioma)}</span>` : ''}
                 ${r.qtd ? `<span class="my-reservations-detail">${ui.reservation_list_people_label || 'Pessoas'}: ${escapeHtml(String(r.qtd))}</span>` : ''}
@@ -3068,10 +4381,22 @@
                         <button type="button" class="btn-edit-reservation" data-reservation-id="${escapeHtml(String(r.id || ''))}" data-reservation-tour="${escapeHtml(String(r.tour || ''))}" data-reservation-date="${escapeHtml(String(r.data || ''))}" data-reservation-hour="${escapeHtml(String(r.hora || ''))}" data-reservation-people="${escapeHtml(String(r.qtd || '1'))}" data-reservation-language="${escapeHtml(String(r.idioma || r.language || ''))}" data-reservation-modality="${escapeHtml(String(r.modalidade || r.modality || ''))}" data-reservation-guide="${escapeHtml(String(r.guia || r.guide || ''))}" data-reservation-name="${escapeHtml(String(r.nome || r.name || ''))}" data-reservation-phone="${escapeHtml(String(r.celular || r.telefone || r.phone || ''))}" data-reservation-email="${escapeHtml(String(r.email || ''))}" data-reservation-status="${escapeHtml(String(r.status || 'Pendente'))}">${ui.action_edit || 'Editar'}</button>
                         <button type="button" class="btn-cancel-reservation" data-reservation-id="${escapeHtml(String(r.id || ''))}">${ui.action_cancel || 'Cancelar'}</button>
                     </div>
-                ` : ''}
+                ` : (isFinalized ? `
+                    <div class="my-reservations-actions">
+                        <button type="button" class="btn-review-reservation" data-reservation-tour="${escapeHtml(String(r.tour || ''))}">${ui.action_review || 'Avaliar'}</button>
+                    </div>
+                ` : '')}
             </div>
         `;
         }).join('');
+
+        listEl.querySelectorAll('.btn-review-reservation').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                modal.classList.remove('open');
+                goToTourReview(button.getAttribute('data-reservation-tour') || '');
+            });
+        });
 
         const parseDisplayDateToIso = (displayDate) => {
             const value = String(displayDate || '').trim();
@@ -3203,7 +4528,7 @@
             return overlayEl;
         };
 
-        // AÃ§Ãµes de ediÃ§Ã£o e cancelamento de reservas
+        // Ações de edição e cancelamento de reservas
         listEl.querySelectorAll('.btn-cancel-reservation').forEach((button) => {
             button.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -3275,12 +4600,123 @@
         });
     };
 
+    // ─── Modal "Tours Favoritos" (menu de perfil) ────────────────────────
+    // Lista os tours que o usuário marcou com o coração no card. Diferente de
+    // "Minhas Reservas", não depende de permissão de aba: qualquer usuário
+    // logado pode ver os próprios favoritos. Reaproveita o CSS do modal de
+    // reservas (.my-reservations-*) pra manter o mesmo visual.
+    const openMyFavoritesModal = async () => {
+        const currentLang = typeof window.getCurrentLanguage === 'function'
+            ? window.getCurrentLanguage()
+            : (document.documentElement.lang || 'pt').slice(0, 2);
+        const ui = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
+        const titulo = ui.profile_my_favorites || 'Tours Favoritos';
+
+        let modal = document.getElementById('myFavoritesModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'myFavoritesModal';
+            modal.className = 'my-reservations-overlay';
+            modal.setAttribute('aria-modal', 'true');
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-label', titulo);
+            modal.innerHTML = `
+                <div class="my-reservations-modal">
+                    <button type="button" class="my-reservations-close" aria-label="Fechar">&times;</button>
+                    <h2 class="my-reservations-title">${escapeHtml(titulo)}</h2>
+                    <div class="my-reservations-list"></div>
+                </div>
+            `;
+            modal.querySelector('.my-reservations-close').addEventListener('click', () => {
+                modal.classList.remove('open');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('open');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('open')) modal.classList.remove('open');
+            });
+            document.body.appendChild(modal);
+        }
+
+        const listEl = modal.querySelector('.my-reservations-list');
+        modal.classList.add('open');
+        listEl.innerHTML = `<p class="my-reservations-empty">${escapeHtml(ui.favorites_loading || 'Carregando favoritos...')}</p>`;
+
+        const email = (localStorage.getItem('userEmail') || '').trim();
+        if (!email) {
+            listEl.innerHTML = `<p class="my-reservations-empty">${escapeHtml(ui.favorites_need_login || 'Faça login para ver seus tours favoritos.')}</p>`;
+            return;
+        }
+
+        let data = null;
+        for (const base of [API_BASE_URL, 'http://127.0.0.1:5000', 'https://api.exksvol.com']) {
+            try {
+                const res = await fetch(`${base}/get_meus_tours_favoritos?email=${encodeURIComponent(email)}`);
+                if (res.ok) { data = await res.json(); break; }
+            } catch {
+                // tenta o próximo endpoint
+            }
+        }
+
+        if (!data || !data.success) {
+            listEl.innerHTML = `<p class="my-reservations-empty">${escapeHtml(ui.favorites_error || 'Não foi possível carregar seus favoritos.')}</p>`;
+            return;
+        }
+
+        const tours = Array.isArray(data.tours) ? data.tours : [];
+        if (!tours.length) {
+            listEl.innerHTML = `<p class="my-reservations-empty">${escapeHtml(ui.favorites_empty || 'Você ainda não favoritou nenhum tour. Toque no coração no card de um tour para salvá-lo aqui.')}</p>`;
+            return;
+        }
+
+        listEl.innerHTML = tours.map((tour) => {
+            const valor = tour.valor != null
+                ? `R$ ${Number(tour.valor).toFixed(2).replace('.', ',')}`
+                : (ui.favorites_free || 'Gratuito');
+            const capa = tour.imagem
+                ? `<img class="my-favorites-thumb" src="${escapeHtml(tour.imagem)}" alt="" loading="lazy">`
+                : '';
+            const link = buildTourPageUrl(tour);
+            return `
+                <article class="my-favorites-card">
+                    ${capa}
+                    <div class="my-favorites-info">
+                        <h3 class="my-favorites-name">${escapeHtml(tour.nome_tour || '')}</h3>
+                        <p class="my-favorites-meta">${escapeHtml(tour.cidade || '')} · ${escapeHtml(valor)}</p>
+                        ${link ? `<a class="my-favorites-link" href="${escapeHtml(link)}">${escapeHtml(ui.favorites_open || 'Ver tour')}</a>` : ''}
+                    </div>
+                </article>
+            `;
+        }).join('');
+    };
+
+    // Link direto pro tour na página da cidade dele (?tour=<id>), pra funcionar
+    // mesmo quando o favorito é de outra cidade que não a página atual.
+    const buildTourPageUrl = (tour) => {
+        if (!tour || tour.id == null) return '';
+        const slugPorCidade = {
+            'Rio de Janeiro': 'rio-de-janeiro',
+            'Salvador': 'salvador',
+            'Sao Luis': 'sao-luis',
+            'São Luís': 'sao-luis',
+            'Lencois': 'lencois-maranhenses',
+            'Lençóis': 'lencois-maranhenses'
+        };
+        const slug = slugPorCidade[tour.cidade];
+        if (!slug) return `?tour=${encodeURIComponent(tour.id)}`;
+        const idioma = window.rotaIdioma?.atual || 'pt';
+        const base = idioma === 'pt' ? `/${slug}/` : `/${slug}/${idioma}/`;
+        return `${base}?tour=${encodeURIComponent(tour.id)}`;
+    };
+
     window.openMyReservationsModal = openMyReservationsModal;
+    window.openMyFavoritesModal = openMyFavoritesModal;
 
     const openUserDataModal = async () => {
         const tabs = (getCurrentRolePermissions()?.tabs || []).map(tab => String(tab).toUpperCase());
         if (!tabs.includes('MEUS DADOS')) {
-            showGlobalNotification('Seu perfil nÃ£o tem permissÃ£o para acessar Meus Dados.', 'error');
+            showGlobalNotification('Seu perfil não tem permissão para acessar Meus Dados.', 'error');
             return;
         }
 
@@ -3301,11 +4737,27 @@
                     <h3 data-i18n="user_data_title">${strings.user_data_title || 'Meus Dados'}</h3>
                     <div class="user-data-loading" hidden data-i18n="user_data_loading">${strings.user_data_loading || 'Carregando dados...'}</div>
                     <form class="user-data-form">
+                        <div class="user-data-photo">
+                            <img class="user-data-photo-preview" alt="Foto de perfil" src="" />
+                            <label class="user-data-photo-upload">
+                                <span data-i18n="user_data_change_photo">${strings.user_data_change_photo || 'Alterar foto'}</span>
+                                <input type="file" name="foto" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+                            </label>
+                        </div>
                         <label><span data-i18n="user_data_name">${strings.user_data_name || 'Nome'}</span><input name="nome" required /></label>
                         <label><span data-i18n="user_data_surname">${strings.user_data_surname || 'Sobrenome'}</span><input name="sobrenome" required /></label>
                         <label><span data-i18n="user_data_phone">${strings.user_data_phone || 'Telefone'}</span><input name="celular" /></label>
                         <label><span data-i18n="user_data_country">${strings.user_data_country || 'País'}</span><input name="pais_origem" /></label>
-                        <label><span data-i18n="user_data_gender">${strings.user_data_gender || 'Gênero'}</span><input name="genero" /></label>
+                        <label><span data-i18n="user_data_gender">${strings.user_data_gender || 'Gênero'}</span>
+                            <select name="genero">
+                                <option value="">—</option>
+                                <option value="male" data-i18n="register_gender_male">${strings.register_gender_male || 'Masculino'}</option>
+                                <option value="female" data-i18n="register_gender_female">${strings.register_gender_female || 'Feminino'}</option>
+                                <option value="nonbinary" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary || 'Não binário'}</option>
+                                <option value="prefer_not" data-i18n="register_gender_prefer_not">${strings.register_gender_prefer_not || 'Prefiro não informar'}</option>
+                                <option value="other" data-i18n="register_gender_other">${strings.register_gender_other || 'Outro'}</option>
+                            </select>
+                        </label>
                         <div class="user-data-actions">
                             <button type="button" class="user-data-cancel" data-i18n="user_data_cancel">${strings.user_data_cancel || 'Cancelar'}</button>
                             <button type="submit" class="user-data-save" data-i18n="user_data_save">${strings.user_data_save || 'Salvar'}</button>
@@ -3324,12 +4776,52 @@
                 if (event.target === modal) close();
             });
 
+            const photoInput = modal.querySelector('input[name="foto"]');
+            photoInput?.addEventListener('change', async () => {
+                const file = photoInput.files?.[0];
+                if (!file) return;
+                const email = localStorage.getItem('userEmail');
+                if (!email) return;
+
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('imagem', file);
+
+                const endpointsUploadFoto = [
+                    `${API_BASE_URL}/upload_user_foto`,
+                    'http://127.0.0.1:5000/upload_user_foto',
+                    'https://api.exksvol.com/upload_user_foto'
+                ];
+
+                let uploaded = false;
+                for (const endpoint of endpointsUploadFoto) {
+                    try {
+                        const response = await fetch(endpoint, { method: 'POST', body: formData });
+                        if (!response.ok) continue;
+                        const result = await response.json();
+                        if (result.success && result.foto_perfil) {
+                            localStorage.setItem('userPhoto', result.foto_perfil);
+                            modal.querySelector('.user-data-photo-preview').src = result.foto_perfil;
+                            window.updateProfileAvatar?.();
+                            uploaded = true;
+                            break;
+                        }
+                    } catch (err) {
+                        console.warn('Upload de foto falhou em', endpoint, err);
+                    }
+                }
+
+                if (!uploaded) {
+                    showGlobalNotification('Não foi possível enviar a foto.', 'error');
+                }
+            });
+
             const form = modal.querySelector('.user-data-form');
             form?.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const email = localStorage.getItem('userEmail');
                 if (!email) {
-                    showGlobalNotification('Erro: usuÃ¡rio nÃ£o identificado.', 'error');
+                    showGlobalNotification('Erro: usuário não identificado.', 'error');
                     return;
                 }
 
@@ -3384,7 +4876,7 @@
                     }
                     close();
                 } else {
-                    showGlobalNotification('NÃ£o foi possÃ­vel atualizar seus dados.', 'error');
+                    showGlobalNotification('Não foi possível atualizar seus dados.', 'error');
                 }
             });
 
@@ -3414,6 +4906,8 @@
         form.elements.celular.value = localStorage.getItem('userPhone') || '';
         form.elements.pais_origem.value = localStorage.getItem('userPais') || '';
         form.elements.genero.value = localStorage.getItem('userGenero') || '';
+        const previewImg = modal.querySelector('.user-data-photo-preview');
+        if (previewImg) previewImg.src = localStorage.getItem('userPhoto') || '';
 
         const email = localStorage.getItem('userEmail');
         if (email) {
@@ -3435,18 +4929,22 @@
                     form.elements.celular.value = data.celular || '';
                     form.elements.pais_origem.value = data.pais_origem || '';
                     form.elements.genero.value = data.genero || '';
+                    if (data.foto_perfil && previewImg) previewImg.src = data.foto_perfil;
 
                     localStorage.setItem('userName', data.nome || email);
                     localStorage.setItem('userPhone', data.celular || '');
                     localStorage.setItem('userSobrenome', data.sobrenome || '');
                     localStorage.setItem('userPais', data.pais_origem || '');
                     localStorage.setItem('userGenero', data.genero || '');
+                    if (data.foto_perfil) {
+                        localStorage.setItem('userPhoto', data.foto_perfil);
+                    }
                     if (typeof window.updateProfileMenuUI === 'function') {
                         window.updateProfileMenuUI();
                     }
                     break;
                 } catch (err) {
-                    console.warn('Leitura de dados do usuÃ¡rio falhou em', endpoint, err);
+                    console.warn('Leitura de dados do usuário falhou em', endpoint, err);
                 }
             }
         }
@@ -3455,17 +4953,59 @@
 
     window.openUserDataModal = openUserDataModal;
 
+    const DIAS_SEMANA_KEYS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+
+    const parseHorariosPorDia = (raw) => {
+        if (!raw) return null;
+        try {
+            const obj = JSON.parse(raw);
+            return obj && typeof obj === 'object' ? obj : null;
+        } catch {
+            return null;
+        }
+    };
+
+    // reservationDate.value é sempre "YYYY-MM-DD" (input type=date); decompor
+    // manualmente e montar a data em horário local evita o bug clássico de
+    // "new Date('YYYY-MM-DD')" (parseia como UTC meia-noite) devolver o dia
+    // da semana errado dependendo do fuso do navegador.
+    const weekdayKeyForDate = (dateStr) => {
+        const [y, m, d] = (dateStr || '').split('-').map(Number);
+        if (!y || !m || !d) return null;
+        return DIAS_SEMANA_KEYS[new Date(y, m - 1, d).getDay()];
+    };
+
+    // Horários válidos pra um tour numa data específica. Tours sem
+    // horarios_por_dia configurado (legado) caem no comportamento antigo:
+    // mesma lista plana de horários, independente do dia da semana.
+    const horariosParaData = (tour, dateStr) => {
+        const porDia = parseHorariosPorDia(tour?.horarios_por_dia);
+        if (!porDia) {
+            return (tour?.horarios || '').split(',').map(h => h.trim()).filter(Boolean);
+        }
+        const dia = weekdayKeyForDate(dateStr);
+        return dia && Array.isArray(porDia[dia]) ? porDia[dia] : [];
+    };
+
     const initReservationTracking = () => {
         const reservationModal = document.getElementById('reservationModal');
         const reservationForm = document.getElementById('reservationForm');
         const reservationTour = document.getElementById('reservationTour');
+        // Elemento só de exibição (caixa "Tour selecionado") — reservationTour
+        // continua sendo o campo de verdade lido no submit, mas agora fica
+        // hidden; quem mostra o nome do tour pro usuário é este aqui.
+        const reservationTourDisplay = document.getElementById('reservationTourDisplay');
         const reservationName = document.getElementById('reservationName');
         const reservationDate = document.getElementById('reservationDate');
+        const reservationTimeField = document.getElementById('reservationTimeField');
+        const reservationTime = document.getElementById('reservationTime');
         const reservationQuantity = document.getElementById('reservationQuantity');
         const reservationLanguage = document.getElementById('reservationLanguage');
         const reservationPhone = document.getElementById('reservationPhone');
         const reservationEmail = document.getElementById('reservationEmail');
         const reservationCancel = document.getElementById('reservationCancel');
+        const reservationSubmitIcon = document.getElementById('reservationSubmitIcon');
+        const reservationSubmitLabel = document.getElementById('reservationSubmitLabel');
         let selectedMeetingPoint = '';
 
         const closeReservationModal = () => {
@@ -3473,8 +5013,315 @@
             reservationModal.classList.add('hidden');
         };
 
+        let activeReservationTour = null;
+
+        const buildReservationTimeOptions = (horarios) => {
+            if (!reservationTime || !reservationTimeField) return;
+            const currentLang = typeof window.getCurrentLanguage === 'function'
+                ? window.getCurrentLanguage()
+                : (document.documentElement.lang || 'pt').slice(0, 2);
+            const strings = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
+
+            reservationTime.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.setAttribute('data-i18n', 'reservation_time_placeholder');
+            defaultOption.textContent = strings.reservation_time_placeholder || 'Selecione um horário';
+            reservationTime.appendChild(defaultOption);
+
+            horarios.forEach(horario => {
+                const option = document.createElement('option');
+                option.value = horario;
+                option.textContent = horario;
+                reservationTime.appendChild(option);
+            });
+
+            // O campo de horário fica SEMPRE visível — some antes deixava um
+            // buraco no formulário e fazia o layout pular quando a data era
+            // escolhida. Sem horários ele mostra só o placeholder e deixa de
+            // ser obrigatório, pra não travar tours que não têm horário.
+            reservationTimeField.hidden = false;
+            if (horarios.length) {
+                reservationTime.setAttribute('required', 'required');
+                // Antes, com um único horário disponível, ele já vinha
+                // pré-selecionado — o cliente nunca via nem escolhia de
+                // fato. Agora o campo sempre nasce em branco (placeholder),
+                // mesmo com uma opção só; é o próprio cliente quem escolhe.
+            } else {
+                reservationTime.removeAttribute('required');
+                reservationTime.value = '';
+            }
+        };
+
+        // Tours com horários por dia da semana só liberam o campo de horário
+        // depois que uma data é escolhida (sem data não dá pra saber o dia da
+        // semana). Tours legados (só a lista plana "horarios") continuam
+        // mostrando o campo direto, com os mesmos horários pra qualquer dia.
+        const updateReservationTimeForSelectedDate = () => {
+            if (!activeReservationTour) return;
+            const porDia = parseHorariosPorDia(activeReservationTour.horarios_por_dia);
+            if (!porDia) {
+                buildReservationTimeOptions((activeReservationTour.horarios || '').split(',').map(h => h.trim()).filter(Boolean));
+                return;
+            }
+            const dateValue = reservationDate ? reservationDate.value : '';
+            if (!dateValue) {
+                buildReservationTimeOptions([]);
+                return;
+            }
+            const horariosDoDia = horariosParaData(activeReservationTour, dateValue);
+            buildReservationTimeOptions(horariosDoDia);
+            if (!horariosDoDia.length) {
+                showGlobalNotification('Este tour não está disponível no dia da semana escolhido. Selecione outra data.', 'error');
+            }
+        };
+
+        // Depois de escolher a data, leva o cliente direto pro campo de
+        // horário — focus() sempre funciona; showPicker() (Chrome/Edge
+        // recentes) já abre o dropdown sozinho, mas é opcional: navegadores
+        // sem suporte simplesmente ignoram e o campo fica focado, pronto
+        // pra abrir com Enter/seta ou um clique.
+        const focarCampoHorario = () => {
+            // Só faz sentido focar quando há horário pra escolher — o campo
+            // agora fica sempre visível, então "não escondido" deixou de ser
+            // sinal de que existem opções.
+            if (!reservationTime || reservationTime.options.length <= 1) return;
+            reservationTime.focus();
+            try { reservationTime.showPicker?.(); } catch (_err) { /* navegador sem suporte */ }
+        };
+
+        if (reservationDate) {
+            reservationDate.addEventListener('change', () => {
+                updateReservationTimeForSelectedDate();
+                focarCampoHorario();
+            });
+        }
+
+        // O campo de horário fica sempre visível, então dá pra tentar usá-lo
+        // antes de escolher a data. Como os horários dependem do dia da semana
+        // (tours com horarios_por_dia), abrir a lista sem data mostraria uma
+        // lista vazia ou errada — melhor avisar e mandar pro calendário.
+        // mousedown/keydown são interceptados ANTES do dropdown abrir; change
+        // fica como rede de segurança pra formas de seleção fora desses dois.
+        const exigirDataAntesDoHorario = (event) => {
+            if (!reservationDate || reservationDate.value) return false;
+            event.preventDefault();
+            reservationTime.blur();
+            const currentLang = typeof window.getCurrentLanguage === 'function'
+                ? window.getCurrentLanguage()
+                : (document.documentElement.lang || 'pt').slice(0, 2);
+            const ui = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
+            showGlobalNotification(
+                ui.reservation_pick_date_first || 'Selecione primeiro a data da reserva.',
+                'info'
+            );
+            (calendarDisplay || reservationDate)?.focus?.();
+            return true;
+        };
+
+        if (reservationTime) {
+            reservationTime.addEventListener('mousedown', exigirDataAntesDoHorario);
+            reservationTime.addEventListener('keydown', (event) => {
+                // Teclas que abrem/percorrem a lista; Tab e Shift+Tab precisam
+                // continuar navegando normalmente pelo formulário.
+                if (['Tab', 'Escape'].includes(event.key)) return;
+                exigirDataAntesDoHorario(event);
+            });
+            reservationTime.addEventListener('change', () => {
+                if (reservationDate && !reservationDate.value) {
+                    reservationTime.value = '';
+                }
+            });
+        }
+
+        // Calendário customizado: o popup nativo de <input type="date"> não é
+        // estilizável, então o campo vira um botão que abre um mini-calendário
+        // próprio pintando de verde os dias em que o tour funciona. O input
+        // nativo continua no DOM (oculto) como fonte da verdade — o resto do
+        // fluxo (payload, updateReservationTimeForSelectedDate) não muda.
+        //
+        // Nome do mês e abreviação dos dias da semana vêm do Intl do próprio
+        // navegador (não de um array fixo em português) — assim cobrem os 6
+        // idiomas do site automaticamente, sem precisar manter uma lista de
+        // traduções por mês. O resto dos textos do calendário (placeholder,
+        // legenda, aria-label dos botões de navegação) usa uiTranslations
+        // normalmente, igual ao restante do modal.
+        const CALENDAR_LOCALE_POR_IDIOMA = { pt: 'pt-BR', en: 'en-US', fr: 'fr-FR', es: 'es-ES', it: 'it-IT', zh: 'zh-CN' };
+        const calendarStrings = () => {
+            const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
+            return window.uiTranslations?.[lang] || window.uiTranslations?.pt || {};
+        };
+        const nomeMesCalendario = (year, month) => {
+            const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
+            const locale = CALENDAR_LOCALE_POR_IDIOMA[lang] || 'pt-BR';
+            const nome = new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(year, month, 1));
+            // Intl devolve em minúsculo em pt/es/it/fr ("setembro") — o inglês já
+            // vem maiúsculo, então isso só afeta os idiomas que precisam.
+            return nome.charAt(0).toUpperCase() + nome.slice(1);
+        };
+        const diasSemanaAbreviados = () => {
+            const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
+            const locale = CALENDAR_LOCALE_POR_IDIOMA[lang] || 'pt-BR';
+            const formatter = new Intl.DateTimeFormat(locale, { weekday: 'narrow' });
+            // 1º de janeiro de 2017 foi um domingo — base conhecida pra gerar
+            // dom..sáb (ou equivalente no idioma) sem depender do dia de hoje.
+            return Array.from({ length: 7 }, (_, i) => formatter.format(new Date(2017, 0, 1 + i)));
+        };
+        let calendarViewDate = new Date();
+        let calendarPopover = null;
+        let calendarDisplay = null;
+
+        const formatDateDisplay = (dateStr) => {
+            if (!dateStr) return calendarStrings().reservation_date_placeholder || 'Selecione uma data';
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        };
+
+        const handleCalendarOutsideClick = (event) => {
+            if (calendarPopover && !calendarPopover.contains(event.target) && event.target !== calendarDisplay && !calendarDisplay?.contains(event.target)) {
+                closeCalendarPopover();
+            }
+        };
+
+        function closeCalendarPopover() {
+            calendarPopover?.remove();
+            calendarPopover = null;
+            document.removeEventListener('click', handleCalendarOutsideClick, true);
+        }
+
+        const renderCalendarPopover = () => {
+            if (!calendarPopover) return;
+            const year = calendarViewDate.getFullYear();
+            const month = calendarViewDate.getMonth();
+            const porDia = parseHorariosPorDia(activeReservationTour?.horarios_por_dia);
+            const firstWeekday = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const selected = reservationDate?.value || '';
+
+            let cells = '';
+            for (let i = 0; i < firstWeekday; i++) cells += '<span class="res-calendar-day res-calendar-day--empty"></span>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const diaKey = DIAS_SEMANA_KEYS[new Date(year, month, day).getDay()];
+                const disponivel = !porDia || (Array.isArray(porDia[diaKey]) && porDia[diaKey].length > 0);
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const classes = ['res-calendar-day', disponivel ? 'res-calendar-day--available' : 'res-calendar-day--unavailable'];
+                if (dateStr === selected) classes.push('res-calendar-day--selected');
+                cells += `<button type="button" class="${classes.join(' ')}" data-date="${dateStr}" ${disponivel ? '' : 'disabled'}>${day}</button>`;
+            }
+
+            const strings = calendarStrings();
+            const prevMonthLabel = strings.reservation_calendar_prev_month || 'Mês anterior';
+            const nextMonthLabel = strings.reservation_calendar_next_month || 'Próximo mês';
+            const legendLabel = strings.reservation_calendar_legend || 'Dias disponíveis para este tour';
+            const weekdayCells = diasSemanaAbreviados().map((d) => `<span>${d}</span>`).join('');
+
+            calendarPopover.innerHTML = `
+                <div class="res-calendar-header">
+                    <button type="button" class="res-calendar-nav" data-nav="-1" aria-label="${prevMonthLabel}">&lsaquo;</button>
+                    <span class="res-calendar-title">${nomeMesCalendario(year, month)} ${year}</span>
+                    <button type="button" class="res-calendar-nav" data-nav="1" aria-label="${nextMonthLabel}">&rsaquo;</button>
+                </div>
+                <div class="res-calendar-weekdays">${weekdayCells}</div>
+                <div class="res-calendar-grid">${cells}</div>
+                ${porDia ? `<div class="res-calendar-legend"><span class="res-calendar-legend-dot"></span> ${legendLabel}</div>` : ''}
+            `;
+
+            calendarPopover.querySelectorAll('[data-nav]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    calendarViewDate = new Date(year, month + Number(btn.getAttribute('data-nav')), 1);
+                    renderCalendarPopover();
+                });
+            });
+            calendarPopover.querySelectorAll('.res-calendar-day--available').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    reservationDate.value = btn.getAttribute('data-date');
+                    reservationDate.dispatchEvent(new Event('change', { bubbles: true }));
+                    if (calendarDisplay) calendarDisplay.querySelector('.res-date-display-text').textContent = formatDateDisplay(reservationDate.value);
+                    closeCalendarPopover();
+                });
+            });
+        };
+
+        const openCalendarPopover = () => {
+            if (calendarPopover) {
+                closeCalendarPopover();
+                return;
+            }
+            calendarViewDate = reservationDate?.value ? new Date(`${reservationDate.value}T00:00:00`) : new Date();
+            calendarPopover = document.createElement('div');
+            calendarPopover.className = 'res-calendar-popover';
+            calendarPopover.style.position = 'fixed';
+            document.body.appendChild(calendarPopover);
+            // Preenche o conteúdo ANTES de posicionar, pra medir o tamanho real
+            // (largura fixa de 260px, altura varia com o mês) — precisa disso
+            // pra decidir se cabe do jeito padrão (colado embaixo do campo, à
+            // esquerda dele) ou se precisa encolher/inverter de lado.
+            renderCalendarPopover();
+
+            const rect = calendarDisplay.getBoundingClientRect();
+            const margin = 8;
+            const popW = calendarPopover.offsetWidth;
+            const popH = calendarPopover.offsetHeight;
+
+            // Em telas estreitas o campo de data fica na coluna direita do
+            // formulário (perto da borda do celular); abrir o calendário
+            // "colado à esquerda do campo" com 260px de largura vazava pra
+            // fora da tela (ver bug reportado). Agora clampa dentro da
+            // viewport, com uma margem de 8px de cada lado.
+            let left = Math.min(rect.left, window.innerWidth - popW - margin);
+            left = Math.max(left, margin);
+
+            let top = rect.bottom + 6;
+            if (top + popH > window.innerHeight - margin) {
+                // Não cabe embaixo do campo (ex.: campo perto do rodapé da
+                // tela) — abre pra cima dele em vez de cortar embaixo.
+                top = rect.top - popH - 6;
+                if (top < margin) top = margin; // último recurso: cola no topo
+            }
+
+            calendarPopover.style.top = `${top}px`;
+            calendarPopover.style.left = `${left}px`;
+            setTimeout(() => document.addEventListener('click', handleCalendarOutsideClick, true), 0);
+        };
+
+        const initCustomReservationCalendar = () => {
+            if (!reservationDate || reservationDate.dataset.customCalendarInit) return;
+            reservationDate.dataset.customCalendarInit = '1';
+            reservationDate.hidden = true;
+            reservationDate.style.display = 'none';
+
+            calendarDisplay = document.createElement('button');
+            calendarDisplay.type = 'button';
+            calendarDisplay.className = 'res-date-display';
+            calendarDisplay.innerHTML = `<i class="fas fa-calendar-alt"></i><span class="res-date-display-text">${calendarStrings().reservation_date_placeholder || 'Selecione uma data'}</span>`;
+            reservationDate.insertAdjacentElement('afterend', calendarDisplay);
+            calendarDisplay.addEventListener('click', openCalendarPopover);
+        };
+
+        initCustomReservationCalendar();
+
+        // O botão do calendário é criado uma única vez (guard em
+        // dataset.customCalendarInit lá em cima) — sem isso, quem troca de
+        // idioma DEPOIS de o modal já ter sido aberto uma vez ficava preso no
+        // idioma de quando o botão nasceu, mesmo com o resto do modal
+        // reagindo normalmente ao "app:language-changed".
+        document.addEventListener('app:language-changed', () => {
+            if (!calendarDisplay || reservationDate?.value) return; // já tem data escolhida: não mexe
+            const span = calendarDisplay.querySelector('.res-date-display-text');
+            if (span) span.textContent = calendarStrings().reservation_date_placeholder || 'Selecione uma data';
+        });
+
+        const matchTourByName = (tourName) => getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tourName));
+
+        // Tours com canal_reserva="whatsapp" continuam usando o mesmo formulário
+        // do site (preenche data, idioma, pessoas etc. normalmente) — só o envio
+        // final é diferente: em vez de salvar no banco, "Concluir Reserva" abre o
+        // WhatsApp com todos os dados preenchidos (ver reservationForm.submit).
         const openReservationModal = (tourName, languageText, meetingPoint) => {
             if (!reservationModal) return;
+
+            const matchedTour = matchTourByName(tourName);
+
             const userRole = localStorage.getItem('userRole');
             const userEmail = localStorage.getItem('userEmail');
             const userName = localStorage.getItem('userName');
@@ -3483,19 +5330,35 @@
                 ? window.getCurrentLanguage()
                 : (document.documentElement.lang || 'pt').slice(0, 2);
             const ui = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
+            const isWhatsAppTour = (matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp';
 
-            if (!userRole || !userEmail) {
+            // Reserva por WhatsApp não passa pelo banco de dados do site (é só uma
+            // mensagem pronta pro guia), então não exige login — igual já era antes.
+            if (!isWhatsAppTour && (!userRole || !userEmail)) {
                 showGlobalNotification(ui.reservation_login_required || 'É necessário realizar login para fazer uma reserva.', 'error');
                 return;
             }
 
             reservationTour.value = tourName;
+            if (reservationTourDisplay) reservationTourDisplay.textContent = tourName;
             reservationName.value = userName || '';
             reservationDate.value = '';
+            if (calendarDisplay) calendarDisplay.querySelector('.res-date-display-text').textContent = formatDateDisplay('');
             reservationQuantity.value = 1;
             reservationPhone.value = userPhone || '';
             reservationEmail.value = userEmail || '';
             selectedMeetingPoint = (meetingPoint || '').trim();
+
+            // Botão "Confirmar Reserva" avisa visualmente que essa reserva vai
+            // para o WhatsApp em vez de ser salva no site: ícone e texto mudam.
+            if (reservationSubmitIcon) {
+                reservationSubmitIcon.className = isWhatsAppTour ? 'fab fa-whatsapp' : 'fas fa-check-circle';
+            }
+            if (reservationSubmitLabel) {
+                reservationSubmitLabel.textContent = isWhatsAppTour
+                    ? (ui.reservation_confirm_whatsapp_btn || 'Enviar Reserva pelo WhatsApp')
+                    : (ui.reservation_confirm_btn || 'Confirmar Reserva');
+            }
 
             const strings = window.uiTranslations?.[window.getCurrentLang?.() || (document.documentElement.lang || 'pt').slice(0, 2)] || window.uiTranslations?.pt || {};
             const langs = (languageText || '').split(/[,;]+|\s+e\s+/i)
@@ -3523,10 +5386,20 @@
                 }
             }
 
+            activeReservationTour = matchedTour || null;
+            updateReservationTimeForSelectedDate();
+
             reservationModal.classList.remove('hidden');
         };
 
-        document.querySelectorAll('.rio-btn-reserve').forEach(button => {
+        // Extraída como função nomeada (em vez de só um forEach inline) porque
+        // cards de tour criados dinamicamente (ver "+ Adicionar Tour" no admin,
+        // window.__bindRioReserveButton em carregarToursDoBanco) precisam do
+        // mesmo binding — o forEach abaixo só alcança os botões que já existem
+        // no HTML estático no momento em que a página carrega.
+        const bindReserveButton = (button) => {
+            if (!button || button.dataset.reserveBound === 'true') return;
+            button.dataset.reserveBound = 'true';
             button.addEventListener('click', (event) => {
                 if (button.classList.contains('disabled') || button.getAttribute('aria-disabled') === 'true') {
                     event.preventDefault();
@@ -3535,12 +5408,29 @@
                 event.preventDefault();
                 const card = button.closest('.rio-tour-card');
                 const tourName = card?.querySelector('.rio-tour-name')?.textContent?.trim() || '';
-                const languageText = card?.querySelector('.fa-language')?.parentElement?.textContent?.replace(/\s*Idiomas?:\s*/i, '').trim() || '';
-                const meetingTextRaw = card?.querySelector('.fa-map-marker-alt')?.parentElement?.textContent?.trim() || '';
+                // Lê o valor pelo .rio-tour-detail-value (e pelo texto original
+                // guardado em dataset.fullText quando a linha foi truncada em 3
+                // linhas), nunca pelo textContent da linha inteira: esse último
+                // engloba o botão "Ler mais", que acabava virando parte do nome
+                // do idioma na lista do modal ("EspanholLer mais").
+                const readDetail = (iconClass, labelRegex) => {
+                    const icon = card?.querySelector(iconClass);
+                    const line = icon?.closest('.rio-tour-detail-line') || icon?.parentElement;
+                    if (!line) return '';
+                    const valueEl = line.querySelector('.rio-tour-detail-value');
+                    const raw = valueEl
+                        ? (valueEl.dataset.fullText ?? valueEl.textContent ?? '')
+                        : (line.textContent ?? '');
+                    return raw.replace(labelRegex, '').replace(/…\s*$/, '').trim();
+                };
+                const languageText = readDetail('.fa-language', /\s*Idiomas?:\s*/i);
+                const meetingTextRaw = readDetail('.fa-map-marker-alt', /^$/);
                 const meetingText = meetingTextRaw.replace(/^\s*(Encontro|Meeting|Rendez-vous|Encuentro|Incontro|集合)\s*:\s*/i, '').trim();
                 openReservationModal(tourName, languageText, meetingText);
             });
-        });
+        };
+        document.querySelectorAll('.rio-btn-reserve').forEach(bindReserveButton);
+        window.__bindRioReserveButton = bindReserveButton;
 
         if (reservationCancel) {
             reservationCancel.addEventListener('click', (event) => {
@@ -3566,7 +5456,12 @@
                 const tour = reservationTour.value.trim();
                 const clientName = reservationName.value.trim();
                 const date = reservationDate.value;
-                const quantity = Number(reservationQuantity.value) || 1;
+                // Math.max(1, ...) porque o formulário agora usa novalidate (o campo de
+                // data fica escondido — substituído pelo calendário customizado — e o
+                // navegador tentava focar esse required invisível e travava o envio sem
+                // avisar ninguém); sem a checagem nativa min="1" desativada junto, um
+                // valor negativo digitado à mão passaria direto.
+                const quantity = Math.max(1, Number(reservationQuantity.value) || 1);
                 const language = reservationLanguage.value;
                 const phone = reservationPhone.value.trim();
                 const email = reservationEmail.value.trim();
@@ -3578,22 +5473,47 @@
                 if (!navigator.onLine) {
                     showGlobalNotification(ui.connectivity_error_body_offline || 'Sem conexão com a internet. Verifique sua rede e tente novamente.', 'error', {
                         titleText: ui.connectivity_error_title || 'Erro de conexão',
-                        gifUrl: 'imagem/assets/erro.gif'
+                        gifUrl: '/imagem/assets/erro.gif'
                     });
                     return;
                 }
 
                 const guideName = 'N/S';
-                const modality = 'privado';
+                // Modalidade vem do cadastro do tour (Privado/Free); nunca fica visível/editável
+                // no formulário do cliente. O backend também valida isso de forma independente.
+                // Reusa o mesmo tour já resolvido quando o modal foi aberto (activeReservationTour)
+                // em vez de procurar de novo — evita qualquer divergência entre o que decidiu
+                // mostrar o botão do WhatsApp e o que decide pra onde a reserva vai.
+                const matchedTour = (activeReservationTour && normalizeTourKey(activeReservationTour.name || activeReservationTour.nome_tour) === normalizeTourKey(tour))
+                    ? activeReservationTour
+                    : getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tour));
+                const modality = (matchedTour?.modalidade || 'free').toLowerCase();
+                const horariosDisponiveis = horariosParaData(matchedTour, date);
+                const selectedTime = reservationTime ? reservationTime.value : '';
 
                 if (!tour || !clientName || !date || !quantity || !language || !phone || !email) {
-                    showGlobalNotification('Preencha todos os campos obrigatÃ³rios para concluir a reserva.', 'error');
+                    showGlobalNotification('Preencha todos os campos obrigatórios para concluir a reserva.', 'error');
+                    return;
+                }
+
+                if (parseHorariosPorDia(matchedTour?.horarios_por_dia) && !horariosDisponiveis.length) {
+                    showGlobalNotification('Este tour não está disponível no dia da semana escolhido. Selecione outra data.', 'error');
+                    return;
+                }
+
+                if (horariosDisponiveis.length && !selectedTime) {
+                    showGlobalNotification('Escolha um horário para a reserva.', 'error');
+                    return;
+                }
+
+                if (horariosDisponiveis.length && selectedTime && !horariosDisponiveis.includes(selectedTime)) {
+                    showGlobalNotification('O horário selecionado não está mais disponível para essa data. Escolha novamente.', 'error');
                     return;
                 }
 
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(email)) {
-                    showGlobalNotification('Por favor, insira um email vÃ¡lido.', 'error');
+                    showGlobalNotification('Por favor, insira um email válido.', 'error');
                     return;
                 }
 
@@ -3604,17 +5524,58 @@
 
                 const phoneRegex = /^[0-9()+\-\s]+$/;
                 if (!phoneRegex.test(phone)) {
-                    showGlobalNotification('O campo celular sÃ³ permite nÃºmeros, +, -, ( ) e espaÃ§os.', 'error');
+                    showGlobalNotification('O campo celular só permite números, +, -, ( ) e espaços.', 'error');
                     return;
                 }
 
-                // Formato required para backend: data e hora em campos separados
-                const defaultTime = '12:00';
+                // Formato required para backend: data e hora em campos separados.
+                // Tours sem horários cadastrados mantêm o comportamento anterior (12:00 fixo).
+                const finalTime = horariosDisponiveis.length ? selectedTime : '12:00';
+
+                // Tours com canal_reserva="whatsapp" não vão para o banco do site: o
+                // cliente preenche o mesmo formulário, mas "Concluir Reserva" monta uma
+                // mensagem com todos os dados e abre o WhatsApp do guia, sem passar pela API.
+                if ((matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp') {
+                    const [wYyyy, wMm, wDd] = date.split('-');
+                    const whatsFormattedDate = (wDd && wMm && wYyyy) ? `${wDd}/${wMm}/${wYyyy}` : date;
+                    const whatsPhone = window.__cidadeContatoPhone || '5521970018590';
+                    const whatsTourUrl = matchedTour?.id != null
+                        ? `${window.API_BASE_URL || 'https://api-tour.exksvol.com'}/compartilhar/tour/${matchedTour.id}`
+                        : '';
+                    const whatsMensagem = [
+                        'Olá! Gostaria de confirmar uma reserva:',
+                        `Tour: ${tour}`,
+                        whatsTourUrl ? `Link do tour: ${whatsTourUrl}` : null,
+                        `Nome: ${clientName}`,
+                        `Data: ${whatsFormattedDate}`,
+                        `Hora: ${finalTime}`,
+                        `Pessoas: ${quantity}`,
+                        `Idioma: ${language}`,
+                        `Celular: ${phone}`,
+                        `Email: ${email}`
+                    ].filter(Boolean).join('\n');
+                    // Registra no painel antes de sair para o WhatsApp (ver
+                    // window.registrarReservaWhatsApp: sai sem await, para o
+                    // window.open abaixo continuar valendo como clique).
+                    window.registrarReservaWhatsApp({
+                        tour,
+                        data: date,
+                        hora: finalTime,
+                        idioma: language,
+                        quantas_pessoas: quantity,
+                        nome: clientName,
+                        celular: phone,
+                        email
+                    });
+                    window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
+                    closeReservationModal();
+                    return;
+                }
 
                 const payload = {
                     tour,
                     data: date,
-                    hora: defaultTime,
+                    hora: finalTime,
                     idioma: language,
                     modalidade: modality,
                     guia: guideName,
@@ -3660,7 +5621,7 @@
                         const ui = window.uiTranslations?.[currentLang] || window.uiTranslations?.pt || {};
                         const safeMeetingPoint = escapeHtml(selectedMeetingPoint || 'Conforme descrição do tour');
                         const safeDate = escapeHtml(formattedDate);
-                        const safeTime = escapeHtml(defaultTime);
+                        const safeTime = escapeHtml(finalTime);
                         const detailsHtml = `
                             <ul class="app-notification__summary">
                                 <li><strong>${ui.booking_success_detail_date || 'Data:'}</strong> ${safeDate}</li>
@@ -3672,7 +5633,7 @@
 
                         showGlobalNotification(ui.booking_success_title || 'Reserva concluída com sucesso.', 'success', {
                             titleText: '',
-                            gifUrl: 'imagem/assets/certo.mp4',
+                            gifUrl: '/imagem/assets/certo.mp4',
                             detailsHtml
                         });
                         closeReservationModal();
@@ -3717,7 +5678,7 @@
 
         emailLink.addEventListener('click', async () => {
             if (!navigator.clipboard || typeof window.showAppNotification !== 'function') return;
-            const email = 'riobyfoottour@gmail.com';
+            const email = (emailLink.getAttribute('href') || '').replace(/^mailto:/, '').split('?')[0] || 'riobyfoottour@gmail.com';
             const currentLang = typeof window.getCurrentLanguage === 'function'
                 ? window.getCurrentLanguage()
                 : (document.documentElement.lang || 'pt').slice(0, 2);
@@ -3761,9 +5722,62 @@
         initFooterInfo();
         initFooterEmailCopy();
 
+        // Rio nunca teve o aviso "Informações Importantes" (só Salvador/São Luís/
+        // Lençóis tinham); a seção existe agora no HTML mas começa oculta
+        // (display:none) e só é revelada por loadCidadeAviso() se o admin ativar.
+        const noticeDismissKey = `rioNoticeDismissed:${window.location.pathname}`;
+        const noticeEl = document.querySelector('.rio-notice');
+        const noticeProceedBtn = document.querySelector('.rio-notice .btn-proceed');
+        const noticeDontShowBtn = document.querySelector('.rio-notice .btn-dont-show');
+        if (noticeProceedBtn) {
+            noticeProceedBtn.addEventListener('click', () => {
+                if (noticeEl) noticeEl.style.display = 'none';
+                window.__showAwardCard?.();
+            });
+        }
+        if (noticeDontShowBtn) {
+            noticeDontShowBtn.addEventListener('click', () => {
+                localStorage.setItem(noticeDismissKey, '1');
+                if (noticeEl) noticeEl.style.display = 'none';
+                window.__showAwardCard?.();
+            });
+        }
+
+        // Se o aviso não existir ou já estiver escondido (caso mais comum no
+        // Rio — ver comentário acima), dispara o card de premiação direto;
+        // senão, os handlers de Prosseguir/Não mostrar novamente acima cuidam
+        // disso quando o usuário fechar o aviso. Pequeno atraso extra porque
+        // window.__showAwardCard só existe depois do fetch assíncrono em
+        // initAwardToast() resolver.
+        const isNoticeVisible = () => {
+            if (!noticeEl) return false;
+            if (noticeEl.style.display === 'none') return false;
+            return getComputedStyle(noticeEl).display !== 'none';
+        };
+        if (!isNoticeVisible()) {
+            setTimeout(() => window.__showAwardCard?.(), 700);
+        }
+
+        // Link direto pra um tour (?tour=<id>): rola até o card assim que ele
+        // existir no DOM — os cards só ganham data-tour-id depois que
+        // carregarToursDoBanco() casa cada um com seu registro do banco (ver
+        // matchRioTourForCard/createRioTourCardElement), por isso isso só
+        // roda DEPOIS daquela chamada, não no load da página.
+        const scrollToDirectLinkTourIfNeeded = () => {
+            if (!window.__tourDirectLinkId) return;
+            const card = document.querySelector(`.rio-tour-card[data-tour-id="${window.__tourDirectLinkId}"]`);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.add('rio-tour-card--highlight');
+            setTimeout(() => card.classList.remove('rio-tour-card--highlight'), 2600);
+        };
+
         const initializePageContent = async () => {
             try {
                 await window.carregarToursDoBanco();
+                openReviewFromUrlIfNeeded();
+                checkPendingTourReviewPrompt();
+                scrollToDirectLinkTourIfNeeded();
             } catch {
                 if (typeof syncToursFromIndex === 'function') {
                     syncToursFromIndex();
@@ -3774,7 +5788,222 @@
         };
 
         initializePageContent();
+        if (!document.body.classList.contains('gerenciamento-page')) {
+            loadCidadeContato();
+            loadCidadeAviso();
+            loadPaginaSecao().then(() => {
+                if (typeof window.__refreshFooterCardDefault === 'function') {
+                    window.__refreshFooterCardDefault();
+                }
+            });
+        }
     });
+
+    // Telefone (WhatsApp) e email de contato são editáveis por cidade em
+    // Gerenciamento > Gerenciamento da página > Contato por Cidade. Substitui,
+    // na página atual, os links de WhatsApp/email que ainda apontam para o
+    // valor padrão hardcoded pelo valor configurado para a cidade desta página.
+    const applyCidadeContato = (contato) => {
+        if (!contato) return;
+        const telefone = (contato.telefone || '').replace(/\D/g, '');
+        const email = (contato.email || '').trim();
+
+        if (telefone) {
+            document.querySelectorAll('a[href*="wa.me/"]').forEach((a) => {
+                a.setAttribute('href', a.getAttribute('href').replace(/wa\.me\/\d+/, `wa.me/${telefone}`));
+            });
+            document.querySelectorAll('a[href*="api.whatsapp.com/send"]').forEach((a) => {
+                a.setAttribute('href', a.getAttribute('href').replace(/phone=\d+/, `phone=${telefone}`));
+            });
+            window.__cidadeContatoPhone = telefone;
+        }
+
+        if (email) {
+            const previousEmail = window.__cidadeContatoEmail || 'riobyfoottour@gmail.com';
+            document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+                const href = a.getAttribute('href');
+                const currentEmail = href.slice(7).split('?')[0];
+                if (currentEmail.toLowerCase() !== previousEmail.toLowerCase()) return;
+                a.setAttribute('href', `mailto:${email}`);
+                if (a.textContent.trim().toLowerCase() === currentEmail.toLowerCase()) {
+                    a.textContent = email;
+                }
+            });
+            window.__cidadeContatoEmail = email;
+        }
+
+        const youtube = (contato.youtube || '').trim();
+        if (youtube) {
+            document.querySelectorAll('a[data-social="youtube"], a[href*="youtube.com"]').forEach((a) => {
+                a.setAttribute('href', youtube);
+            });
+            window.__cidadeContatoYoutube = youtube;
+        }
+    };
+    window.applyCidadeContato = (cidade, contato) => applyCidadeContato(contato);
+
+    const loadCidadeContato = async () => {
+        const cidade = 'Rio de Janeiro';
+        const apiBase = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+        const endpoints = [
+            `${apiBase}/get_cidade_contato`,
+            'http://127.0.0.1:5000/get_cidade_contato',
+            'https://api.exksvol.com/get_cidade_contato'
+        ];
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) continue;
+                const lista = await response.json();
+                if (!Array.isArray(lista)) continue;
+                const contato = lista.find((item) => item && item.cidade === cidade);
+                if (contato) applyCidadeContato(contato);
+                return;
+            } catch (error) {
+                console.warn('Falha ao carregar contato da cidade em', endpoint, error);
+            }
+        }
+    };
+
+    // Aviso "Informações Importantes" editável por cidade em Gerenciamento >
+    // Gerenciamento da página > Aviso "Informações Importantes". Permite
+    // customizar título/texto ou ocultar o aviso por completo.
+    const applyCidadeAviso = (aviso) => {
+        const noticeEl = document.querySelector('.rio-notice');
+        if (!noticeEl || !aviso) return;
+
+        // Link direto pra um tour: some com o aviso e nem tenta acionar o
+        // card de premiação (initAwardToast já nem define essa função nesse
+        // caso, mas o early return aqui deixa a intenção clara).
+        if (window.__tourDirectLinkId) {
+            noticeEl.style.display = 'none';
+            return;
+        }
+
+        if (aviso.ativo === false) {
+            noticeEl.style.display = 'none';
+            window.__showAwardCard?.();
+            return;
+        }
+
+        const noticeDismissKey = `rioNoticeDismissed:${window.location.pathname}`;
+        if (localStorage.getItem(noticeDismissKey) === '1') return;
+
+        // Cacheado para poder reaplicar (com a tradução certa) quando o
+        // idioma da página trocar, sem precisar buscar de novo na API.
+        window.__cidadeAvisoData = aviso;
+
+        // O admin só digita em português; nos outros idiomas usamos a
+        // tradução automática cacheada em aviso.traducoes[lang] (ver app.py).
+        const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
+        const traducao = lang !== 'pt' ? aviso.traducoes?.[lang] : null;
+        const titulo = (traducao && traducao.titulo) || aviso.titulo;
+        const texto = (traducao && typeof traducao.texto === 'string') ? traducao.texto : aviso.texto;
+
+        const titleEl = noticeEl.querySelector('.rio-notice-title');
+        if (titleEl && titulo) titleEl.textContent = titulo;
+
+        const textContainer = noticeEl.querySelector('.rio-notice-text');
+        const actions = noticeEl.querySelector('.rio-notice-actions');
+        if (textContainer && typeof texto === 'string') {
+            const linhas = texto.split('\n').map((l) => l.trim()).filter(Boolean);
+            if (linhas.length) {
+                textContainer.querySelectorAll('p').forEach((p) => p.remove());
+                linhas.forEach((linha) => {
+                    const p = document.createElement('p');
+                    const icon = document.createElement('i');
+                    icon.className = 'fa fa-circle-info';
+                    p.appendChild(icon);
+                    p.appendChild(document.createTextNode(` ${linha}`));
+                    textContainer.insertBefore(p, actions);
+                });
+            }
+        }
+
+        // Marca no window (não numa variável local) porque este arquivo tem
+        // duas IIFEs sem escopo compartilhado: applyPageLanguage está numa e
+        // applyCidadeAviso está na outra.
+        window.__cidadeAvisoCarregado = true;
+        noticeEl.style.display = '';
+    };
+    window.applyCidadeAviso = (cidade, aviso) => applyCidadeAviso(aviso);
+
+    // Preenchido por js/preload-paineis.js quando o cliente passa pela home
+    // antes de entrar no Rio — aplica na hora, sem esperar a API, e só
+    // revalida em segundo plano (o fetch abaixo roda igual, sempre).
+    const AVISO_CACHE_KEY = 'cidadeAvisoCache';
+    const getCachedAvisoLista = () => {
+        try {
+            const raw = localStorage.getItem(AVISO_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed?.dados) ? parsed.dados : null;
+        } catch (_e) {
+            return null;
+        }
+    };
+
+    const loadCidadeAviso = async () => {
+        const cidade = 'Rio de Janeiro';
+        const apiBase = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+
+        const cachedLista = getCachedAvisoLista();
+        if (cachedLista) {
+            const cachedAviso = cachedLista.find((item) => item && item.cidade === cidade);
+            if (cachedAviso) applyCidadeAviso(cachedAviso);
+        }
+
+        const endpoints = [
+            `${apiBase}/get_cidade_aviso`,
+            'http://127.0.0.1:5000/get_cidade_aviso',
+            'https://api.exksvol.com/get_cidade_aviso'
+        ];
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) continue;
+                const lista = await response.json();
+                if (!Array.isArray(lista)) continue;
+                try {
+                    localStorage.setItem(AVISO_CACHE_KEY, JSON.stringify({ ts: Date.now(), dados: lista }));
+                } catch (_e) {}
+                const aviso = lista.find((item) => item && item.cidade === cidade);
+                if (aviso) applyCidadeAviso(aviso);
+                return;
+            } catch (error) {
+                console.warn('Falha ao carregar aviso da cidade em', endpoint, error);
+            }
+        }
+    };
+
+    // Título/texto de SOBRE, CONTATO e AJUDA editáveis por página em
+    // Gerenciamento > Gerenciamento da página > Textos SOBRE/CONTATO/AJUDA.
+    // Popula window.__paginaSecaoOverrides, consultado por updateFooterInfo()
+    // sempre que o card de informações do rodapé é preenchido.
+    const loadPaginaSecao = async () => {
+        const pagina = 'Rio de Janeiro';
+        const apiBase = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+        const endpoints = [
+            `${apiBase}/get_pagina_secao?pagina=${encodeURIComponent(pagina)}`,
+            `http://127.0.0.1:5000/get_pagina_secao?pagina=${encodeURIComponent(pagina)}`,
+            `https://api.exksvol.com/get_pagina_secao?pagina=${encodeURIComponent(pagina)}`
+        ];
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint);
+                if (!response.ok) continue;
+                const lista = await response.json();
+                if (!Array.isArray(lista)) continue;
+                window.__paginaSecaoOverrides = lista.reduce((acc, item) => {
+                    if (item && item.secao) acc[item.secao] = item;
+                    return acc;
+                }, {});
+                return;
+            } catch (error) {
+                console.warn('Falha ao carregar textos da página em', endpoint, error);
+            }
+        }
+    };
 })();
 
 

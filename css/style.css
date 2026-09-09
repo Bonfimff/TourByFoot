@@ -8,19 +8,40 @@
 }
 
 :root {
-    --primary-gradient: linear-gradient(120deg, #7ecab7 0%, #c8f8f3 100%);
+    --primary-gradient: linear-gradient(120deg, #7ecab780 0%, #095c54 100%);
     --font-main: 'Montserrat', sans-serif;
-    --green-dark: #0d5548;
-    --green-main: #1da194;
-    --green-light: #7fe9e2;
+    --green-dark: #0d554859;
+    --green-main: #1da1948e;
+    --green-light: #3ac4bb2c;
 }
 
 body {
     font-family: var(--font-main);
-    background: url("../imagem/Papel-de-fundo.png") center center / cover no-repeat fixed;
     min-height: 100vh;
     display: flex;
-    color: #fff;
+    color: #ffffff;
+}
+
+/* Fundo em pseudo-elemento fixed dedicado (em vez de background-attachment:fixed
+   no body): no Android, quando a barra de navegação some/aparece durante a
+   rolagem, o viewport recalcula e um background-attachment:fixed comum "pula" e
+   revela uma faixa em branco. Usar height:100dvh (viewport dinâmico) faz o
+   pseudo-elemento acompanhar essa transição suavemente, sem o salto. O
+   height:100% acima serve de fallback para navegadores sem suporte a dvh. */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    z-index: -2;
+    /* WebP, e nao o PNG de mesmo nome: a versao PNG tem 2,4 MB e era 68% do
+       peso de cada página de cidade. Mesma imagem, 285 KB. O PNG continua no
+       repositório porque Gerenciamento.css ainda o usa. */
+    background: url("../imagem/Rio de Janeiro/assets/fundo-rj.webp") center center / cover no-repeat;
+    pointer-events: none;
 }
 
 /* ===================================================== */
@@ -30,17 +51,30 @@ body {
     position: relative;
     isolation: isolate;
     background:
-        url("../imagem/Papel-de-fundo.png") center center / cover no-repeat fixed,
         radial-gradient(1200px 600px at 80% 10%, rgba(255,255,255,0.08), transparent 60%),
         radial-gradient(900px 500px at 20% 80%, rgba(255,255,255,0.06), transparent 55%),
         radial-gradient(800px 600px at 100% 100%, rgba(255,255,255,0.22), transparent 60%),
-        linear-gradient(120deg, rgba(13,85,72,0.85) 0%, rgba(33,175,156,0.75) 55%, rgba(127,233,226,0.7) 100%);
-    background-blend-mode: normal, screen, screen, screen, normal;
+        linear-gradient(120deg, rgba(2, 61, 49, 0.884) 0%, rgba(20, 139, 123, 0.774) 55%, rgba(12, 160, 150, 0.788) 100%);
+    background-blend-mode: screen, screen, screen, normal;
     width: 100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+}
+
+/* Mesma correção do body::before, aplicada à imagem de fundo do painel central. */
+.main-container::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    z-index: -2;
+    background: url("../imagem/Rio de Janeiro/assets/fundo-rj.webp") center center / cover no-repeat;
+    pointer-events: none;
 }
 
 .main-container::before {
@@ -50,7 +84,7 @@ body {
     pointer-events: none;
     z-index: 0;
     background: linear-gradient(135deg, rgba(6, 54, 45, 0.22) 0%, rgba(255, 255, 255, 0.14) 100%);
-    -webkit-backdrop-filter: blur(1.7px); 
+    -webkit-backdrop-filter: blur(1.7px);
     backdrop-filter: blur(1.7px);
 }
 
@@ -62,6 +96,14 @@ body {
 /* ===================================================== */
 /* HEADER                                                */
 /* ===================================================== */
+/* Precisa vencer ".main-container > *" (z-index:1, mais específica que o
+   z-index:100 daqui embaixo por causa da classe): sem isso, "main" (que vem
+   depois no HTML) desenha por cima do dropdown de idioma, que fica atrás do
+   texto da hero. */
+.main-container > header {
+    z-index: 2;
+}
+
 header {
     display: flex;
     flex-wrap: nowrap;
@@ -228,6 +270,85 @@ nav a.active {
 .btn-signup:hover {
     background: var(--green-main);
     color: white;
+}
+
+/* ─── Menu de perfil (login vira foto do usuário) ────────────────────────── */
+
+.profile-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-btn {
+    border: none;
+    background: transparent;
+    color: var(--green-main);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.profile-btn i {
+    font-size: 1.6rem;
+    color: var(--green-main);
+    line-height: 1;
+}
+
+.profile-btn-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-btn:hover {
+    opacity: 0.8;
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.15);
+    padding: 0.6rem 0;
+    min-width: 180px;
+    z-index: 200;
+}
+
+.profile-menu.open .profile-dropdown {
+    display: block;
+}
+
+.profile-item {
+    display: block;
+    padding: 0.65rem 1rem;
+    color: #0b3c6d !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.profile-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.profile-user-info {
+    color: #0b3c6d;
 }
 
 /* ===================================================== */
@@ -464,10 +585,32 @@ main {
 }
 
 /* Imagens de cada cidade */
-.city-thumb-rio { background-image: url('../imagem/RiodeJaneiro.jpeg'); }
-.city-thumb-salvador { background-image: url('../imagem/Salvador.jpeg'); }
-.city-thumb-saoluis { background-image: url('../imagem/SaoLuis.jpeg'); }
-.city-thumb-lencois { background-image: url('../imagem/Lencois.jpeg'); }
+/* As miniaturas de cidade viraram <img> reais (antes eram background-image em
+   <span>) para terem ALT e aparecerem na busca por imagens. object-fit:cover
+   reproduz exatamente o recorte que background-size:cover fazia — o resultado
+   renderizado e identico ao anterior. As classes .city-thumb-* continuam
+   existindo como fallback visual caso a imagem falhe ao carregar. */
+img.city-thumb {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Dentro de #inicio o thumb e posicionado com "position:absolute; inset:0;
+   width:auto; height:auto" — regra escrita para o <span> com background-image,
+   onde inset:0 ja definia o tamanho. Um <img> e elemento substituido: com
+   width/height auto ele ignora o inset e desenha no tamanho intrinseco da foto
+   (564px dentro de um card de 167px), sendo cortado pelo overflow do cartao.
+   Voltar width/height para 100% devolve exatamente o enquadramento anterior. */
+#inicio img.city-thumb {
+    width: 100%;
+    height: 100%;
+}
+
+.city-thumb-rio { background-image: url('../imagem/assets/RiodeJaneiro.jpeg'); background-position: center top; }
+.city-thumb-salvador { background-image: url('../imagem/assets/Salvador.jpeg'); }
+.city-thumb-saoluis { background-image: url('../imagem/assets/SaoLuis.jpeg'); }
+.city-thumb-lencois { background-image: url('../imagem/assets/Lencois.jpeg'); }
 
 /* ===================================================== */
 /* SELETOR DE IDIOMA                                     */
@@ -625,7 +768,10 @@ main {
     bottom: 1rem;
     display: none;
     pointer-events: none;
-    z-index: 2000;
+    /* Sempre atrás do aviso "Informações Importantes" (.rio-notice,
+       z-index:1000) — mesmo que os dois fiquem visíveis ao mesmo tempo por
+       algum motivo, o aviso tem prioridade. */
+    z-index: 900;
     width: min(420px, calc(100vw - 2rem));
 }
 
@@ -637,61 +783,145 @@ main {
     position: relative;
     pointer-events: auto;
     width: 100%;
-    background: rgba(8, 56, 47, 0.55);
-    color: #f7f3e5;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-radius: 16px;
-    border: 1px solid rgba(247, 243, 229, 0.38);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
-    padding: 1.1rem;
+    background: #0c352d;
+    color: #f5f2e9;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
     animation: awardToastIn 0.4s ease-out;
-    cursor: pointer;
+    overflow: hidden;
 }
 
-.award-modal__close {
-    position: absolute;
-    right: 0.7rem;
-    top: 0.4rem;
-    background: transparent;
-    border: none;
-    font-size: 1.7rem;
-    color: rgba(200, 200, 200, 0.6);
-    cursor: pointer;
+.award-modal__header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.award-modal__badge-icon {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #f6df99;
+    color: #f6df99;
+    font-size: 1.05rem;
 }
 
 .award-modal__title {
-    margin-right: 1.8rem;
-    margin-bottom: 0.8rem;
-    font-size: 1.1rem;
+    flex: 1;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #f5f2e9;
+    letter-spacing: 0.2px;
+}
+
+.award-modal__close {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: rgba(245, 242, 233, 0.85);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.award-modal__close:hover {
+    background: rgba(255, 255, 255, 0.16);
     color: #f6df99;
 }
 
 .hs-modal__body {
     display: grid;
-    grid-template-columns: 92px 1fr;
-    gap: 0.9rem;
+    grid-template-columns: 92px 1px 1fr;
+    gap: 1.1rem;
     align-items: center;
+    padding: 1.1rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hs-modal__leftImage img {
     width: 92px;
     height: 92px;
     border-radius: 14px;
-    object-fit: cover;
-    border: 1px solid rgba(13, 85, 72, 0.35);
+    object-fit: contain;
+}
+
+.award-modal__divider {
+    align-self: stretch;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .js-hs-description {
     line-height: 1.5;
+    font-size: 1rem;
+}
+
+.award-modal__footer {
+    display: grid;
+    grid-template-columns: 1fr 1px auto;
+    gap: 1.1rem;
+    align-items: center;
+    padding: 1rem 1.2rem;
+}
+
+.award-modal__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #ece4d3;
+    color: var(--green-dark);
+    padding: 0.85rem 1.4rem;
+    border-radius: 40px;
+    font-weight: 800;
     font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: 0.25s;
+}
+
+.award-modal__cta:hover {
+    background: #f6df99;
+    transform: translateY(-1px) scale(1.02);
+}
+
+.award-modal__cta i {
+    font-size: 0.85rem;
+}
+
+.award-modal__countdown-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    color: rgba(245, 242, 233, 0.85);
+}
+
+.award-modal__countdown-wrap i {
+    color: #4fd1a5;
+    font-size: 1rem;
 }
 
 .award-modal__countdown {
-    margin-top: 0.7rem;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     letter-spacing: 0.2px;
-    color: rgba(247, 243, 229, 0.85);
 }
 
 @keyframes awardToastIn {
@@ -705,6 +935,9 @@ main {
     }
 }
 
+/* Em telas grandes sobra espaço ao redor do card (ele fica isolado no canto
+   da página) — deixamos ele um pouco maior e com mais presença/acabamento
+   em vez de usar o mesmo tamanho compacto do mobile. */
 /* Hero title animation */
 @keyframes heroIntro {
     from {
@@ -739,6 +972,53 @@ main {
 /* MEDIA QUERIES                                         */
 /* ===================================================== */
 
+/* ---------- TELAS MUITO GRANDES >= 1600px --------------
+   Sem isso, o main (hero-text + cápsulas) ficava grudado à
+   esquerda com "justify-content:flex-start", deixando uma
+   faixa vazia enorme do lado direito em monitores grandes/4K,
+   e as cápsulas mantinham tamanho fixo (pequenas e "perdidas"
+   num viewport muito maior). Aqui o bloco é centralizado com
+   largura máxima e as cápsulas crescem de forma proporcional
+   (clamp com vw) até um teto, mantendo a proporção do formato
+   "cápsula".                                              */
+@media (min-width: 1600px) {
+    main {
+        width: 100%;
+        max-width: 1800px;
+        margin: 0 auto;
+        justify-content: space-between;
+    }
+
+    .hero-images {
+        --capsule-w: clamp(110px, 6vw, 170px);
+        margin-left: 0;
+    }
+
+    .capsule {
+        width: var(--capsule-w);
+    }
+
+    .capsule-video {
+        width: calc(var(--capsule-w) * 3 + 1.2rem * 2);
+        height: clamp(500px, 27vw, 770px);
+    }
+
+    .capsule-center .capsule-video { left: calc(-1 * (var(--capsule-w) + 1.2rem)); }
+    .capsule-right .capsule-video  { left: calc(-2 * (var(--capsule-w) + 1.2rem)); }
+
+    .capsule-left {
+        height: clamp(320px, 17.5vw, 495px);
+    }
+
+    .capsule-center {
+        height: clamp(500px, 27vw, 770px);
+    }
+
+    .capsule-right {
+        height: clamp(340px, 18.5vw, 525px);
+    }
+}
+
 /* ---------- DESKTOP MEDIO < 1200px -------------------- */
 @media (max-width: 1200px) {
     header {
@@ -771,11 +1051,13 @@ main {
         height: auto;
     }
 
+    /* Cápsulas de vídeo são puramente decorativas e, abaixo de 1200px,
+       não cabem ao lado do texto — sobrariam empurradas para depois de
+       todo o conteúdo real (cidades, ícones), ocupando espaço valioso
+       de rolagem à toa. Removidas para priorizar o conteúdo em telas
+       menores e evitar carregar 3 vídeos à toa em conexões móveis. */
     .hero-images {
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-        padding-right: 0;
+        display: none;
     }
 
     .site-sections {
@@ -786,8 +1068,102 @@ main {
 
 /* ---------- TABLET < 900px ----------------------------- */
 @media (max-width: 900px) {
+    /* Abaixo de 900px as cápsulas de vídeo somem e o conteúdo vira só o
+       bloco .hero-text — aqui ele precisa caber inteiro na tela (título +
+       subtítulo + botão + grade de cidades + ícones sociais) sem depender
+       de rolagem para ver a quarta cidade. Trocamos min-height por height
+       fixo (100dvh) com overflow-y:auto como rede de segurança (idiomas
+       muito longos, fonte do usuário aumentada etc. ainda conseguem
+       rolar), mas os espaçamentos abaixo usam clamp() com unidades dvh
+       para encolher automaticamente e evitar a rolagem no caso comum. */
+    /* :not(.rio-page) — essa regra é só para a home (grade de cidades). Nas
+       páginas de cidade (Salvador/São Luís/Lençóis, que também carregam este
+       arquivo) ela prendia .main-container numa altura fixa com scroll
+       interno, e como o .rio-hero dessas páginas já assume um
+       min-height:0 próprio (pensado pra um container que cresce livre com o
+       conteúdo), o flex-shrink zerava a altura do hero por completo. */
+    .main-container:not(.rio-page) {
+        height: 100dvh;
+        min-height: 100dvh;
+        overflow-y: auto;
+    }
+
+    main {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+
+    /* "flex:1" (herdado da regra base) dá ao main uma altura DEFINIDA em
+       pixels (preenche o espaço restante depois do header e do painel
+       Sobre/Contato/Ajuda, quando visível). "height:100%" aqui faz o
+       .hero-text ocupar exatamente essa altura — "align-items:stretch" no
+       main teoricamente faria o mesmo, mas stretch não repassa uma altura
+       definida através de um flex row (main) aninhado num flex column
+       (.main-container) em todos os casos; height:100% resolve isso de
+       forma explícita. Sem isso, .hero-text ficava do tamanho do próprio
+       conteúdo e vazava por cima do painel Sobre/Contato/Ajuda abaixo. */
+    .hero-text {
+        gap: clamp(0.3rem, 1.2dvh, 0.5rem);
+        justify-content: center;
+        height: 100%;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    /* Quando o painel Sobre/Contato/Ajuda está aberto (infoSections visível,
+       sem a classe is-empty), o .hero-text volta ao tamanho natural em vez
+       de ser espremido na altura do main — senão a grade de cidades era
+       cortada por uma rolagem interna (ver captura de tela do usuário) só
+       para caber ao lado do painel. Deixamos a página inteira rolar
+       normalmente nesse caso: os 4 cards aparecem completos e o painel vem
+       logo abaixo do último, sem sobrepor nada. */
+    .main-container:has(#infoSections:not(.is-empty)) main {
+        flex: 0 0 auto;
+    }
+
+    .main-container:has(#infoSections:not(.is-empty)) .hero-text {
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .hero-title {
+        margin-bottom: clamp(0.3rem, 1.2dvh, 1rem);
+    }
+
+    .hero-text .subtitle {
+        margin-bottom: clamp(0.5rem, 1.6dvh, 1.5rem);
+    }
+
+    .city-title {
+        margin: clamp(0.4rem, 1.6dvh, 1.5rem) 0 clamp(0.3rem, 1dvh, 0.8rem);
+    }
+
+    .city-list {
+        gap: clamp(0.5rem, 1.4dvh, 1rem);
+    }
+
+    .city-thumb {
+        width: 90%;
+        height: clamp(90px, 18dvh, 210px);
+        margin: clamp(4px, 1dvh, 8px) auto;
+    }
+
+    .city-name {
+        padding: clamp(0.25rem, 1dvh, 0.5rem) 0.5rem clamp(0.35rem, 1.2dvh, 0.7rem);
+    }
+
+    .social-icons {
+        margin-top: clamp(0.5rem, 1.6dvh, 2rem);
+    }
+
     header {
         flex-wrap: wrap;
+        /* "space-between" espalharia hambúrguer/idioma/login em 3 espaços
+           iguais; com "flex-start" + margin-left:auto no idioma (abaixo),
+           só um respiro empurra idioma+login juntos pra direita, como
+           busca+login ficavam agrupados antes. */
+        justify-content: flex-start;
+        gap: 0.6rem;
     }
 
     .hamburger {
@@ -819,11 +1195,19 @@ main {
         border-bottom: none;
     }
 
+    /* A busca some em telas pequenas; o botão de login (único filho visível
+       que sobra) passa a participar direto do flex do header via
+       display:contents, sem precisar do wrapper .nav-right. */
+    .search-bar {
+        display: none;
+    }
+
     .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        flex-wrap: wrap;
+        display: contents;
+    }
+
+    .btn-signup,
+    .profile-menu {
         order: 2;
     }
 
@@ -831,59 +1215,38 @@ main {
         display: flex;
     }
 
+    /* Fechado: nav-left fica compacto (só o hamburger o antecede) para que
+       hamburger + busca + login caibam lado a lado, na mesma linha. */
     .nav-left {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    /* Aberto: nav-left ocupa a linha inteira para o dropdown (nav/idioma)
+       se expandir abaixo, com largura total. "order" maior que o do
+       nav-right (2) garante que o dropdown sempre desça abaixo de
+       hambúrguer/idioma/login, em vez de aparecer empurrado para cima
+       deles (ordem padrão do DOM, sem "order", colocava o nav-left antes
+       do hambúrguer no fluxo do flex). */
+    header.menu-open .nav-left {
         width: 100%;
         justify-content: space-between;
         flex-wrap: wrap;
         flex: 1 1 100%;
+        order: 3;
     }
 
+    /* No lugar da busca (escondida acima): chip compacto, igual ao
+       desktop, só que agora sempre visível na barra do cabeçalho.
+       margin-left:auto empurra idioma+login (que vem logo depois, order:2)
+       juntos pra direita, deixando só o hambúrguer solto à esquerda. */
     .lang-selector {
-        display: none;
-        order: 13;
-        width: 100%;
-        padding: 0;
-        background: none;
-        border-radius: 0;
-    }
-
-    .lang-selector .lang-btn {
-        width: 100%;
-        background: rgba(13, 85, 72, 0.95);
-        border: none;
-        border-radius: 0 0 12px 12px;
-        color: #e9dfc7;
-        padding: 0.9rem 1.2rem;
-        font-size: 1rem;
-        justify-content: flex-start;
-    }
-
-    .lang-selector .lang-list {
-        position: static;
-        background: rgba(13, 85, 72, 0.98);
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        width: 100%;
-        min-width: unset;
-    }
-
-    .lang-selector .lang-list li {
-        color: #e9dfc7;
-        padding: 0.7rem 1.2rem 0.7rem 2rem;
-    }
-
-    .lang-selector .lang-list li:hover {
-        background: rgba(194,178,128,0.2);
-    }
-
-    header.menu-open .lang-selector {
-        display: block;
+        order: 1;
+        margin-left: auto;
     }
 
     header {
         padding: 1rem 1.2rem 0;
-        gap: 0;
     }
 
     main {
@@ -905,11 +1268,6 @@ main {
         border-left: none;
         padding-left: 0;
         text-align: center;
-    }
-
-    .search-bar {
-        min-width: 120px;
-        flex: 1 1 auto;
     }
 
     .btn-signup {
@@ -936,40 +1294,6 @@ main {
         min-height: auto;
     }
 
-    .city-thumb {
-        aspect-ratio: 4 / 5;
-        height: auto;
-    }
-
-    .hero-images {
-        width: 100%;
-        justify-content: center;
-        order: 12;
-        padding-bottom: 0;
-        margin-top: 1rem;
-    }
-
-    .capsule {
-        width: 90px;
-    }
-
-    .capsule-video {
-        width: calc(90px * 3 + 1.2rem * 2);
-        height: 380px;
-    }
-
-    .capsule-center .capsule-video { left: calc(-1 * (90px + 1.2rem)); }
-    .capsule-right .capsule-video  { left: calc(-2 * (90px + 1.2rem)); }
-
-    .capsule-center {
-        height: 380px;
-    }
-
-    .capsule-left,
-    .capsule-right {
-        height: 260px;
-    }
-
     .site-sections {
         padding: 0 1.2rem 2rem;
     }
@@ -980,18 +1304,68 @@ main {
         width: min(420px, calc(100vw - 1.5rem));
     }
 
-    .award-modal__dialog {
-        padding: 1rem 0.9rem;
+    /* A ordem e o agrupamento (imagem + divisória + texto / botão + divisória
+       + contador, tudo lado a lado) se mantêm iguais em qualquer tamanho de
+       tela — só os tamanhos encolhem, nunca empilha em coluna. */
+    .award-modal__header {
+        padding: 0.85rem 0.9rem;
+        gap: 0.6rem;
+    }
+
+    .award-modal__badge-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .award-modal__title {
+        font-size: 1rem;
+    }
+
+    .award-modal__close {
+        width: 30px;
+        height: 30px;
+        font-size: 1.2rem;
     }
 
     .hs-modal__body {
-        grid-template-columns: 1fr;
-        text-align: center;
+        grid-template-columns: 64px 1px 1fr;
+        gap: 0.7rem;
+        padding: 0.85rem 0.9rem;
     }
 
-    .hs-modal__leftImage {
-        display: flex;
-        justify-content: center;
+    .hs-modal__leftImage img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .js-hs-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .award-modal__footer {
+        grid-template-columns: 1fr 1px auto;
+        gap: 0.6rem;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .award-modal__cta {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.78rem;
+        gap: 0.3rem;
+    }
+
+    .award-modal__countdown-wrap {
+        gap: 0.35rem;
+    }
+
+    .award-modal__countdown-wrap i {
+        font-size: 0.85rem;
+    }
+
+    .award-modal__countdown {
+        font-size: 0.75rem;
     }
 }
 
@@ -1032,13 +1406,17 @@ main {
     }
 
     .city-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.6rem;
     }
 
+    .city-name {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.4rem 0.6rem;
+    }
+
     .city-thumb {
-        aspect-ratio: 4 / 5;
-        height: auto;
+        margin: clamp(3px, 0.8dvh, 6px) auto;
     }
 
     .social-icons {
@@ -1052,30 +1430,6 @@ main {
         font-size: 1rem;
     }
 
-    .hero-images {
-        gap: 0.8rem;
-    }
-
-    .capsule {
-        width: 70px;
-    }
-
-    .capsule-video {
-        width: calc(70px * 3 + 0.8rem * 2);
-        height: 300px;
-    }
-
-    .capsule-center .capsule-video { left: calc(-1 * (70px + 0.8rem)); }
-    .capsule-right .capsule-video  { left: calc(-2 * (70px + 0.8rem)); }
-
-    .capsule-center {
-        height: 300px;
-    }
-
-    .capsule-left,
-    .capsule-right {
-        height: 210px;
-    }
 }
 
 /* ---------- MOBILE PEQUENO < 400px --------------------- */
@@ -1110,4 +1464,986 @@ main {
         padding: 0.6rem 1.2rem;
         font-size: 0.9rem;
     }
+}
+
+/* ─── Modal de login/cadastro (copiado das páginas de cidade) ───────────── */
+
+.register-code-group {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+    margin-bottom: 0.9rem;
+}
+
+.register-code-input {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.3rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 0.35rem;
+    background: #fff;
+    color: #333;
+}
+
+.register-code-input:focus {
+    outline: none;
+    border-color: #017cff;
+    box-shadow: 0 0 0 2px rgba(1, 124, 255, 0.2);
+}
+
+.register-code-valid {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2) !important;
+}
+
+.register-code-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+}
+
+body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
+    filter: blur(3px);
+    transition: filter 0.2s ease;
+}
+
+.login-modal-overlay,
+.register-modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1500;
+}
+
+.login-modal-overlay.open,
+.register-modal-overlay.open {
+    display: flex;
+}
+
+.login-modal {
+    width: min(420px, 92%);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 18px;
+    padding: 2rem 1.8rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    position: relative;
+}
+
+.login-modal__image {
+    width: 100%;
+    max-width: 240px;
+    display: block;
+    margin: 0 auto 1rem;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.login-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.login-modal__title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    color: #0b3c6d;
+}
+
+.login-modal__close {
+    background: transparent;
+    border: none;
+    font-size: 1.35rem;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.login-modal__form {
+    display: grid;
+    gap: 1rem;
+}
+
+.login-modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.register-step {
+    display: none;
+}
+
+.register-step.active {
+    display: block;
+}
+
+.login-modal__field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.login-modal__field input,
+.login-modal__field select {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.login-modal__field--password .login-modal__password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.login-modal__field--password input {
+    padding-left: 2.5rem;
+}
+
+.login-modal__toggle-password {
+    position: absolute;
+    top: 50%;
+    left: 0.65rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-modal__toggle-password:hover {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.login-modal__field input:focus {
+    border-color: rgba(0, 77, 140, 0.8);
+}
+
+.login-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.login-modal__resend {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.register-resend-button {
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    border: none;
+    background: rgba(11, 77, 139, 0.9);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.register-resend-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.register-resend-button:not(:disabled):hover {
+    background: rgba(11, 77, 139, 1);
+}
+
+.login-modal__actions--row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.login-modal__submit,
+.login-modal__next,
+.login-modal__back {
+    padding: 0.85rem;
+    border-radius: 999px;
+    border: none;
+    background: rgba(11, 77, 139, 0.95);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.login-modal__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-modal__submit:hover,
+.login-modal__next:hover,
+.login-modal__back:hover {
+    background: rgba(11, 77, 139, 1);
+}
+
+.login-modal__next.loading {
+    position: relative;
+    cursor: wait;
+    opacity: 0.85;
+    padding-right: 2.5rem;
+}
+
+.login-modal__next.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-top-color: transparent;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    animation: login-button-spinner 0.8s linear infinite;
+}
+
+@keyframes login-button-spinner {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+.login-modal__back {
+    background: rgba(0, 0, 0, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.login-modal__back:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.login-modal__forgot {
+    background: transparent;
+    border: none;
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    align-self: flex-start;
+}
+
+.login-modal__forgot.loading {
+    position: relative;
+    opacity: 0.75;
+    cursor: wait;
+}
+
+.login-modal__forgot.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -0.25rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 2px solid rgba(0, 0, 0, 0.35);
+    border-top-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    animation: login-button-spinner 0.8s linear infinite;
+}
+
+/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+   #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
+   (0.85rem) e precisa de contraste suficiente sobre o fundo claro do modal. */
+.login-modal__switch {
+    text-align: center;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: #1a7f37;
+}
+
+.login-modal__switch button {
+    background: none;
+    border: none;
+    color: #1a7f37;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* ─── Botão "Login" no lugar da foto (usuário deslogado) ─────────────────── */
+
+.profile-btn.profile-btn--login {
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1.2rem;
+    border-radius: 60px;
+    background: #C2B280;
+    color: #111;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px -6px rgba(0, 40, 30, 0.4);
+}
+
+.profile-btn.profile-btn--login:hover {
+    background: #b5a370;
+    opacity: 1;
+}
+
+/* ─── Modal "Minhas Reservas" ─────────────────────────────────────────────── */
+
+.my-reservations-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 2200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.my-reservations-overlay.open {
+    display: flex;
+}
+
+.my-reservations-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1.6rem 1.4rem;
+    width: min(520px, 96%);
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.my-reservations-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.7rem;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.my-reservations-close:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.my-reservations-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2d3d;
+    margin: 0 0 1rem;
+}
+
+.my-reservations-empty {
+    color: #6b7a8d;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.my-reservations-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #e6eaf0;
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
+    background: #f9fafb;
+}
+
+.my-reservations-tour {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: #1a2d40;
+}
+
+.my-reservations-date,
+.my-reservations-detail {
+    font-size: 0.88rem;
+    color: #3b5168;
+}
+
+.my-reservations-status {
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 8px;
+    width: fit-content;
+    background: #e8f0fe;
+    color: #1558b0;
+}
+
+.my-reservations-status--confirmado {
+    background: #d4edda;
+    color: #1f7a3f;
+}
+
+.my-reservations-status--pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.my-reservations-status--cancelado {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.my-reservations-actions {
+    margin-top: 0.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.my-reservations-actions button {
+    border: 1px solid #1a7a4a;
+    background: #ffffff;
+    color: #1a7a4a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.my-reservations-actions button:hover {
+    background: #1a7a4a;
+    color: #ffffff;
+}
+
+.my-reservations-actions button.btn-cancel-reservation {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.my-reservations-actions button.btn-cancel-reservation:hover {
+    background: #c0392b;
+}
+
+/* ===================================================== */
+/* TELA DE INICIO — layout de referencia                 */
+/* ===================================================== */
+/* Tudo escopado em #inicio (o .main-container da home). As paginas de
+   cidade carregam este mesmo arquivo e nao podem ser afetadas. */
+
+/* Fundo verde da referencia. A home ja zera a foto de fundo
+   (body::before / .main-container::after) por um <style> inline no
+   index.html; aqui fica so o degrade. */
+#inicio {
+    background:
+        radial-gradient(120% 70% at 50% 0%, rgba(3, 40, 35, 0.92) 0%, rgba(3, 40, 35, 0) 62%),
+        radial-gradient(90% 60% at 85% 45%, rgba(31, 168, 138, 0.38) 0%, rgba(31, 168, 138, 0) 60%),
+        linear-gradient(165deg, #0a4a40 0%, #10695a 46%, #17836d 100%);
+    background-blend-mode: normal;
+}
+
+/* O degrade acima ja da o contraste; o veu com blur deixava tudo leitoso. */
+#inicio::before {
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+/* O ::after do container carregava a foto de fundo (a home ja a zera por um
+   <style> inline). A onda do rodape nao mora aqui: ela e o ::before da
+   faixa creme .social-icons, mais abaixo, para acompanhar a faixa. */
+#inicio::after {
+    content: none;
+}
+
+/* ---------- Cabecalho ---------- */
+#inicio > header {
+    background: rgba(4, 40, 34, 0.55);
+    border-bottom: 1px solid rgba(206, 168, 82, 0.18);
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+
+/* Pilula de idioma: formato arredondado nos dois tamanhos. As cores mudam —
+   creme no desktop, escura no mobile (media query no fim do bloco), como nas
+   duas imagens de referencia. */
+#inicio .lang-btn {
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+}
+
+/* Seta do seletor: nao existe no HTML, entra como pseudo-elemento.
+   O inline-block cria um bloco proprio e nao herda o sublinhado do botao. */
+#inicio .lang-btn::after {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 4px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+}
+
+/* ---------- Titulo ---------- */
+/* nowrap: "Free Walking Tour" fica sempre numa linha so. O corpo e o
+   espacamento sao dados em vw para a linha inteira acompanhar a largura da
+   tela sem estourar — o titulo e curto em todos os idiomas ("Free Walking
+   Tour" em 5 deles, "徒步旅行团" em chines), entao nao ha risco de overflow. */
+#inicio .hero-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 800;
+    white-space: nowrap;
+    letter-spacing: clamp(1px, 0.5vw, 8px);
+    line-height: 1.12;
+    background: linear-gradient(180deg, #f4dfa0 0%, #cea852 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.3);
+    animation: heroIntro 0.9s ease-out forwards;
+    margin-bottom: 0.6rem;
+}
+
+/* ---------- "Tour by Foot" com filetes dourados ---------- */
+/* No desktop o hero é alinhado à esquerda; a centralização entra só no
+   mobile (media query no fim deste bloco), junto com a do subtítulo. */
+#inicio .hero-brandline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 0 1.1rem;
+}
+
+#inicio .hero-brandline::before,
+#inicio .hero-brandline::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(206, 168, 82, 0.75);
+}
+
+#inicio .hero-brandline span {
+    flex: 0 0 auto;
+    font-size: clamp(0.72rem, 2.2vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: clamp(2px, 1vw, 5px);
+    text-transform: uppercase;
+    color: #f3ede0;
+    white-space: nowrap;
+}
+
+/* ---------- Subtitulo ---------- */
+#inicio .hero-text .subtitle {
+    border-left: none;
+    padding-left: 0;
+    max-width: 620px;
+    color: #f1f6f3;
+    opacity: 1;
+    line-height: 1.55;
+}
+
+/* ---------- "Escolha a cidade:" + filete dourado ---------- */
+#inicio .city-title {
+    align-self: center;
+    text-align: center;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* O filete dourado sob "Escolha a cidade:" so existe na referencia mobile;
+   no desktop o titulo aparece sozinho (ver media query no fim do bloco). */
+
+/* ---------- Cards de cidade ---------- */
+/* Na referencia a foto ocupa o card inteiro e o nome fica sobreposto no
+   rodape, sobre um degrade escuro — antes a foto era um retangulo menor
+   dentro de uma caixa dourada, com o nome abaixo dela. */
+#inicio .city-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3.6;
+    background: #0a4a40;
+    animation: none;
+    border: 2px solid #cea852;
+    border-radius: 18px;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+}
+
+#inicio .city-thumb {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    aspect-ratio: auto;
+    margin: 0;
+    border-radius: 16px;
+}
+
+#inicio .city-name {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 1.9rem 0.7rem 0.65rem;
+    text-align: left;
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+    border-radius: 0 0 16px 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.68) 62%, rgba(0, 0, 0, 0.82) 100%);
+}
+
+/* ---------- Rodape creme com as redes sociais ---------- */
+/* A faixa creme e a propria .social-icons (movida no index.html para fora do
+   .hero-text, que e limitado a 760px, para poder sangrar de ponta a ponta).
+   A onda dourada e o ::before dela, encostado no topo (bottom:100%). */
+#inicio .social-icons {
+    position: relative;
+    margin-top: clamp(70px, 11vw, 130px);
+    padding: 1.5rem 1rem 1.8rem;
+    background: #f7f2e7;
+    justify-content: center;
+    gap: 1.1rem;
+}
+
+#inicio .social-icons::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: clamp(70px, 11vw, 130px);
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 130' preserveAspectRatio='none'%3E%3Cpath d='M0,70 C260,116 520,14 780,44 C1010,70 1240,112 1440,74 L1440,130 L0,130 Z' fill='%23f7f2e7'/%3E%3Cpath d='M0,56 C260,102 520,0 780,30 C1010,56 1240,98 1440,60' fill='none' stroke='%23cea852' stroke-width='4'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat;
+}
+
+/* Sobre o creme, os icones brancos sumiriam: viram verde sobre dourado claro. */
+#inicio .social-icons a {
+    color: #0d5548;
+    background: rgba(206, 168, 82, 0.16);
+    border: 1px solid rgba(206, 168, 82, 0.65);
+}
+
+#inicio .social-icons a:hover {
+    background: #0d5548;
+    border-color: #0d5548;
+    color: #f7f2e7;
+}
+
+/* Pin dourado antes do nome (Font Awesome ja carregado no index.html). */
+#inicio .city-name::before {
+    content: "\f3c5";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    flex: 0 0 auto;
+    color: #cea852;
+    font-size: 1.05em;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- Ajustes so no mobile ---------- */
+@media (max-width: 900px) {
+    /* A regra generica prende a home em 100dvh com rolagem interna para
+       caber tudo numa tela. Com os cards grandes da referencia isso
+       espremeria as fotos; aqui a pagina volta a rolar normalmente. */
+    #inicio {
+        height: auto;
+        min-height: 100dvh;
+        overflow-y: visible;
+    }
+
+    #inicio .hero-text {
+        height: auto;
+        overflow-y: visible;
+        gap: 0;
+    }
+
+    /* Hamburguer na esquerda, pilula de idioma centralizada e conta na
+       direita — o idioma fica no meio como na referencia. */
+    #inicio > header {
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    #inicio .lang-selector {
+        order: 1;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Pilula escura com o rotulo sublinhado, como na referencia mobile. */
+    #inicio .lang-btn {
+        background: rgba(3, 32, 27, 0.72);
+        border: 1px solid rgba(206, 168, 82, 0.45);
+        color: #ffffff;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+    }
+
+    #inicio .lang-btn:hover {
+        background: rgba(3, 32, 27, 0.9);
+        color: #ffffff;
+    }
+
+    /* Com nowrap o corpo precisa acompanhar a largura da tela: em vw a linha
+       inteira encolhe junto e nunca estoura. O valor foi ajustado medindo a
+       largura real do texto renderizado em 375px. */
+    #inicio .hero-title {
+        font-size: 7.4vw;
+        letter-spacing: clamp(1px, 0.5vw, 4px);
+    }
+
+    #inicio .hero-brandline {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #inicio .hero-text .subtitle {
+        font-size: clamp(0.95rem, 4vw, 1.1rem);
+        margin-bottom: 1.6rem;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+
+    #inicio .city-title {
+        font-size: clamp(1.05rem, 4.6vw, 1.35rem);
+        margin: 0.4rem 0 1.1rem;
+    }
+
+    #inicio .city-title::after {
+        content: "";
+        display: block;
+        width: 74px;
+        height: 3px;
+        border-radius: 3px;
+        margin: 0.55rem auto 0;
+        background: #cea852;
+    }
+
+    #inicio .city-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+    }
+
+    #inicio .city-name {
+        font-size: clamp(0.8rem, 3.4vw, 0.95rem);
+        padding: 1.7rem 0.6rem 0.6rem;
+    }
+
+}
+
+/* ---------- Tela grande: imagem de referencia desktop ---------- */
+@media (min-width: 901px) {
+    /* Verde mais fundo e fechado que o do mobile, com vinheta nos cantos. */
+    #inicio {
+        background:
+            radial-gradient(75% 55% at 62% 42%, rgba(24, 122, 100, 0.5) 0%, rgba(24, 122, 100, 0) 70%),
+            radial-gradient(100% 90% at 50% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 20, 15, 0.45) 100%),
+            linear-gradient(150deg, #05372c 0%, #0a4638 55%, #06382d 100%);
+    }
+
+    /* Barra quase preta, como na referencia (no mobile ela e translucida). */
+    #inicio > header {
+        background: #042a22;
+        border-bottom: none;
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+    }
+
+    /* Pilula creme com texto escuro (a versao escura e so do mobile). */
+    #inicio .lang-btn {
+        background: #f5f0e6;
+        border: 1px solid rgba(206, 168, 82, 0.55);
+        color: #3f3524;
+        text-decoration: none;
+    }
+
+    #inicio .lang-btn:hover {
+        background: #ffffff;
+        color: #3f3524;
+    }
+
+    #inicio nav a {
+        color: #f3ede0;
+    }
+
+    /* Busca: pilula creme mais larga e clara, com o botao verde na ponta. */
+    #inicio .search-bar {
+        background: #f5f0e6;
+        min-width: 270px;
+        height: 46px;
+    }
+
+    #inicio .search-bar button {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        background: #0d5548;
+    }
+
+    /* Conta: medalhao circular escuro com aro dourado, no lugar do icone solto. */
+    #inicio .profile-btn {
+        background: #063228;
+        border: 2px solid #cea852;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    #inicio .profile-btn i {
+        color: #cea852;
+        font-size: 1.35rem;
+    }
+
+    /* Titulo grande ocupando a coluna da esquerda. Continua em uma linha so
+       (pedido anterior) — na referencia ele quebra em duas, mas o corpo aqui
+       foi calculado para preencher a mesma largura sem quebrar. */
+    #inicio .hero-title {
+        font-size: clamp(2.6rem, 4.4vw, 3.5rem);
+        letter-spacing: clamp(2px, 0.42vw, 6px);
+    }
+
+    /* Filetes mais curtos que o titulo, como na referencia. */
+    #inicio .hero-brandline {
+        max-width: 440px;
+        margin-bottom: 1.6rem;
+    }
+
+    #inicio .hero-text .subtitle {
+        font-size: 1rem;
+        line-height: 1.65;
+        margin-bottom: 1.8rem;
+    }
+
+    #inicio .city-title {
+        margin-bottom: 1rem;
+    }
+
+    /* Aro dourado nas capsulas de video (eram brancas translucidas). */
+    #inicio .capsule {
+        border: 2px solid rgba(206, 168, 82, 0.75);
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Menos respiro no fim do main: no desktop os icones assumem o papel que
+       esse espaco tinha, entao ele fica mais enxuto para abrir espaco para a
+       onda sem precisar de rolagem. */
+    #inicio main {
+        padding-bottom: 0.6rem;
+    }
+
+    /* No desktop os icones ficam numa faixa creme solida, logo abaixo dos
+       cards/capsulas — a fileira precisa estar sempre inteira dentro da
+       parte clara, nunca tocando a borda ondulada. Por isso a onda vira uma
+       tira decorativa SEPARADA acima da faixa (no ::before), em vez de ficar
+       atras dos proprios icones: sobre uma curva, a altura da parte creme
+       varia ponto a ponto e o icone podia acabar espetando pra fora dela. */
+    #inicio .social-icons {
+        position: relative;
+        background: #f7f2e7;
+        margin-top: 0.5rem;
+        padding: 0.85rem 1rem 1rem;
+        gap: 1.1rem;
+    }
+
+    #inicio .social-icons::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 100%;
+        height: 30px;
+        pointer-events: none;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 30' preserveAspectRatio='none'%3E%3Cpath d='M0,16 C260,27 520,3 780,10 C1010,16 1240,26 1440,17 L1440,30 L0,30 Z' fill='%23f7f2e7'/%3E%3Cpath d='M0,13 C260,24 520,0 780,7 C1010,13 1240,23 1440,14' fill='none' stroke='%23cea852' stroke-width='2'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat;
+    }
+
+    /* Sobre o creme, os icones escuros translucidos (herdados do mobile)
+       sumiriam: viram verde sobre dourado claro, como no rodape creme. */
+    #inicio .social-icons a {
+        color: #0d5548;
+        background: rgba(206, 168, 82, 0.16);
+        border: 1px solid rgba(206, 168, 82, 0.65);
+    }
+
+    #inicio .social-icons a:hover {
+        background: #0d5548;
+        border-color: #0d5548;
+        color: #f7f2e7;
+    }
+}
+
+/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+   e o título de .my-reservations-*, só os itens da lista são próprios.
+   Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
+.my-favorites-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.my-favorites-card:last-child {
+  border-bottom: none;
+}
+
+.my-favorites-thumb {
+  width: 84px;
+  height: 60px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.my-favorites-info {
+  min-width: 0;
+}
+
+.my-favorites-name {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.my-favorites-meta {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  color: #6b7a8d;
+}
+
+.my-favorites-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1da194;
+  text-decoration: underline;
 }

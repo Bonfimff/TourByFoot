@@ -34,6 +34,10 @@ console.log('Layout da imagem de referência carregado.');
 		zh: { label: "中文(普通话)", flag: "flag-zh" }
 	};
 
+	// Idioma do HTML por extenso. Sem isto a página anunciaria "en-EN" e
+	// "pt-PT", que ou não existem ou apontam para o país errado.
+	const TAG_IDIOMA = { pt: "pt-BR", en: "en", es: "es", fr: "fr", it: "it", zh: "zh" };
+
 	const btn = document.getElementById("langBtn");
 	const list = document.getElementById("langList");
 	const wrapper = document.getElementById("langSelector");
@@ -42,8 +46,14 @@ console.log('Layout da imagem de referência carregado.');
 	const applyLang = (lang) => {
 		currentLang = translations[lang] ? lang : "pt";
 		window.__appLang = currentLang;
-		try { localStorage.setItem('appLang', currentLang); } catch(e) {}
-		document.documentElement.lang = currentLang;
+		// Mesma chave usada pelas páginas de cidade e pelo Gerenciamento
+		// (site-shell.js/Riodejaneiro.js) — precisa ser a mesma em todo o site
+		// para o idioma escolhido numa aba valer nas outras (ver listener de
+		// "storage" mais abaixo).
+		try { localStorage.setItem('preferredLanguage', currentLang); } catch(e) {}
+		// pt-BR, nao pt: "pt" sozinho o Google lê como português de Portugal, e
+		// o hreflang da página promete pt-BR. Os dois precisam bater.
+		document.documentElement.lang = TAG_IDIOMA[currentLang] || currentLang;
 
 		const dict = translations[currentLang] || translations.pt;
 		document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -69,9 +79,15 @@ console.log('Layout da imagem de referência carregado.');
 
 	if (btn && list && wrapper) {
 		let savedLang;
-		try { savedLang = localStorage.getItem('appLang'); } catch(e) {}
+		try { savedLang = localStorage.getItem('preferredLanguage'); } catch(e) {}
 		const browserLang = (navigator.language || "pt").slice(0, 2);
-		const initialLang = savedLang && translations[savedLang] ? savedLang : (translations[browserLang] ? browserLang : "pt");
+		// Quem manda é a URL: /en/ mostra inglês mesmo com outro idioma salvo no
+		// navegador. Senão a página exibiria um idioma enquanto a URL e o
+		// hreflang prometem outro, e o Google indexaria o conteúdo errado. Só
+		// quando não há rota de idioma (página avulsa) vale a preferência salva.
+		const rota = window.rotaIdioma;
+		const initialLang = (rota && translations[rota.atual]) ? rota.atual
+			: (savedLang && translations[savedLang] ? savedLang : (translations[browserLang] ? browserLang : "pt"));
 		applyLang(initialLang);
 
 		btn.addEventListener("click", () => {
@@ -81,19 +97,45 @@ console.log('Layout da imagem de referência carregado.');
 		list.addEventListener("click", (e) => {
 			const item = e.target.closest("li");
 			if (!item) return;
-			applyLang(item.dataset.lang);
 			wrapper.classList.remove("open");
+			const escolhido = item.dataset.lang;
+			// Cada idioma tem endereço próprio, então trocar de idioma é NAVEGAR
+			// até ele — trocar o texto no lugar deixaria a URL mentindo sobre o
+			// que a página mostra. A busca e a âncora vão junto.
+			const rota = window.rotaIdioma;
+			if (rota && rota.base) {
+				try { localStorage.setItem('preferredLanguage', escolhido); } catch(err) {}
+				const destino = escolhido === "pt" ? rota.base : rota.base + escolhido + "/";
+				window.location.assign(destino + window.location.search + window.location.hash);
+				return;
+			}
+			applyLang(escolhido);
 		});
 
 		document.addEventListener("click", (e) => {
 			if (!wrapper.contains(e.target)) wrapper.classList.remove("open");
+		});
+
+		// Troca de idioma feita em OUTRA aba (ex.: home aberta junto com a
+		// página de uma cidade): o evento "storage" só dispara nas abas que
+		// NÃO fizeram a mudança, então não conflita com applyLang() acima.
+		window.addEventListener('storage', (event) => {
+			if (event.key !== 'preferredLanguage' || !event.newValue) return;
+			// Numa página com endereço por idioma, quem manda é a URL: trocar o
+			// texto aqui faria /en/ aparecer em português.
+			if (window.rotaIdioma) return;
+			if (event.newValue !== currentLang) {
+				applyLang(event.newValue);
+			}
 		});
 	}
 
 	const modal = document.getElementById("awardModal");
 	if (modal) {
 		const countdownEl = document.getElementById("awardCountdown");
+		const awardCta = document.getElementById("awardCta");
 		const awardLink = "https://www.tripadvisor.com.br/Attraction_Review-g303506-d12219836-Reviews-Rio_by_Foot_Free_Walking_Tour-Rio_de_Janeiro_State_of_Rio_de_Janeiro.html";
+		if (awardCta) awardCta.href = awardLink;
 		let countdownTimer = null;
 
 		const getCountdownLabel = (seconds) => {
@@ -148,12 +190,12 @@ console.log('Layout da imagem de referência carregado.');
 			});
 		});
 
-		const dialog = modal.querySelector(".award-modal__dialog");
-		if (dialog) {
-			dialog.addEventListener("click", (e) => {
-				if (e.target.closest("[data-close-award]")) return;
+		// O card inteiro não é mais clicável — só o botão "Ver no TripAdvisor"
+		// abre o link (em nova aba, sem tirar o visitante do site), evitando
+		// que um clique acidental em qualquer parte do card redirecione.
+		if (awardCta) {
+			awardCta.addEventListener("click", () => {
 				closeModal();
-				window.location.href = awardLink;
 			});
 		}
 
@@ -238,10 +280,85 @@ console.log('Layout da imagem de referência carregado.');
 })();
 
 /* ===================================================== */
+/* TEXTOS SOBRE / CONTATO / AJUDA (editáveis via Gerenciamento) */
+/* ===================================================== */
+(() => {
+	// Título/texto dessas 3 seções são editáveis em Gerenciamento > Gerenciamento
+	// da página > Textos SOBRE/CONTATO/AJUDA (página "Principal"). Reaplica a cada
+	// troca de idioma porque applyLang() (acima) reescreve o texto padrão a cada vez.
+	const SECOES = ["sobre", "contato", "ajuda"];
+	let overrides = {};
+
+	const applyOverrides = () => {
+		// O admin só digita em português; nos outros idiomas usamos a tradução
+		// automática cacheada em override.traducoes[lang] (ver app.py).
+		const lang = typeof window.getCurrentLanguage === "function" ? window.getCurrentLanguage() : "pt";
+		SECOES.forEach((secao) => {
+			const override = overrides[secao];
+			if (!override) return;
+			const article = document.getElementById(secao);
+			if (!article) return;
+
+			const traducao = lang !== "pt" ? override.traducoes?.[lang] : null;
+			const titulo = (traducao && traducao.titulo) || override.titulo;
+			const texto = (traducao && typeof traducao.texto === "string") ? traducao.texto : override.texto;
+
+			const titleEl = article.querySelector("h2");
+			if (titleEl && titulo) titleEl.textContent = titulo;
+
+			if (texto) {
+				const linhas = texto.split("\n").map((l) => l.trim()).filter(Boolean);
+				if (linhas.length) {
+					article.querySelectorAll("p").forEach((p) => p.remove());
+					const linksDiv = article.querySelector(".site-section-links");
+					linhas.forEach((linha) => {
+						const p = document.createElement("p");
+						p.textContent = linha;
+						article.insertBefore(p, linksDiv || null);
+					});
+				}
+			}
+		});
+	};
+
+	const loadPaginaSecao = async () => {
+		// api.exksvol.com não existe (NXDOMAIN) — era só um request garantidamente
+		// falho a cada carregamento. O fallback real é o backend local.
+		const endpoints = [
+			"https://api-tour.exksvol.com/get_pagina_secao?pagina=Principal",
+			"http://127.0.0.1:5000/get_pagina_secao?pagina=Principal"
+		];
+		for (const endpoint of endpoints) {
+			try {
+				const response = await fetch(endpoint);
+				if (!response.ok) continue;
+				const lista = await response.json();
+				if (!Array.isArray(lista)) continue;
+				overrides = lista.reduce((acc, item) => {
+					if (item && item.secao) acc[item.secao] = item;
+					return acc;
+				}, {});
+				applyOverrides();
+				return;
+			} catch (error) {
+				console.warn("Falha ao carregar textos da página em", endpoint, error);
+			}
+		}
+	};
+
+	document.addEventListener("app:language-changed", applyOverrides);
+	loadPaginaSecao();
+})();
+
+/* ===================================================== */
 /* VIDEO CAPSULE SYNC  (split-screen local mp4)          */
 /* Trecho de 0:12 a 2:00, depois repete                  */
 /* ===================================================== */
 (function () {
+	// Cápsulas de vídeo ficam escondidas (display:none) abaixo de 1200px
+	// (ver style.css); evita baixar/reproduzir 3 vídeos à toa em mobile/tablet.
+	if (window.matchMedia('(max-width: 1200px)').matches) return;
+
 	var START = 12;
 	var END   = 120;
 	var videos = document.querySelectorAll('.capsule-video');
@@ -302,3 +419,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Modo de manutenção: a checagem que realmente decide isso agora é o script
+// bloqueante no <head> (ver index.html), que redireciona pra manutencao.html
+// antes de qualquer conteúdo renderizar — evita o flash da página real que
+// essa versão baseada em fetch assíncrono/pós-load tinha.

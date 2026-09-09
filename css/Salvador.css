@@ -1,6 +1,34 @@
 /* Salvador — Tema Pelourinho (claro, colonial) */
 /* Re-usa classes rio-* de Riodejaneiro.css */
 
+.main-container.rio-page {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    left: 0 !important;
+    position: relative !important;
+}
+
+/* Garante full-bleed do topo (header + painel) sem recuo lateral.
+   Usa 100vw (não 100%) porque .main-container.rio-page tem overflow-y:auto
+   e gera sua própria barra de rolagem interna, que "rouba" espaço de um
+   width:100% do lado direito. 100vw ignora essa barra e cola nas bordas reais. */
+.rio-page > header,
+.rio-page > .rio-hero {
+  width: 100vw;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Fundo fixo próprio de Salvador (substitui o fundo do Rio de Janeiro) */
+.rio-page::before {
+    background-color: var(--city-fundo-cor, #3d2b1f);
+    background-image: var(--city-fundo-img, none);
+    background-size: cover;
+    background-position: center;
+}
+
 /* Fundo claro com tom quente de areia, remetendo às fachadas coloridas */
 .rio-page {
     background:
@@ -10,34 +38,30 @@
     color: #3d2b1f;
 }
 
-.rio-hero {
-    background: url('https://tourbyfootcom.swipepages.media/2021/11/6154b435ca6c9c0010a3dead/imagem-pelourinho-500.webp') center/cover no-repeat;
+.rio-hero::before {
+    background: var(--city-painel-bg, transparent);
 }
 
-/* Remove padrão Copacabana — exclusivo do Rio */
+/* Remove padrão Copacabana — exclusivo do Rio; base escura padronizada
+   (mesmo tom azul-marinho do degradê principal) em vez de clarear.
+   A máscara de recorte na onda (definida em Riodejaneiro.css, carregado
+   antes deste arquivo como base) continua valendo — só a cor/imagem muda. */
 .rio-hero::after {
-    mask-image: none;
-    -webkit-mask-image: none;
-    background: linear-gradient(to bottom, transparent 0%, #faf6f0 100%);
+    background: linear-gradient(to bottom, transparent 0%, rgba(12, 35, 64, 0.9) 100%);
 }
 
 .rio-hero-overlay {
+    /* Degradê padronizado com base no Rio de Janeiro, base mais escura/sólida */
     background: linear-gradient(
         180deg,
-        rgba(61, 43, 31, 0.72) 0%,
-        rgba(140, 90, 40, 0.4) 60%,
-        rgba(61, 43, 31, 0.82) 100%
+        rgba(12, 35, 64, 0.60) 0%,
+        rgba(26, 82, 118, 0.38) 60%,
+        rgba(12, 35, 64, 0.88) 100%
     );
 }
 
-/* Textura sutil de ladrilho colonial */
-.rio-tours::before {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='none'/%3E%3Crect x='0' y='0' width='20' height='20' fill='%23d2944a' opacity='0.04'/%3E%3Crect x='20' y='20' width='20' height='20' fill='%23d2944a' opacity='0.04'/%3E%3C/svg%3E") repeat;
-    background-size: 40px 40px;
-}
-
-.rio-section-title { color: #3d2b1f; }
-.rio-section-subtitle { color: #a06520; }
+.rio-section-title { color: #0b3c6d; }
+.rio-section-subtitle { color: #f1d7b1; }
 .rio-tour-card { background: #ffffff; border-color: rgba(161,101,32,0.1); }
 .rio-tour-name { color: #5c3a10; }
 .rio-tour-details i { color: #c88930; }

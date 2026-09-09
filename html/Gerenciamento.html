@@ -1,0 +1,1538 @@
+﻿<!-- version 1.0 -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" href="../imagem/assets/Logo.png?v=2">
+    <link rel="icon" type="image/png" href="../imagem/assets/Logo.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/Gerenciamento.css?v=70">
+</head>
+<body class="gerenciamento-page">
+    <header class="gerenciamento-header">
+        <div class="nav-left">
+            <h1 style="margin: 0; font-size: 1.2rem; color: #fff;">Reservas</h1>
+            <button class="hamburger" id="hamburger" type="button" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="gerenciamento-nav" id="gerenciamentoNav">
+                <a href="../index.html" class="nav-link">Principal</a>
+                <a href="#" class="nav-link" data-section="reservas">Reservas</a>
+                <a href="#" class="nav-link" data-section="gerenciamento">Gerenciamento da página</a>
+                <a href="#" class="nav-link" data-section="financeiro">Financeiro</a>
+                <a href="#" class="nav-link" data-section="contas">Contas</a>
+            </nav>
+        </div>
+
+        <div class="profile-menu">
+            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Conta"><i class="fa fa-user-circle"></i></button>
+            <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Opções de conta">
+                <a href="#" class="profile-item" data-profile-action="login" data-i18n="profile_login">Entrar</a>
+                <a href="#" class="profile-item" data-profile-action="register" data-i18n="profile_register">Cadastrar</a>
+                <a href="#" class="profile-item" data-profile-action="account">Minha Conta</a>
+                <a href="#" class="profile-item" data-profile-action="logout">Sair</a>
+                <a href="#" class="profile-item profile-item--admin" data-profile-action="principal" style="display:none;">Principal</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-menu-container" id="mobileMenuContainer" aria-hidden="true">
+        <div class="mobile-menu-panel">
+            <div class="mobile-menu-header">
+                <button class="mobile-menu-back" id="mobileMenuBack" type="button" aria-label="Voltar">←</button>
+                <span class="mobile-menu-title" id="mobileMenuTitle">Menu</span>
+                <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Fechar">×</button>
+            </div>
+            <div class="mobile-menu-content">
+                <div class="mobile-menu-view mobile-menu-main" data-view="main"></div>
+                <div class="mobile-menu-view mobile-menu-lang" data-view="lang"></div>
+                <div class="mobile-menu-view mobile-menu-user" data-view="user"></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <section id="reservationsStatsSection" class="rio-notice reservas-section" style="padding-top: 2rem;">
+            <div class="rio-notice-text blurry-card">
+            <h2 class="rio-notice-title">Gerenciamento de Reservas</h2>
+            <div style="margin-top:1rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+                <button id="clearAllAlertsBtn" class="btn-book" type="button" style="display:none; background:#f3f4f6;color:#111827;border:1px solid rgba(55,65,81,0.12);border-radius:999px;padding:0.75rem 1.2rem;min-width:180px;">Limpar alertas</button>
+            </div>
+            <div id="importantInfoFeed" class="important-info-feed" style="margin-top:0.85rem; display:grid; gap:0.75rem;">
+              <div class="important-info-empty" style="padding:0.85rem 1rem; border-radius:12px; background:rgba(255,255,255,0.82); color:#4b5563;">Carregando atividades recentes...</div>
+            </div>
+                
+                <div class="gerenciamento-stats" style="display:flex; gap:1rem; flex-wrap:wrap; overflow-x:hidden; margin-top:1rem;">
+                  <div class="status-group" style="display:flex; gap:1rem; width:100%; overflow-x:hidden;">
+                    <div class="status-card" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px;"> 
+                            <strong>Pendente</strong>
+                            <div id="statPending" style="font-size:1.4rem; font-weight:800;">0</div>
+                        </div>
+                    <div class="status-card" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px;">
+                            <strong>Confirmado</strong>
+                            <div id="statConfirmed" style="font-size:1.4rem; font-weight:800;">0</div>
+                        </div>
+                    <div class="status-card" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px;">
+                            <strong>Finalizado</strong>
+                            <div id="statFinalized" style="font-size:1.4rem; font-weight:800;">0</div>
+                        </div>
+                    </div>
+                    <div id="nextTourCard" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px; min-width:220px;">
+                        <strong>Próximo tour</strong>
+                        <div id="statNext" style="font-size:1.2rem; font-weight:700;">-</div>
+                        <button id="nextTourToggle" type="button" class="next-tour-toggle" aria-expanded="false">▾</button>
+                        <div id="nextTourDetails" class="next-tour-details-panel" style="margin-top:0.5rem; font-size:0.85rem; color:#374151;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;">
+                    <strong style="font-size:0.9rem; color:#1f2937;">Tours mais clicados</strong>
+                    <div style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0.6rem; margin-top:0.4rem;">
+                        <table class="rio-tour-table" style="margin:0; background:rgba(255,255,255,0.9);">
+                            <thead>
+                                <tr>
+                                    <th>Tour</th>
+                                    <th>Visualizações</th>
+                                    <th>Cliques em Reservar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toursMaisClicadosBody">
+                                <tr><td colspan="3" style="padding:0.75rem;">Carregando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="reservationsTableSection" class="reservas-section" style="margin-top: 2rem;">
+            <div class="rio-notice-text" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                <strong>Filtros</strong>
+                <div class="filtro-reservas-grid" style="margin-top:0.75rem;">
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Data inicial
+                        <input type="date" id="filterFrom" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);" />
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Data final
+                        <input type="date" id="filterTo" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);" />
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Cidade
+                        <select id="filterCity" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                            <option value="">Todas as cidades</option>
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Salvador">Salvador</option>
+                        </select>
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Tour
+                        <select id="filterTour" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                            <option value="all">Todos</option>
+                        </select>
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Modalidade
+                        <select id="filterModality" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                            <option value="all">Todos</option>
+                            <option value="free">Free</option>
+                            <option value="privado">Privado</option>
+                        </select>
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Status
+                        <select id="filterStatus" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                            <option value="all">Todos</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Cancelado">Cancelado</option>
+                            <option value="Finalizado">Finalizado</option>
+                        </select>
+                    </label>
+                    <button id="addReservation" class="btn-book" style="height:fit-content; border-radius:999px;">Adicionar reserva</button>
+                    <button id="syncReservasBtn" class="btn-book" style="height:fit-content; border-radius:999px; background:#1f6feb;" title="Verifica agora se há reservas novas nas plataformas externas conectadas">Verificar novas reservas</button>
+                </div>
+            </div>
+
+            <div id="reservationAlert" class="reservation-alert hidden" role="status" aria-live="polite">
+                <span id="reservationAlertText">&nbsp;</span>
+                <button type="button" class="reservations-alert-close" aria-label="Fechar alerta">×</button>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="rio-tour-table">
+                    <thead>
+                            <tr>
+                            <th>Tour</th>
+                            <th>Idioma</th>
+                            <th>Modalidade</th>
+                            <th>Guia</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Pessoas</th>
+                            <th>Status</th>
+                            <th>Origem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationsBody">
+                        <tr><td colspan="8" style="padding:0.75rem;">Carregando reservas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="accountsSection" style="display:none; margin-top: 2rem;">
+            <div class="rio-notice-text" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                <!-- Pizza (clientes por país) e colunas (top 5 tours) lado a lado;
+                     empilham só no celular (ver .contas-charts-grid no CSS). As
+                     legendas dos dois viraram tooltip no hover pra caberem na
+                     metade da largura. -->
+                <div class="contas-charts-grid">
+                    <div class="contas-chart-card">
+                        <strong class="contas-chart-title">Clientes por país</strong>
+                        <div id="countryChartContainer" class="country-chart">
+                            <div id="countryPie" class="country-pie" tabindex="0" aria-describedby="countryLegend"></div>
+                            <div id="countryLegend" class="country-legend" role="tooltip">Carregando dados do país...</div>
+                        </div>
+                    </div>
+
+                    <div class="contas-chart-card">
+                        <strong class="contas-chart-title">Top 5 tours mais clicados</strong>
+                        <div id="toursMaisClicadosBarChart" class="tours-bar-chart">
+                            <span class="tours-bar-empty">Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="liberacoesCadastroManager" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                <strong style="color:#0b3c6d;">Solicitações de Liberação de Cadastro</strong>
+                <p style="font-size:0.85rem; color:#6b7280; margin:0.4rem 0 0.75rem;">Clientes que não receberam o código de confirmação por e-mail e pediram liberação manual do cadastro. Ao aprovar, o e-mail pula a etapa de código na próxima tentativa de cadastro.</p>
+                <div style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0.6rem;">
+                    <table class="rio-tour-table" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>E-mail</th>
+                                <th>Nome</th>
+                                <th>Celular</th>
+                                <th>País</th>
+                                <th>Solicitado em</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liberacoesCadastroBody">
+                            <tr><td colspan="7" style="padding:0.75rem;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="accounts-tabbar">
+                <button type="button" id="accountsFilterColaboradores" data-filter="colaboradores" class="accounts-tab-btn">Colaboradores</button>
+                <button type="button" id="accountsFilterClientes" data-filter="clientes" class="accounts-tab-btn">Clientes</button>
+                <!-- Só aparecem pra quem tem a permissão "Ver auditoria" (a
+                     princípio, só super_admin) — ver applyAccessControls. -->
+                <button type="button" id="accountsFilterAuditoria" data-filter="auditoria" class="accounts-tab-btn" style="display:none;">Auditoria</button>
+                <button type="button" id="accountsFilterAtividadeClientes" data-filter="atividade_clientes" class="accounts-tab-btn" style="display:none;">Ações dos Clientes</button>
+                <div class="accounts-search-tab" id="accountsSearchTab">
+                    <label for="accountsNameSearch">Buscar</label>
+                    <input type="text" id="accountsNameSearch" placeholder="Nome ou e-mail" />
+                </div>
+                <button type="button" id="addAccountBtn" class="accounts-tab-btn accounts-tab-btn-accent">+ Nova Conta</button>
+            </div>
+            <div id="accountsTableWrapper" style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0 0 0.6rem 0.6rem;">
+                <table class="rio-tour-table" style="margin:0; border-radius:0;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>E-mail</th>
+                            <th>Nome</th>
+                            <th>Sobrenome</th>
+                            <th>Celular</th>
+                            <th>Role</th>
+                            <th>País</th>
+                            <th>Gênero</th>
+                            <th>Última página</th>
+                            <th>Último acesso</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsBody">
+                        <tr><td colspan="10" style="padding:0.75rem;">Clique em "Contas" para carregar os registros.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Aba da mesma "pasta" de Colaboradores/Clientes (ver accounts-tabbar
+                 acima) — setAccountsFilterTab() alterna entre esta, a Ações dos
+                 Clientes e a tabela de contas; só uma fica visível por vez. Só
+                 aparece pra quem tem a permissão "Ver auditoria" (a princípio,
+                 só super_admin). -->
+            <div id="auditoriaManager" style="display:none; margin-top:0; background:rgba(255,255,255,0.9); border-radius:0 0 12px 12px; padding:1rem; border:1px solid #d1d5db; border-top:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                    <strong style="color:#0b3c6d;">Auditoria</strong>
+                    <button type="button" id="refreshAuditoriaBtn" class="btn-book">Atualizar</button>
+                </div>
+                <p style="font-size:0.85rem; color:#6b7280; margin:0.4rem 0 0.75rem;">
+                    Registro de ações de colaboradores (criação, alteração e exclusão) em contas, tours, financeiro, permissões e outras áreas do painel.
+                    Os registros são apagados automaticamente depois de <span id="auditoriaRetencaoDias">90</span> dias.
+                </p>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                    <input type="text" id="auditoriaFiltroAtor" placeholder="Filtrar por e-mail do responsável" style="flex:1 1 220px; padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;" />
+                    <select id="auditoriaFiltroEntidade" style="padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;">
+                        <option value="">Todas as áreas</option>
+                        <option value="conta">Contas</option>
+                        <option value="nivel_acesso">Níveis de acesso</option>
+                        <option value="tour">Tours</option>
+                        <option value="tour_imagem">Imagens de tour</option>
+                        <option value="tour_ordem">Ordem dos tours</option>
+                        <option value="reserva">Reservas</option>
+                        <option value="liberacao_cadastro">Liberação de cadastro</option>
+                        <option value="comentario">Comentários</option>
+                        <option value="despesa_fixa">Despesas fixas</option>
+                        <option value="financeiro_lancamento">Financeiro</option>
+                        <option value="plataforma_reserva">Plataformas de reserva</option>
+                        <option value="whatsapp_contato">Contatos do WhatsApp</option>
+                        <option value="cidade_contato">Contato da cidade</option>
+                        <option value="cidade_visual">Identidade visual da cidade</option>
+                        <option value="cidade_aviso">Aviso da cidade</option>
+                        <option value="cidade_award">Card de premiação</option>
+                        <option value="pagina_secao">Textos da página (sobre/contato/ajuda)</option>
+                        <option value="site_config">Configuração do site</option>
+                    </select>
+                    <select id="auditoriaFiltroAcao" style="padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;">
+                        <option value="">Toda ação</option>
+                        <option value="criar">Criar</option>
+                        <option value="atualizar">Atualizar</option>
+                        <option value="excluir">Excluir</option>
+                    </select>
+                </div>
+                <div style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0.6rem;">
+                    <table class="rio-tour-table" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Quando</th>
+                                <th>Responsável</th>
+                                <th>Ação</th>
+                                <th>Área</th>
+                                <th>Registro</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditoriaBody">
+                            <tr><td colspan="6" style="padding:0.75rem;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Outra aba da mesma "pasta" — mesma permissão da Auditoria
+                 (viewAuditoria). -->
+            <div id="atividadeClientesManager" style="display:none; margin-top:0; background:rgba(255,255,255,0.9); border-radius:0 0 12px 12px; padding:1rem; border:1px solid #d1d5db; border-top:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                    <strong style="color:#0b3c6d;">Ações dos Clientes</strong>
+                    <button type="button" id="refreshAtividadeClientesBtn" class="btn-book">Atualizar</button>
+                </div>
+                <p style="font-size:0.85rem; color:#6b7280; margin:0.4rem 0 0.75rem;">
+                    Login, cadastro, pedido de liberação, reservas e cliques em tour de clientes (não colaboradores).
+                    Os registros são apagados automaticamente depois de <span id="atividadeClientesRetencaoDias">90</span> dias.
+                </p>
+
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                    <input type="text" id="atividadeClientesFiltroCliente" placeholder="Filtrar por e-mail do cliente" style="flex:1 1 220px; padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;" />
+                    <select id="atividadeClientesFiltroTipo" style="padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;">
+                        <option value="">Toda ação</option>
+                        <option value="login">Login</option>
+                        <option value="cadastro">Cadastro</option>
+                        <option value="liberacao_solicitar">Pediu liberação</option>
+                        <option value="reserva_criar">Criou reserva</option>
+                        <option value="reserva_atualizar">Alterou reserva</option>
+                        <option value="reserva_cancelar">Cancelou reserva</option>
+                        <option value="tour_visualizar">Viu detalhes do tour</option>
+                        <option value="tour_reservar_clique">Clicou em Reservar</option>
+                        <option value="tour_compartilhar">Compartilhou o tour</option>
+                        <option value="tour_acesso_link">Entrou por link do tour</option>
+                        <option value="tour_favoritar">Favoritou o tour</option>
+                    </select>
+                </div>
+                <div style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0.6rem;">
+                    <table class="rio-tour-table" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Quando</th>
+                                <th>Cliente</th>
+                                <th>Ação</th>
+                                <th>Tour / Cidade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="atividadeClientesBody">
+                            <tr><td colspan="4" style="padding:0.75rem;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="rolesManager" style="margin-top:1.5rem; background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem;">
+                <strong>Gerenciamento de Níveis de Acesso</strong>
+                <div style="margin-top:0.75rem; display:flex; gap:0.5rem; align-items:center;">
+                    <label style="display:block; margin-bottom:0.5rem; color:#1f2937; font-weight:700;">Perfil de Acesso:</label>
+                    <button id="addRoleBtn" class="btn-book" type="button" style="background:#18b015;color:#fff;">Adicionar nível de acesso</button>
+                </div>
+                <div style="margin-top:0.75rem;">
+                    <select id="roleSelect" style="width:100%; max-width:320px; padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;"></select>
+                </div>
+                <div id="roleCheckboxes" style="margin-top:0.75rem; color:#1f2937;">
+                    <strong>Permissões</strong><br />
+                    <label><input type="checkbox" id="roleCheckReservas" /> Gerenciar Reservas</label><br />
+                    <label><input type="checkbox" id="roleCheckContas" /> Gerenciar Contas</label><br />
+                    <label><input type="checkbox" id="roleCheckPerfis" /> Gerenciar Perfis</label><br />
+                    <label><input type="checkbox" id="roleCheckSelfEdit" /> Alterar próprias informações</label><br />
+                    <label><input type="checkbox" id="roleCheckOtherEdit" /> Alterar informações de outros perfis</label><br />
+                    <label><input type="checkbox" id="roleCheckConsultas" /> Realizar consultas</label><br />
+                    <label><input type="checkbox" id="roleCheckCarregarReservas" /> Carregar todas as reservas</label><br />
+                    <label><input type="checkbox" id="roleCheckPageContent" /> Gerenciar conteúdo da página (tours, aviso, contato, textos)</label><br />
+                    <label><input type="checkbox" id="roleCheckComentarios" /> Moderar avaliações de clientes</label><br />
+                    <label><input type="checkbox" id="roleCheckFinanceiro" /> Gerenciar financeiro</label><br />
+                    <label><input type="checkbox" id="roleCheckAuditoria" /> Ver auditoria (registro de ações de colaboradores)</label><br />
+                    <label><input type="checkbox" id="roleCheckManutencao" /> Gerenciar modo de manutenção</label><br />
+                </div>
+
+                <div id="reservasRestricoes" style="margin-top:1rem; color:#1f2937;">
+                    <strong>Restrições de reservas</strong><br />
+                    <span style="font-size:0.85rem; color:#6b7280;">Só valem para quem tem "Gerenciar Reservas" marcado acima.</span><br />
+                    <label><input type="checkbox" class="reservas-city-perm" data-cidade="Rio de Janeiro" /> Rio de Janeiro</label><br />
+                    <label><input type="checkbox" class="reservas-city-perm" data-cidade="Lencois" /> Lençóis Maranhenses</label><br />
+                    <label><input type="checkbox" class="reservas-city-perm" data-cidade="Sao Luis" /> São Luís do Maranhão</label><br />
+                    <label><input type="checkbox" class="reservas-city-perm" data-cidade="Salvador" /> Salvador</label><br />
+                </div>
+
+                <div id="financeiroRestricoes" style="margin-top:1rem; color:#1f2937;">
+                    <strong>Restrições do financeiro</strong><br />
+                    <span style="font-size:0.85rem; color:#6b7280;">Só valem para quem tem "Gerenciar financeiro" marcado acima.</span><br />
+                    <label><input type="checkbox" class="finance-city-perm" data-cidade="Rio de Janeiro" /> Rio de Janeiro</label><br />
+                    <label><input type="checkbox" class="finance-city-perm" data-cidade="Lencois" /> Lençóis Maranhenses</label><br />
+                    <label><input type="checkbox" class="finance-city-perm" data-cidade="Sao Luis" /> São Luís do Maranhão</label><br />
+                    <label><input type="checkbox" class="finance-city-perm" data-cidade="Salvador" /> Salvador</label><br />
+                    <label style="margin-top:0.4rem; display:inline-block;"><input type="checkbox" id="roleCheckFinanceiroSomenteView" /> Somente visualizar (não pode lançar, editar ou excluir entradas/retiradas/despesas)</label>
+                </div>
+
+                <div style="margin-top:1rem; color:#1f2937;">
+                    <strong>Abas visíveis</strong><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Principal" /> Principal</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Reservas" /> Reservas</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Gerenciamento" /> Gerenciamento</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Financeiro" /> Financeiro</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Contas" /> Contas</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Minhas Reservas" /> Minhas Reservas</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="Meus Dados" /> Meus Dados</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="SOBRE" /> Sobre</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="CONTATO" /> Contato</label><br />
+                    <label><input type="checkbox" class="tab-perm" data-tab="AJUDA" /> Ajuda</label>
+                </div>
+
+                <div style="margin-top:1rem; color:#1f2937;">
+                    <strong>Páginas permitidas</strong><br />
+                    <label><input type="checkbox" class="page-perm" data-page="Principal" /> Principal</label><br />
+                    <label><input type="checkbox" class="page-perm" data-page="Gerenciamento" /> Gerenciamento</label>
+                </div>
+
+                <div style="margin-top:0.75rem;">
+                    <button id="saveRolesConfig" class="btn-book" type="button">Salvar níveis</button>
+                </div>
+            </div>
+
+            <div id="reservaSyncPlataformasManager" style="margin-top:1.5rem; background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem;">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                    <strong style="color:#0b3c6d;">Plataformas de Reserva</strong>
+                    <button type="button" id="addPlataformaBtn" class="btn-book" style="background:#18b015;color:#fff;">+ Nova Plataforma</button>
+                </div>
+                <p style="font-size:0.85rem; color:#6b7280; margin:0.4rem 0 0.75rem;">Credenciais de login usadas pelo sincronizador de reservas para importar reservas de plataformas externas (GetYourGuide, Airbnb, etc). A senha nunca é exibida depois de salva. Clique em uma linha para editar.</p>
+                <div style="overflow:hidden; overflow-x:auto; border:1px solid #d1d5db; border-radius:0.6rem;">
+                    <table class="rio-tour-table" style="margin:0;">
+                        <thead>
+                            <tr>
+                                <th>Identificador</th>
+                                <th>URL</th>
+                                <th>E-mail</th>
+                                <th>Senha</th>
+                                <th>Código de confirmação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservaSyncPlataformasBody">
+                            <tr><td colspan="5" style="padding:0.75rem;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="pageManagementSection" style="display:none; margin-top:2rem;">
+            <div id="financeSection" aria-label="Controle financeiro">
+
+                <div class="finance-month-nav">
+                    <button type="button" id="financePrevMonth" class="btn-book finance-month-btn" aria-label="Mês anterior">‹</button>
+                    <input type="month" id="financeMonth" aria-label="Mês do controle financeiro" />
+                    <button type="button" id="financeNextMonth" class="btn-book finance-month-btn" aria-label="Próximo mês">›</button>
+                    <select id="financeCityFilter" aria-label="Cidade do controle financeiro" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                        <option value="">Geral (todas as cidades)</option>
+                        <option value="Rio de Janeiro">Rio de Janeiro</option>
+                        <option value="Lencois">Lençóis Maranhenses</option>
+                        <option value="Sao Luis">São Luís do Maranhão</option>
+                        <option value="Salvador">Salvador</option>
+                    </select>
+                    <button type="button" id="financeReload" class="btn-book" style="margin-left:auto;">Atualizar</button>
+                    <button type="button" id="financeDownloadCsv" class="btn-book" title="Baixar as informações deste mês em formato de tabela (CSV)">Baixar tabela</button>
+                </div>
+
+                <p id="financeCityLabel" style="margin:0 0 0.75rem; font-weight:700; color:#374151;">Exibindo: Geral (todas as cidades)</p>
+
+                <div class="finance-summary">
+                    <div class="finance-card finance-card-entrada">
+                        <span>Entradas</span>
+                        <strong id="financeTotalEntradas">R$ 0,00</strong>
+                    </div>
+                    <div class="finance-card finance-card-retirada">
+                        <span>Retiradas</span>
+                        <strong id="financeTotalRetiradas">R$ 0,00</strong>
+                    </div>
+                    <div class="finance-card finance-card-despesa">
+                        <span>Despesas</span>
+                        <strong id="financeTotalDespesas">R$ 0,00</strong>
+                    </div>
+                    <div class="finance-card finance-card-saldo">
+                        <span>Saldo do mês</span>
+                        <strong id="financeSaldo">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="finance-block">
+                    <h3>Entradas</h3>
+                    <p class="finance-hint">Reservas finalizadas de tours pagos entram automaticamente (marcadas como <strong>Auto</strong>, com valor editável). Use o formulário para entradas manuais, como tours free.</p>
+                    <form id="financeFormEntrada" class="finance-add-form">
+                        <input type="text" id="financeEntradaDesc" placeholder="Descrição." required />
+                        <input type="number" id="financeEntradaValorBruto" min="0.01" step="0.01" placeholder="Valor Bruto (R$)" />
+                        <input type="number" id="financeEntradaValor" min="0.01" step="0.01" placeholder="Valor Líquido (R$)" required />
+                        <input type="date" id="financeEntradaData" required />
+                        <button type="submit" class="btn-book">Adicionar entrada</button>
+                    </form>
+                    <div style="overflow-x:auto;">
+                        <table class="rio-tour-table finance-table">
+                            <thead>
+                                <tr><th>Data</th><th>Descrição</th><th>Origem</th><th>Cidade</th><th>Valor Bruto</th><th>Valor Líquido</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="financeEntradasBody">
+                                <tr><td colspan="7" style="padding:0.75rem;">Nenhuma entrada neste mês.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="finance-block">
+                    <h3>Retiradas</h3>
+                        <form id="financeFormRetirada" class="finance-add-form">
+                        <input type="text" id="financeRetiradaDesc" placeholder="Descrição." required />
+                        <input type="number" id="financeRetiradaValor" min="0.01" step="0.01" placeholder="Valor (R$)" required />
+                        <input type="date" id="financeRetiradaData" required />
+                        <button type="submit" class="btn-book">Adicionar retirada</button>
+                    </form>
+                    <div style="overflow-x:auto;">
+                        <table class="rio-tour-table finance-table">
+                            <thead>
+                                <tr><th>Data</th><th>Descrição</th><th>Cidade</th><th>Valor</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="financeRetiradasBody">
+                                <tr><td colspan="5" style="padding:0.75rem;">Nenhuma retirada neste mês.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="finance-block">
+                    <h3>Despesas</h3>
+                    <form id="financeFormDespesa" class="finance-add-form">
+                        <input type="text" id="financeDespesaDesc" placeholder="Descrição." required />
+                        <input type="number" id="financeDespesaValor" min="0.01" step="0.01" placeholder="Valor (R$)" required />
+                        <input type="date" id="financeDespesaData" required />
+                        <label class="finance-parcelas-label">
+                            Parcelas
+                            <input type="number" id="financeDespesaParcelas" min="1" max="60" value="1" />
+                        </label>
+                        <button type="submit" class="btn-book">Adicionar despesa</button>
+                    </form>
+                    <div style="overflow-x:auto;">
+                        <table class="rio-tour-table finance-table">
+                            <thead>
+                                <tr><th>Data</th><th>Descrição</th><th>Parcela</th><th>Cidade</th><th>Valor</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="financeDespesasBody">
+                                <tr><td colspan="6" style="padding:0.75rem;">Nenhuma despesa neste mês.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="finance-block">
+                    <h3>Despesas fixas</h3>
+                    <form id="financeFormDespesaFixa" class="finance-add-form">
+                        <input type="text" id="financeDespesaFixaDesc" placeholder="Descrição." required />
+                        <input type="number" id="financeDespesaFixaValor" min="0.01" step="0.01" placeholder="Valor mensal (R$)" required />
+                        <label class="finance-parcelas-label">
+                            Dia do mês
+                            <input type="number" id="financeDespesaFixaDia" min="1" max="31" value="5" />
+                        </label>
+                        <button type="submit" class="btn-book">Adicionar despesa fixa</button>
+                    </form>
+                    <div style="overflow-x:auto;">
+                        <table class="rio-tour-table finance-table">
+                            <thead>
+                                <tr><th>Descrição</th><th>Valor mensal</th><th>Dia</th><th>Cidade</th><th>Início</th><th>Situação</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="financeDespesasFixasBody">
+                                <tr><td colspan="7" style="padding:0.75rem;">Nenhuma despesa fixa cadastrada.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="cidadeContatoSection" style="margin-bottom: 1.25rem;">
+                <div id="cidadeContatoCard" class="cidade-contato-card">
+                    <h3 style="margin:0 0 0.5rem; font-size:1rem; flex:1 1 100%;">Contato por Cidade</h3>
+                    <label>Cidade
+                        <select id="cidadeContatoSelect">
+                            <option value="Inicio">Página Inicial</option>
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Salvador">Salvador</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                        </select>
+                    </label>
+                    <label>WhatsApp (só números, com DDI/DDD)
+                        <input type="text" id="cidadeContatoTelefone" placeholder="Ex: 5521999999999" />
+                    </label>
+                    <label>Email
+                        <input type="email" id="cidadeContatoEmail" placeholder="Ex: contato@site.com" />
+                    </label>
+                    <label>URL do YouTube
+                        <input type="url" id="cidadeContatoYoutube" placeholder="Ex: https://www.youtube.com/@canal" />
+                    </label>
+                    <button type="button" id="cidadeContatoSave" class="btn-book">Salvar</button>
+                    <span id="cidadeContatoStatus" class="cidade-contato-status"></span>
+                </div>
+            </div>
+
+            <div id="cidadeAvisoSection" style="margin-bottom: 1.25rem;">
+                <div id="cidadeAvisoCard" class="cidade-contato-card">
+                    <h3 style="margin:0 0 0.5rem; font-size:1rem; flex:1 1 100%;">Aviso "Informações Importantes"</h3>
+                    <label>Cidade
+                        <select id="cidadeAvisoSelect">
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Salvador">Salvador</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                        </select>
+                    </label>
+                    <label style="flex:0 0 auto;">
+                        <input type="checkbox" id="cidadeAvisoAtivo" style="width:auto; height:auto;" /> Exibir aviso
+                    </label>
+                    <label style="flex:1 1 100%;">Título
+                        <input type="text" id="cidadeAvisoTitulo" placeholder="Informações Importantes" />
+                    </label>
+                    <div style="flex:1 1 100%;">
+                        <strong style="display:block; font-size:0.8rem; color:#33485f; margin-bottom:0.35rem;">Itens do aviso</strong>
+                        <ul id="cidadeAvisoItens" class="cidade-aviso-itens"></ul>
+                        <button type="button" id="cidadeAvisoAddItem" class="btn-book cidade-aviso-add">+ Adicionar item</button>
+                    </div>
+                    <button type="button" id="cidadeAvisoSave" class="btn-book">Salvar</button>
+                    <span id="cidadeAvisoStatus" class="cidade-contato-status"></span>
+                </div>
+            </div>
+
+            <div id="cidadeAwardSection" style="margin-bottom: 1.25rem;">
+                <div id="cidadeAwardCard" class="cidade-contato-card">
+                    <h3 style="margin:0 0 0.5rem; font-size:1rem; flex:1 1 100%;">Card de Premiação ("Reconhecimento Especial")</h3>
+                    <label>Cidade
+                        <select id="cidadeAwardSelect">
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Salvador">Salvador</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                        </select>
+                    </label>
+                    <label style="flex:0 0 auto;">
+                        <input type="checkbox" id="cidadeAwardAtivo" style="width:auto; height:auto;" /> Exibir card
+                    </label>
+                    <label style="flex:1 1 100%;">Link do prêmio (para onde o card leva ao clicar)
+                        <input type="url" id="cidadeAwardLink" placeholder="https://..." />
+                    </label>
+                    <label style="flex:1 1 100%;">Ícone/imagem do prêmio (URL)
+                        <input type="url" id="cidadeAwardImagem" placeholder="https://..." />
+                    </label>
+                    <label style="flex:1 1 100%;">Título do card
+                        <input type="text" id="cidadeAwardTitulo" placeholder="Reconhecimento Especial" />
+                    </label>
+                    <label style="flex:1 1 100%;">Texto do card
+                        <textarea id="cidadeAwardTexto" rows="3" placeholder="Sabia que fomos premiados como a melhor escolha pelo TripAdvisor em 2021? 🏆"></textarea>
+                    </label>
+                    <button type="button" id="cidadeAwardSave" class="btn-book">Salvar</button>
+                    <span id="cidadeAwardStatus" class="cidade-contato-status"></span>
+                </div>
+            </div>
+
+            <div id="paginaSecaoSection" style="margin-bottom: 1.25rem;">
+                <div id="paginaSecaoCard" class="cidade-contato-card">
+                    <h3 style="margin:0 0 0.5rem; font-size:1rem; flex:1 1 100%;">Textos SOBRE / CONTATO / AJUDA</h3>
+                    <label>Página
+                        <select id="paginaSecaoPagina">
+                            <option value="Principal">Principal</option>
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Salvador">Salvador</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                        </select>
+                    </label>
+                    <label>Seção
+                        <select id="paginaSecaoSecao">
+                            <option value="informacoes">Informações (texto padrão do cartão)</option>
+                            <option value="sobre">Sobre</option>
+                            <option value="contato">Contato</option>
+                            <option value="ajuda">Ajuda</option>
+                        </select>
+                    </label>
+                    <label style="flex:1 1 100%;">Título
+                        <input type="text" id="paginaSecaoTitulo" placeholder="Ex: Sobre" />
+                    </label>
+                    <div style="flex:1 1 100%;">
+                        <strong style="display:block; font-size:0.8rem; color:#33485f; margin-bottom:0.35rem;">Parágrafos</strong>
+                        <ul id="paginaSecaoItens" class="cidade-aviso-itens"></ul>
+                        <button type="button" id="paginaSecaoAddItem" class="btn-book cidade-aviso-add">+ Adicionar parágrafo</button>
+                    </div>
+                    <button type="button" id="paginaSecaoSave" class="btn-book">Salvar</button>
+                    <span id="paginaSecaoStatus" class="cidade-contato-status"></span>
+                </div>
+            </div>
+
+            <div id="cidadeVisualSection" style="margin-bottom: 1.25rem;">
+                <div id="cidadeVisualCard" class="cidade-contato-card cidade-visual-card">
+                    <h3 class="cidade-visual-titulo">Identidade Visual da Cidade</h3>
+                    <label class="cidade-visual-cidade">Cidade
+                        <select id="cidadeVisualSelect">
+                            <option value="Rio de Janeiro">Rio de Janeiro</option>
+                            <option value="Salvador">Salvador</option>
+                            <option value="Sao Luis">São Luís do Maranhão</option>
+                            <option value="Lencois">Lençóis Maranhenses</option>
+                        </select>
+                    </label>
+
+                    <section class="cidade-visual-bloco">
+                        <h4 class="cidade-visual-bloco-titulo">Logo</h4>
+                        <div class="cidade-visual-upload">
+                            <img id="cidadeVisualLogoPreview" class="cidade-visual-preview" alt="Prévia da logo" style="display:none;" />
+                            <input type="file" id="cidadeVisualLogoInput" class="cidade-visual-file" accept="image/*" />
+                            <button type="button" id="cidadeVisualLogoUpload" class="btn-book">Enviar logo</button>
+                        </div>
+                    </section>
+
+                    <section class="cidade-visual-bloco">
+                        <h4 class="cidade-visual-bloco-titulo">Painel (topo da página)</h4>
+                        <label class="cidade-visual-modo-label">Modo
+                            <select id="cidadeVisualPainelModo" class="cidade-visual-modo" data-alvo="painel">
+                                <option value="imagem">Imagem</option>
+                                <option value="solida">Cor sólida</option>
+                                <option value="degrade">Degradê</option>
+                            </select>
+                        </label>
+                        <div id="cidadeVisualPainelImagemBox" class="cidade-visual-upload">
+                            <img id="cidadeVisualPainelPreview" class="cidade-visual-preview" alt="Prévia do painel" style="display:none;" />
+                            <input type="file" id="cidadeVisualPainelInput" class="cidade-visual-file" accept="image/*" />
+                            <button type="button" id="cidadeVisualPainelUpload" class="btn-book">Enviar imagem</button>
+                        </div>
+                        <div id="cidadeVisualPainelCorBox" class="cidade-visual-cores" style="display:none;">
+                            <label id="cidadeVisualPainelDegradeTipoLabel" style="display:none;">Tipo de degradê
+                                <select id="cidadeVisualPainelDegradeTipo">
+                                    <option value="linear">Linear</option>
+                                    <option value="radial">Radial</option>
+                                    <option value="conic">Cônico</option>
+                                </select>
+                            </label>
+                            <div class="color-alpha-field">
+                                <span class="color-alpha-field-label">Cor 1</span>
+                                <div class="color-alpha-picker" data-target-color="cidadeVisualPainelCor1" data-target-alpha="cidadeVisualPainelCor1Alpha"></div>
+                                <input type="color" id="cidadeVisualPainelCor1" hidden />
+                                <input type="range" id="cidadeVisualPainelCor1Alpha" min="0" max="100" value="100" hidden />
+                            </div>
+                            <div id="cidadeVisualPainelCor2Label" class="color-alpha-field" style="display:none;">
+                                <span class="color-alpha-field-label">Cor 2</span>
+                                <div class="color-alpha-picker" data-target-color="cidadeVisualPainelCor2" data-target-alpha="cidadeVisualPainelCor2Alpha"></div>
+                                <input type="color" id="cidadeVisualPainelCor2" hidden />
+                                <input type="range" id="cidadeVisualPainelCor2Alpha" min="0" max="100" value="100" hidden />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="cidade-visual-bloco">
+                        <h4 class="cidade-visual-bloco-titulo">Fundo da página</h4>
+                        <label class="cidade-visual-modo-label">Modo
+                            <select id="cidadeVisualFundoModo" class="cidade-visual-modo" data-alvo="fundo">
+                                <option value="imagem">Imagem</option>
+                                <option value="solida">Cor sólida</option>
+                                <option value="degrade">Degradê</option>
+                            </select>
+                        </label>
+                        <div id="cidadeVisualFundoImagemBox" class="cidade-visual-upload">
+                            <img id="cidadeVisualFundoPreview" class="cidade-visual-preview" alt="Prévia do fundo" style="display:none;" />
+                            <input type="file" id="cidadeVisualFundoInput" class="cidade-visual-file" accept="image/*" />
+                            <button type="button" id="cidadeVisualFundoUpload" class="btn-book">Enviar imagem</button>
+                        </div>
+                        <div id="cidadeVisualFundoCorBox" class="cidade-visual-cores" style="display:none;">
+                            <label id="cidadeVisualFundoDegradeTipoLabel" style="display:none;">Tipo de degradê
+                                <select id="cidadeVisualFundoDegradeTipo">
+                                    <option value="linear">Linear</option>
+                                    <option value="radial">Radial</option>
+                                    <option value="conic">Cônico</option>
+                                </select>
+                            </label>
+                            <div class="color-alpha-field">
+                                <span class="color-alpha-field-label">Cor 1</span>
+                                <div class="color-alpha-picker" data-target-color="cidadeVisualFundoCor1" data-target-alpha="cidadeVisualFundoCor1Alpha"></div>
+                                <input type="color" id="cidadeVisualFundoCor1" hidden />
+                                <input type="range" id="cidadeVisualFundoCor1Alpha" min="0" max="100" value="100" hidden />
+                            </div>
+                            <div id="cidadeVisualFundoCor2Label" class="color-alpha-field" style="display:none;">
+                                <span class="color-alpha-field-label">Cor 2</span>
+                                <div class="color-alpha-picker" data-target-color="cidadeVisualFundoCor2" data-target-alpha="cidadeVisualFundoCor2Alpha"></div>
+                                <input type="color" id="cidadeVisualFundoCor2" hidden />
+                                <input type="range" id="cidadeVisualFundoCor2Alpha" min="0" max="100" value="100" hidden />
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="cidade-visual-rodape">
+                        <button type="button" id="cidadeVisualSave" class="btn-book">Salvar cores/modo</button>
+                        <span id="cidadeVisualStatus" class="cidade-contato-status"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pageManagementToursSection" style="overflow-x:auto; margin-bottom: 1.25rem;">
+                <div id="tourBulkImportStatus" class="tour-bulk-import-status" style="display:none;"></div>
+                <div style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:0.9rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.9rem;">
+                        <h3 style="margin:0; font-size:1rem;">Tours da Página</h3>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button type="button" id="tourBulkDownloadButton" class="btn-book" style="background:#fff; color:#0b3c6d; border:1px solid rgba(11,60,109,0.3);">Baixar JSON</button>
+                            <button type="button" id="tourBulkImportButton" class="btn-book" style="background:#fff; color:#0b3c6d; border:1px solid rgba(11,60,109,0.3);">Importar JSON</button>
+                            <input type="file" id="tourBulkImportInput" accept="application/json,.json" hidden />
+                            <button type="button" id="tourAddButton" class="btn-book">+ Adicionar Tour</button>
+                        </div>
+                    </div>
+                    <div class="filtro-reservas-grid">
+                        <label>Cidade
+                            <select id="filterTourManagementCidade">
+                                <option value="">Todas as cidades</option>
+                                <option value="Rio de Janeiro">Rio de Janeiro</option>
+                                <option value="Lencois">Lençóis Maranhenses</option>
+                                <option value="Sao Luis">São Luís do Maranhão</option>
+                                <option value="Salvador">Salvador</option>
+                            </select>
+                        </label>
+                        <label>Modalidade
+                            <select id="filterTourManagementModalidade">
+                                <option value="all">Todas</option>
+                                <option value="free">Aberto (Free)</option>
+                                <option value="privado">Privado</option>
+                                <option value="transfer">Transfer</option>
+                            </select>
+                        </label>
+                        <label>Status
+                            <select id="filterTourManagementStatus">
+                                <option value="all">Todos</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Pausado">Pausado</option>
+                                <option value="Oculto">Oculto</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <table class="rio-tour-table">
+                    <thead>
+                        <tr>
+                            <th>Ordem</th>
+                            <th>Posição</th>
+                            <th>Tour</th>
+                            <th>Cidade</th>
+                            <th>Idiomas</th>
+                            <th>Encontro</th>
+                            <th>Identificação</th>
+                            <th>Link</th>
+                            <th>Valor</th>
+                            <th>Modalidade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tourManagementBody">
+                        <tr><td colspan="11" style="padding:0.75rem;">Nenhum tour carregado.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="maintenanceModeSection" class="super-admin-only" style="display:none; margin-bottom: 1.25rem;">
+                <div id="maintenanceModeCard" class="cidade-contato-card">
+                    <h3 style="margin:0 0 0.5rem; font-size:1rem; flex:1 1 100%;">Modo de Manutenção</h3>
+                    <div class="maintenance-target-list">
+                        <label class="maintenance-target-label">
+                            <input type="checkbox" class="maintenance-target-checkbox" data-target="Inicio" /> Página Inicial
+                        </label>
+                        <label class="maintenance-target-label">
+                            <input type="checkbox" class="maintenance-target-checkbox" data-target="Rio de Janeiro" /> Rio de Janeiro
+                        </label>
+                        <label class="maintenance-target-label">
+                            <input type="checkbox" class="maintenance-target-checkbox" data-target="Salvador" /> Salvador
+                        </label>
+                        <label class="maintenance-target-label">
+                            <input type="checkbox" class="maintenance-target-checkbox" data-target="Sao Luis" /> São Luís do Maranhão
+                        </label>
+                        <label class="maintenance-target-label">
+                            <input type="checkbox" class="maintenance-target-checkbox" data-target="Lencois" /> Lençóis Maranhenses
+                        </label>
+                    </div>
+                    <span id="maintenanceModeStatus" class="cidade-contato-status"></span>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Modal de edição de reserva -->
+    <div id="reservationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <h3 id="modalTitle">Editar reserva</h3>
+            <div class="modal-body">
+              <form id="reservationForm">
+                  <label>
+                      Tour
+                      <select id="modalTour" required>
+                          <option value="">Selecione um tour</option>
+                      </select>
+                  </label>
+                  <label>
+                      Data
+                      <input type="date" id="modalDate" required />
+                  </label>
+                  <label>
+                      Hora
+                      <input type="time" id="modalTime" required />
+                  </label>
+                  <label>
+                      Idioma
+                      <select id="modalLanguage">
+                          <option value="">Selecione um idioma</option>
+                      </select>
+                  </label>
+                  <label>
+                      Modalidade
+                      <select id="modalModality">
+                          <option value="free">Free</option>
+                          <option value="privado">Privado</option>
+                      </select>
+                  </label>
+                  <label class="phone-field">
+                      Celular
+                      <div class="phone-input-wrapper">
+                        <input type="tel" id="modalPhone" placeholder="(00) 00000-0000" />
+                        <button type="button" class="whatsapp-link" aria-label="Abrir WhatsApp">
+                          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                  </label>
+                  <label>
+                      Email
+                      <input type="email" id="modalEmail"  />
+                  </label>
+                  <label>
+                      Nome
+                      <input type="text" id="modalName" placeholder="Nome do cliente" />
+                  </label>
+                  <label>
+                      Guia
+                      <input type="text" id="modalGuide" list="modalGuideOptions" autocomplete="off" />
+                      <datalist id="modalGuideOptions"></datalist>
+                  </label>
+                  <label>
+                      Pessoas
+                      <input type="number" id="modalQuantity" min="1" value="1" />
+                  </label>
+                  <label>
+                      Status
+                      <select id="modalStatus">
+                          <option value="Pendente">Pendente</option>
+                          <option value="Confirmado">Confirmado</option>
+                          <option value="Cancelado">Cancelado</option>                            <option value="Finalizado">Finalizado</option>                      </select>
+                  </label>
+                  <label>
+                      Origem da reserva
+                      <input type="text" id="modalOrigem" placeholder="Ex:Site de Origem..." />
+                  </label>
+                  <div class="modal-actions">
+                      <button type="button" id="modalDelete" class="btn-book btn-danger">Excluir</button>
+                      <button type="button" id="modalCancel" class="btn-book">Cancelar</button>
+                      <button type="button" id="modalSave" class="btn-book">Salvar</button>
+                  </div>
+                  <div id="deleteConfirmation" class="delete-confirmation hidden">
+                      <p>Deslize para confirmar a exclusão:</p>
+                      <div class="delete-slider">
+                          <input type="range" id="deleteSlider" min="0" max="100" value="0" />
+                          <span id="deleteSliderLabel">Arraste até o final</span>
+                      </div>
+                    <div class="modal-actions">
+                        <button type="button" id="modalDeleteCancel" class="btn-book">Cancelar</button>
+                        <button type="button" id="modalDeleteConfirm" class="btn-book btn-danger" disabled>Confirmar exclusão</button>
+                    </div>
+                  </div>
+              </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="platformModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="platformModalTitle" style="z-index:5000;">
+      <div class="modal-content">
+        <h3 id="platformModalTitle">Nova Plataforma de Reserva</h3>
+        <div class="modal-body">
+          <form id="platformForm">
+            <label>
+              Identificador
+              <input type="text" id="platformNome" placeholder="ex: getyourguide" autocomplete="off" />
+              <span style="font-size:0.75rem; color:#6b7280;">Sem espaços — precisa ser igual ao "nome" do conector em reserva_sync.py.</span>
+            </label>
+            <label>
+              URL de login
+              <input type="url" id="platformUrl" placeholder="https://..." />
+            </label>
+            <label>
+              E-mail de login
+              <input type="email" id="platformEmail" />
+            </label>
+            <label>
+              Senha
+              <input type="password" id="platformSenha" placeholder="Deixe em branco para manter a senha atual" autocomplete="new-password" />
+            </label>
+            <label>
+              Código de confirmação
+              <input type="text" id="platformCodigoConfirmacao" placeholder="Se a plataforma exigir código de confirmação no login" />
+            </label>
+            <div class="modal-actions">
+              <button type="button" id="platformDelete" class="btn-book btn-danger">Excluir</button>
+              <button type="button" id="platformCancel" class="btn-book">Cancelar</button>
+              <button type="button" id="platformSave" class="btn-book">Salvar</button>
+            </div>
+            <div id="platformDeleteConfirmation" class="delete-confirmation hidden">
+                <p>Deslize para confirmar a exclusão:</p>
+                <div class="delete-slider">
+                    <input type="range" id="platformDeleteSlider" min="0" max="100" value="0" />
+                    <span id="platformDeleteSliderLabel">Arraste até o final</span>
+                </div>
+              <div class="modal-actions">
+                  <button type="button" id="platformDeleteCancel" class="btn-book">Cancelar</button>
+                  <button type="button" id="platformDeleteConfirm" class="btn-book btn-danger" disabled>Confirmar exclusão</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmação por barra deslizante antes de colocar uma página em manutenção -->
+    <div id="maintenanceConfirmOverlay" class="maintenance-confirm-overlay" style="z-index:3000;">
+      <div class="login-modal" style="max-width:380px;">
+        <div class="login-modal__header">
+          <h2 class="login-modal__title">Confirmar manutenção</h2>
+          <button type="button" class="login-modal__close" id="maintenanceConfirmClose">&times;</button>
+        </div>
+        <p id="maintenanceConfirmText" style="font-size:0.9rem; color:rgba(0,0,0,0.7); margin:0 0 1.25rem;">Isso vai tirar esta página do ar para os visitantes. Arraste até o fim para confirmar.</p>
+        <div class="slide-confirm-track" id="maintenanceSlideTrack">
+          <div class="slide-confirm-fill" id="maintenanceSlideFill"></div>
+          <span class="slide-confirm-label" id="maintenanceSlideLabel">Arraste para confirmar</span>
+          <div class="slide-confirm-handle" id="maintenanceSlideHandle"><i class="fa fa-chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de edição de tour da página -->
+    <div id="tourEditModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="tourModalTitle" style="z-index:5000;">
+      <div class="modal-content">
+        <h3 id="tourModalTitle">Editar Tour</h3>
+        <div class="modal-body">
+          <div id="tourModalJsonStatus" class="tour-bulk-import-status" style="display:none;"></div>
+          <form id="tourEditForm">
+            <fieldset>
+              <legend>Dados básicos</legend>
+              <p class="tour-modal-id">
+                <strong>ID:</strong> <span id="tourModalId">--</span>
+                <!-- Link direto pro tour (?tour=<id>): antes era um campo de
+                     texto + botão "Copiar link" ocupando uma faixa inteira do
+                     formulário; virou só este ícone, que copia a mesma URL. -->
+                <button type="button" id="tourModalCopyDirectUrl" class="tour-modal-share" title="Copiar link direto deste tour" aria-label="Copiar link direto deste tour">
+                  <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </button>
+                <input type="hidden" id="tourModalDirectUrl" />
+              </p>
+              <div class="tour-modal-json-toolbar">
+                <button type="button" id="tourModalDownloadJson" class="btn-book" style="background:#fff; color:#0b3c6d; border:1px solid rgba(11,60,109,0.3);">Baixar JSON deste tour</button>
+                <button type="button" id="tourModalImportJson" class="btn-book" style="background:#fff; color:#0b3c6d; border:1px solid rgba(11,60,109,0.3);">Importar JSON para este tour</button>
+                <input type="file" id="tourModalImportJsonInput" accept="application/json,.json" hidden />
+              </div>
+              <div class="modal-field-grid">
+                <label>
+                  Nome
+                  <input type="text" id="tourModalName" required />
+                </label>
+                <label>
+                  Cidade
+                  <select id="tourModalCidade">
+                    <option value="">Selecione</option>
+                    <option value="Rio de Janeiro">Rio de Janeiro</option>
+                    <option value="Lencois">Lençóis Maranhenses</option>
+                    <option value="Sao Luis">São Luís do Maranhão</option>
+                    <option value="Salvador">Salvador</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                Pasta de Imagens
+                <input type="text" id="tourModalPastaImagens" placeholder="Ex: CentroHistorico" />
+              </label>
+              <label class="modal-subgroup-label">Idiomas do tour</label>
+              <div class="checkbox-row">
+                <label><input type="checkbox" id="tourModalLanguagePt" value="Português" /> Português</label>
+                <label><input type="checkbox" id="tourModalLanguageEn" value="Inglês" /> Inglês</label>
+                <label><input type="checkbox" id="tourModalLanguageEs" value="Espanhol" /> Espanhol</label>
+              </div>
+            </fieldset>
+
+            <div class="tour-lang-card">
+              <div class="tour-lang-tabs" id="tourModalLangTabs">
+                <button type="button" class="tour-lang-tab active" data-lang="pt">Português</button>
+                <button type="button" class="tour-lang-tab" data-lang="en">English</button>
+                <button type="button" class="tour-lang-tab" data-lang="fr">Français</button>
+                <button type="button" class="tour-lang-tab" data-lang="es">Español</button>
+                <button type="button" class="tour-lang-tab" data-lang="it">Italiano</button>
+                <button type="button" class="tour-lang-tab" data-lang="zh">中文</button>
+              </div>
+              <div class="tour-lang-card-body">
+                <fieldset class="tour-lang-section">
+                  <legend>Informações do tour</legend>
+                  <div class="modal-field-grid">
+                    <label>
+                      Período
+                      <input type="text" id="tourModalPeriodo" placeholder="Ex: Junho a Setembro (deixe em branco ou N/U para ocultar)" />
+                    </label>
+                    <label>
+                      Saída
+                      <input type="text" id="tourModalSaida" placeholder="Ex: São Luís ou Barreirinhas (deixe em branco ou N/U para ocultar)" />
+                    </label>
+                    <label>
+                      Grupo
+                      <input type="text" id="tourModalGrupo" placeholder="Ex: Mínimo 2 pessoas (deixe em branco ou N/U para ocultar)" />
+                    </label>
+                    <label class="tour-lang-only-pt">
+                      Duração
+                      <div class="tour-duracao-picker">
+                        <select id="tourModalDuracaoDias" aria-label="Dias de duração">
+                          <option value="">Dias</option>
+                          <option value="0">0d</option>
+                          <option value="1">1 dia</option>
+                          <option value="2">2 dias</option>
+                          <option value="3">3 dias</option>
+                          <option value="4">4 dias</option>
+                          <option value="5">5 dias</option>
+                          <option value="6">6 dias</option>
+                          <option value="7">7 dias</option>
+                          <option value="10">10 dias</option>
+                          <option value="15">15 dias</option>
+                        </select>
+                        <select id="tourModalDuracaoHoras" aria-label="Horas de duração">
+                          <option value="">Horas</option>
+                          <option value="0">0h</option>
+                          <option value="1">1h</option>
+                          <option value="2">2h</option>
+                          <option value="3">3h</option>
+                          <option value="4">4h</option>
+                          <option value="5">5h</option>
+                          <option value="6">6h</option>
+                          <option value="7">7h</option>
+                          <option value="8">8h</option>
+                          <option value="9">9h</option>
+                          <option value="10">10h</option>
+                          <option value="11">11h</option>
+                          <option value="12">12h</option>
+                        </select>
+                        <select id="tourModalDuracaoMinutos" aria-label="Minutos de duração">
+                          <option value="">Min</option>
+                          <option value="0">00</option>
+                          <option value="15">15</option>
+                          <option value="30">30</option>
+                          <option value="45">45</option>
+                        </select>
+                        <!-- Fonte da verdade da duração ("2 dias 4h30"), montada pelos três
+                             seletores acima (formatDuracaoFromSelects) e lida no salvamento.
+                             Era um campo de texto visível; virou hidden porque o admin passou
+                             a preencher só pelos seletores. -->
+                        <input type="hidden" id="tourModalDuracao" />
+                      </div>
+                    </label>
+                  </div>
+                  <label>
+                    Dias da semana
+                    <input type="text" id="tourModalDiasSemana" placeholder="Defina os horários por dia abaixo" readonly />
+                  </label>
+                </fieldset>
+
+                <fieldset class="tour-lang-section">
+                  <legend>Ponto de encontro</legend>
+                  <div class="modal-field-grid">
+                    <label>
+                      Encontro
+                      <input type="text" id="tourModalMeeting" placeholder="Deixe em branco ou N/U para ocultar" />
+                    </label>
+                    <label>
+                      Identificação do guia
+                      <input type="text" id="tourModalIdentification" placeholder="Deixe em branco ou N/U para ocultar" />
+                    </label>
+                    <label>
+                      Ponto de embarque
+                      <input type="text" id="tourModalPontoEmbarque" placeholder="Deixe em branco ou N/U para ocultar" />
+                    </label>
+                    <label>
+                      Ponto de desembarque
+                      <input type="text" id="tourModalPontoDesembarque" placeholder="Deixe em branco ou N/U para ocultar" />
+                    </label>
+                  </div>
+                  <label class="tour-lang-only-pt">
+                    Link do local de encontro
+                    <input type="url" id="tourModalLink" placeholder="https://..." />
+                  </label>
+                </fieldset>
+
+                <fieldset class="tour-lang-section">
+                  <legend>Descrição</legend>
+                  <label>
+                    Inclui
+                    <textarea id="tourModalInclui" placeholder="Deixe em branco ou N/U para ocultar. Use Enter para nova linha, ✓/✕/* com espaço no início da linha para lista, *texto* ou **texto** para negrito"></textarea>
+                  </label>
+                  <label>
+                    Roteiro
+                    <textarea id="tourModalRoteiro" placeholder="Deixe em branco ou N/U para ocultar. Use Enter para nova linha, ✓/✕/* com espaço no início da linha para lista, *texto* ou **texto** para negrito"></textarea>
+                  </label>
+                </fieldset>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Comercial e reserva</legend>
+              <div class="modal-field-grid">
+                <label>
+                  Valor por pessoa
+                  <input type="number" id="tourModalValue" min="0" step="0.01" placeholder="0.00" />
+                </label>
+                <label>
+                  Status
+                  <select id="tourModalStatus">
+                    <option value="Ativo">Ativo</option>
+                    <option value="Pausado">Pausado (reserva indisponível, tour continua visível)</option>
+                    <option value="Oculto">Oculto (some da página pública)</option>
+                  </select>
+                </label>
+                <label>
+                  Modalidade
+                  <select id="tourModalModalidade">
+                    <option value="free">Aberto (Free)</option>
+                    <option value="privado">Privado</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </label>
+                <label>
+                  Reserva ("Reservar agora")
+                  <select id="tourModalCanalReserva">
+                    <option value="web">Site (abre o formulário de reserva)</option>
+                    <option value="whatsapp">WhatsApp (redireciona com mensagem pronta)</option>
+                  </select>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Horários por dia da semana</legend>
+              <p class="tour-horarios-hint">Adicione os horários em que o tour funciona em cada dia. Dias sem nenhum horário ficam indisponíveis para reserva naquele dia da semana; ao escolher a data, o cliente só vê os horários do dia correspondente.</p>
+              <div id="tourModalHorariosPorDia" class="tour-horarios-dias"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Imagens</legend>
+              <div id="tourModalGallery" class="tour-gallery"></div>
+              <div class="tour-gallery-upload">
+                <input type="file" id="tourModalImageInput" accept="image/*" multiple />
+                <button type="button" id="tourModalUploadImages" class="btn-book">Enviar Imagens</button>
+              </div>
+              <div id="tourModalImagePreview" class="tour-gallery tour-gallery-preview-pending"></div>
+            </fieldset>
+
+            <fieldset class="tour-avaliacoes-fieldset">
+              <legend>Avaliações dos clientes</legend>
+              <div id="tourModalComments" class="tour-comments-admin-list"></div>
+            </fieldset>
+
+            <div class="modal-actions">
+              <button type="button" id="tourModalPause" class="btn-book" style="background:#f59e0b; color:#fff;">Pausar</button>
+              <button type="button" id="tourModalDelete" class="btn-book btn-danger">Excluir</button>
+              <span class="modal-actions-spacer"></span>
+              <button type="button" id="tourModalCancel" class="btn-book">Cancelar</button>
+              <button type="button" id="tourModalSave" class="btn-book">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de edição de perfil de acesso -->
+    <div id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle" style="z-index:5000;">
+      <div class="modal-content">
+        <h3 id="accountModalTitle">Gerenciar Perfil de Acesso</h3>
+        <div class="modal-body">
+          <form id="accountForm">
+            <label>
+              E-mail (não editável)
+              <input type="email" id="accountEmail" readonly />
+            </label>
+            <label>
+              Nome
+              <input type="text" id="accountNome" />
+            </label>
+            <label>
+              Sobrenome
+              <input type="text" id="accountSobrenome" />
+            </label>
+            <label>
+              Celular
+              <input type="text" id="accountCelular" />
+            </label>
+            <label>
+              País de Origem
+              <input type="text" id="accountPaisOrigem" placeholder="Brasil" />
+            </label>
+            <label>
+              Gênero
+              <select id="accountGenero">
+                <option value="">Não informado</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </label>
+            <label>
+              Role
+              <select id="accountRole"></select>
+            </label>
+            <label>
+              Nova Senha (opcional)
+              <input type="password" id="accountSenha" placeholder="Deixe em branco para manter a senha atual" autocomplete="new-password" />
+            </label>
+            <div id="accountWhatsAppFields" style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid #e5e7eb;">
+              <label style="flex-direction:row; align-items:center; gap:0.5rem;">
+                <input type="checkbox" id="accountWhatsAppAlerta" style="width:auto; flex:0 0 auto;" /> Receber alertas por WhatsApp
+              </label>
+              <span style="font-size:0.8rem; color:#6b7280; display:block; margin:0.15rem 0 0.5rem;">Usa o número do campo "Celular" acima (precisa ter DDI + DDD).</span>
+              <button type="button" id="accountWhatsAppPause" class="btn-book" style="font-size:0.85rem;">Pausar alertas</button>
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="accountDelete" class="btn-book btn-danger">Excluir Perfil</button>
+              <button type="button" id="accountCancel" class="btn-book">Cancelar</button>
+              <button type="button" id="accountSave" class="btn-book">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de criação de nova conta -->
+    <div id="addAccountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addAccountModalTitle" style="z-index:5000;">
+      <div class="modal-content">
+        <h3 id="addAccountModalTitle">Nova Conta</h3>
+        <div class="modal-body">
+          <form id="addAccountForm">
+            <label>
+              E-mail
+              <input type="email" id="newAccountEmail" required />
+            </label>
+            <label>
+              Senha
+              <input type="password" id="newAccountSenha" autocomplete="new-password" required />
+            </label>
+            <label>
+              Nome
+              <input type="text" id="newAccountNome" />
+            </label>
+            <label>
+              Sobrenome
+              <input type="text" id="newAccountSobrenome" />
+            </label>
+            <label>
+              Celular
+              <input type="text" id="newAccountCelular" />
+            </label>
+            <label>
+              País de Origem
+              <input type="text" id="newAccountPaisOrigem" placeholder="Brasil" />
+            </label>
+            <label>
+              Gênero
+              <select id="newAccountGenero">
+                <option value="">Não informado</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </label>
+            <label>
+              Role
+              <select id="newAccountRole"></select>
+            </label>
+            <div id="newAccountWhatsAppFields" style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid #e5e7eb;">
+              <label style="flex-direction:row; align-items:center; gap:0.5rem;">
+                <input type="checkbox" id="newAccountWhatsAppAlerta" style="width:auto; flex:0 0 auto;" /> Receber alertas por WhatsApp
+              </label>
+              <span style="font-size:0.8rem; color:#6b7280; display:block; margin-top:0.15rem;">Usa o número do campo "Celular" acima (precisa ter DDI + DDD).</span>
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="addAccountCancel" class="btn-book">Cancelar</button>
+              <button type="button" id="addAccountSave" class="btn-book">Criar Conta</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="floating-calculator-group">
+      <button id="translateFloatingBtn" class="floating-action-button floating-translate-button" type="button" aria-label="Traduzir">
+        <i class="fa fa-language" aria-hidden="true"></i>
+      </button>
+      <button id="financeFloatingCalc" class="floating-calculator" type="button" aria-label="Abrir calculadora">
+        <i class="fa fa-calculator" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div id="floatingToolsBackdrop" class="floating-tools-backdrop" aria-hidden="true"></div>
+
+    <div id="translateFloatingPanel" class="floating-translate-panel hidden" aria-hidden="true">
+      <div class="floating-calculator-header">
+        <span>Tradutor</span>
+        <button id="closeTranslatePanel" class="floating-calculator-close" type="button" aria-label="Fechar tradutor">×</button>
+      </div>
+      <div class="translator-widget">
+        <div class="translator-direction-row">
+          <label>
+            Idioma de origem
+            <select id="translatorSourceLang" aria-label="Idioma de origem">
+              <option value="pt">Português</option>
+              <option value="en">Inglês</option>
+              <option value="es">Espanhol</option>
+            </select>
+          </label>
+          <label>
+            Idioma de destino
+            <select id="translatorTargetLang" aria-label="Idioma de destino">
+              <option value="en">Inglês</option>
+              <option value="pt">Português</option>
+              <option value="es">Espanhol</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Texto a traduzir
+          <textarea id="translatorSource" rows="4" placeholder="Digite aqui o texto..." aria-label="Texto de origem"></textarea>
+        </label>
+        <label class="translator-result-label">
+          Resultado
+          <div class="translator-result-wrapper">
+            <textarea id="translatorResult" rows="4" placeholder="A tradução aparecerá aqui..." aria-label="Texto traduzido"></textarea>
+            <button id="copyTranslationBtn" class="translator-copy-icon" type="button" aria-label="Copiar tradução">
+              <i class="fa fa-copy" aria-hidden="true"></i>
+            </button>
+          </div>
+        </label>
+        <div class="translator-actions-row">
+          <button id="translateSubmit" class="btn-book" type="button">Traduzir</button>
+          <button id="saveTranslationBtn" class="btn-book btn-secondary" type="button">Salvar tradução</button>
+        </div>
+        <div class="translation-history">
+          <div class="translation-history-header">Traduções salvas</div>
+          <div id="translationHistoryList" class="translation-history-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="financeCalculatorPanel" class="floating-calculator-panel hidden" aria-hidden="true">
+        <div class="floating-calculator-header">
+            <span>Calculadora Real ↔ Dólar</span>
+            <button id="closeFinanceCalculator" class="floating-calculator-close" type="button" aria-label="Fechar calculadora">×</button>
+        </div>
+        <div class="currency-converter" aria-label="Calculadora de conversão de moeda">
+            <div class="currency-converter-grid">
+                <label>
+                    Valor em Real (BRL)
+                    <input type="number" id="brlAmountFloating" min="0" step="0.01" placeholder="0,00" />
+                </label>
+                <label>
+                    Cotação atual (1 USD = BRL)
+                    <input type="number" id="usdRateFloating" min="0" step="0.0001" readonly placeholder="Carregando..." />
+                </label>
+                <label>
+                    Valor em Dólar (USD)
+                    <input type="number" id="usdResultFloating" min="0" step="0.01" placeholder="0,00" />
+                </label>
+            </div>
+        </div>
+        <div class="floating-standard-calculator" aria-label="Calculadora convencional">
+            <input type="text" id="floatingCalcDisplay" class="floating-calc-display" inputmode="text" autocomplete="off" aria-label="Visor da calculadora" placeholder="Digite números e operadores" />
+            <div class="floating-calc-keypad">
+                <button type="button" class="floating-calc-key" data-value="C">C</button>
+                <button type="button" class="floating-calc-key" data-value="⌫">⌫</button>
+                <button type="button" class="floating-calc-key" data-value="(">(</button>
+                <button type="button" class="floating-calc-key" data-value=")">)</button>
+                <button type="button" class="floating-calc-key floating-calc-key--operator" data-value="/">÷</button>
+                <button type="button" class="floating-calc-key" data-value="7">7</button>
+                <button type="button" class="floating-calc-key" data-value="8">8</button>
+                <button type="button" class="floating-calc-key" data-value="9">9</button>
+                <button type="button" class="floating-calc-key floating-calc-key--operator" data-value="*">×</button>
+                <button type="button" class="floating-calc-key" data-value="4">4</button>
+                <button type="button" class="floating-calc-key" data-value="5">5</button>
+                <button type="button" class="floating-calc-key" data-value="6">6</button>
+                <button type="button" class="floating-calc-key floating-calc-key--operator" data-value="-">−</button>
+                <button type="button" class="floating-calc-key" data-value="1">1</button>
+                <button type="button" class="floating-calc-key" data-value="2">2</button>
+                <button type="button" class="floating-calc-key" data-value="3">3</button>
+                <button type="button" class="floating-calc-key floating-calc-key--operator" data-value="+">+</button>
+                <button type="button" class="floating-calc-key" data-value="0">0</button>
+                <button type="button" class="floating-calc-key floating-calc-key--operator" data-value="%">%</button>
+                <button type="button" class="floating-calc-key" data-value=","> , </button>
+                <button type="button" class="floating-calc-key floating-calc-key--equals" data-value="=">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api-auth.js?v=1"></script>
+    <script src="../js/Translation.js?v=5"></script>
+    <script src="../js/Riodejaneiro.js?v=94"></script>
+    <script src="../js/color-alpha-picker.js?v=1"></script>
+    <script src="../js/Gerenciamento.js?v=115"></script>
+</body>
+</html>
+
+
+

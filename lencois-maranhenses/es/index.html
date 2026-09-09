@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Checagem BLOQUEANTE de manutenção — ver comentário em index.html. -->
+    <script>
+    (function () {
+        try {
+            var role = (localStorage.getItem('userRole') || '').trim().toLowerCase();
+            if (role === 'admin' || role === 'super_admin') return;
+            // Rastreadores de busca e geradores de preview de link nao passam
+            // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
+            // travaria o rastreamento e entra na conta de tempo de carga que o
+            // Google avalia; (2) com a manutencao ligada o crawler seria
+            // redirecionado para manutencao.html, que e noindex — o Google
+            // entenderia que a pagina real saiu do ar e poderia tira-la do
+            // indice. Visitante humano segue com o comportamento de sempre.
+            if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api-tour.exksvol.com/get_site_config', false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                var targets = JSON.parse(xhr.responseText).maintenance_targets || [];
+                if (targets.indexOf('Lencois') !== -1) {
+                    window.location.replace('/manutencao.html');
+                }
+            }
+        } catch (e) {}
+    })();
+    </script>
+    <title>Excursiones en los Lençóis Maranhenses | Tour by Foot</title>
+    <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
+         metadados — nada aqui altera o que o visitante vê na página. -->
+    <meta name="description" content="Lagoa Azul, Lagoa Bonita, cuatriciclo, trekking y traslados en Barreirinhas. Excursiones en los Lençóis Maranhenses con transporte, guía y seguro.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tour by Foot">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:title" content="Excursiones en los Lençóis Maranhenses | Tour by Foot">
+    <meta property="og:description" content="Lagoa Azul, Lagoa Bonita, cuatriciclo, trekking y traslados en Barreirinhas. Excursiones en los Lençóis Maranhenses con transporte, guía y seguro.">
+    <meta property="og:url" content="https://www.tourbyfoot.com/lencois-maranhenses/es/">
+    <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Excursiones en los Lençóis Maranhenses | Tour by Foot">
+    <meta name="twitter:description" content="Lagoa Azul, Lagoa Bonita, cuatriciclo, trekking y traslados en Barreirinhas. Excursiones en los Lençóis Maranhenses con transporte, guía y seguro.">
+    <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg">
+    <link rel="apple-touch-icon" href="../../imagem/Lencois/assets/Logo2.png?v=4">
+    <link rel="icon" type="image/png" href="../../imagem/Lencois/assets/Logo2.png?v=4">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@400;500;700;900&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css?v=28">
+
+    <link rel="stylesheet" href="../../css/Lencoismaranhenses.css?v=74">
+    <link rel="stylesheet" href="../../css/tour-interacoes.css?v=9">
+<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+    <link rel="canonical" href="https://www.tourbyfoot.com/lencois-maranhenses/es/">
+    <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/lencois-maranhenses/">
+    <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/lencois-maranhenses/en/">
+    <link rel="alternate" hreflang="es" href="https://www.tourbyfoot.com/lencois-maranhenses/es/">
+    <link rel="alternate" hreflang="fr" href="https://www.tourbyfoot.com/lencois-maranhenses/fr/">
+    <link rel="alternate" hreflang="it" href="https://www.tourbyfoot.com/lencois-maranhenses/it/">
+    <link rel="alternate" hreflang="zh" href="https://www.tourbyfoot.com/lencois-maranhenses/zh/">
+    <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/lencois-maranhenses/">
+    <script>
+    // A URL manda no idioma. Quem abrir /lencois-maranhenses/en/ ve ingles, mesmo com
+    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
+    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
+    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
+    window.rotaIdioma = { base: "/lencois-maranhenses/", atual: "es", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
+    try { localStorage.setItem("preferredLanguage", "es"); } catch (e) {}
+    </script>
+    <!-- fim do bloco gerado -->
+</head>
+<body>
+    <div class="main-container rio-page">
+        <header>
+            <div class="nav-left">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <nav>
+                    <a href="/" data-i18n="nav_home">INÍCIO</a>
+                    <a href="#" data-footer-action="sobre" data-i18n="nav_about">SOBRE</a>
+                    <a href="#" data-footer-action="contato" data-i18n="nav_contact">CONTATO</a>
+                    <a href="#" data-footer-action="ajuda" data-i18n="nav_help">AJUDA</a>
+                </nav>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="header-center">
+                <div class="lang-selector" id="langSelector">
+                    <button class="lang-btn" type="button" id="langBtn">
+                        <span class="flag flag-pt"></span><span class="lang-label" data-i18n="lang_label">Português</span>
+                    </button>
+                    <ul class="lang-list" id="langList">
+                        <li data-lang="pt"><span class="flag flag-pt"></span><span class="lang-label">Português</span></li>
+                        <li data-lang="en"><span class="flag flag-en"></span><span class="lang-label">English</span></li>
+                        <li data-lang="fr"><span class="flag flag-fr"></span><span class="lang-label">Français</span></li>
+                        <li data-lang="es"><span class="flag flag-es"></span><span class="lang-label">Español</span></li>
+                        <li data-lang="it"><span class="flag flag-it"></span><span class="lang-label">Italiano</span></li>
+                        <li data-lang="zh"><span class="flag flag-zh"></span><span class="lang-label">中文(普通话)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="profile-menu">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Conta"><i class="fa fa-user-circle"></i></button>
+                <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Opções de conta">
+                    <a href="#" class="profile-item" data-profile-action="login" data-i18n="profile_login">Entrar</a>
+                    <a href="#" class="profile-item" data-profile-action="register" data-i18n="profile_register">Cadastrar</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-menu-container" id="mobileMenuContainer" aria-hidden="true">
+            <div class="mobile-menu-panel">
+                <div class="mobile-menu-header">
+                    <button class="mobile-menu-back" id="mobileMenuBack" type="button" aria-label="Voltar">←</button>
+                    <span class="mobile-menu-title" id="mobileMenuTitle">Menu</span>
+                    <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Fechar">×</button>
+                </div>
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-view mobile-menu-main" data-view="main"></div>
+                    <div class="mobile-menu-view mobile-menu-lang" data-view="lang"></div>
+                    <div class="mobile-menu-view mobile-menu-user" data-view="user"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERO LENÇÓIS -->
+        <section class="rio-hero">
+            <div class="rio-hero-overlay"></div>
+            <div class="rio-hero-content">
+                <div class="rio-hero-brand">
+                    <!-- Telas pequenas: a arte completa do logo (símbolo sobre a tipografia). -->
+                    <img src="../../imagem/Lencois/assets/Logo2.png" alt="Visit Lençóis" class="rio-hero-logo rio-hero-logo--full" loading="eager" decoding="async">
+                    <!-- Telas grandes: a MESMA arte recortada em símbolo + tipografia para
+                         ficarem lado a lado. Os recortes vivem em --mark-*/--word-* no CSS;
+                         as três imagens compartilham a classe .rio-hero-logo para que
+                         cidade-visual.js continue trocando todas pelo logo do servidor. -->
+                    <span class="rio-hero-brand-mark" aria-hidden="true">
+                        <img src="../../imagem/Lencois/assets/Logo2.png" alt="" class="rio-hero-logo" loading="eager" decoding="async">
+                    </span>
+                    <span class="rio-hero-brand-word">
+                        <span class="rio-hero-brand-wordmark">
+                            <img src="../../imagem/Lencois/assets/Logo2.png" alt="Visit Lençóis" class="rio-hero-logo" loading="eager" decoding="async">
+                        </span>
+                        <p class="rio-hero-logo-sub">Tour by Foot</p>
+                    </span>
+                </div>
+                <div class="rio-hero-text">
+                    <h1 class="rio-hero-title"><span class="rio-city-highlight">Lençóis Maranhenses</span></h1>
+                    <p class="rio-hero-location">Maranhão • Brasil</p>
+                    <p class="rio-hero-desc">Descubra o <span class="rio-hero-accent">paraíso das dunas</span> e lagoas cristalinas no coração do <span class="rio-hero-accent">Maranhão</span>. Uma experiência única em um dos cenários naturais mais impressionantes do planeta.</p>
+                    <a href="#tours" class="btn-book">Conhecer Tours</a>
+                </div>
+            </div>
+            <svg class="rio-hero-wave-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 58 C 240 18, 480 18, 720 46 S 1200 82, 1440 40" fill="none" stroke="#e0b653" stroke-width="3"/>
+                <path d="M0 74 C 240 34, 480 34, 720 62 S 1200 98, 1440 56" fill="none" stroke="#e0b653" stroke-width="2" opacity="0.5"/>
+            </svg>
+        </section>
+
+        <!-- AVISO (oculto por padrão; controlado por Gerenciamento > Gerenciamento da página > Aviso "Informações Importantes") -->
+        <section class="rio-notice" style="display:none;">
+            
+            <div class="rio-notice-text">
+                <h2 class="rio-notice-title">Informações Importantes</h2>
+                <!-- Sem texto fixo aqui de propósito: o conteúdo do aviso vem do
+                     servidor (Gerenciamento > Aviso), já traduzido. Texto escrito no
+                     HTML envelhecia sem ninguém perceber e aparecia em português nas
+                     seis versões de idioma. Sem aviso cadastrado, a seção não aparece. -->
+                <div class="rio-notice-actions">
+                    <button class="btn-proceed" type="button">Prosseguir</button>
+                    <button class="btn-dont-show" type="button">Não mostrar novamente</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOURS -->
+        <section class="rio-tours" id="tours">
+            <h2 class="rio-section-title" data-i18n="tours_section_title">Nossas Experiências</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour entram aqui, montados via JS a partir do banco (ver fetchToursFromBackend em site-shell.js) -->
+            </div>
+
+            <!-- Retrato dos tours para o rastreador: os cards de verdade vem da
+                 API por JavaScript, e o Google le o HTML puro. Este bloco e escrito
+                 por tools/snapshot_tours.py e removido da tela pelo JS antes do
+                 primeiro card aparecer — ninguem chega a ve-lo. Nao editar a mao. -->
+            <!-- inicio do retrato de tours -->
+    <div class="tours-snapshot" data-snapshot>
+      <h2>Nuestras experiencias</h2>
+      <article class="tours-snapshot-item">
+        <h3>Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita)</h3>
+        <p>Encuentra al guía en tu hotel por la mañana. Después, relájate durante un paseo en jeep desde Barreirinhas hasta el Parque Nacional de los Lençóis Maranhenses, conocido por sus extensas dunas de arena y paisajes desérticos. Al llegar al parque, comienza la caminata desde una laguna y cruza la arena hasta otra laguna. Haz una parada en un restaurante local en medio de un oasis para disfrutar de un delicioso almuerzo. Después de comer, sal para contemplar la hermosa puesta de sol sobre las dunas y observa cómo cambia el color del cielo. Finalmente, regresa al jeep y vuelve a tu hotel en Barreirinhas para finalizar la actividad.</p>
+        <p>Hasta 9 personas · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img1.jpeg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img2.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img3.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img4.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img5.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img6.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img7.jpg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img8.jpg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Tour Santo Amaro           (Circuito Betânia)</h3>
+        <p>El itinerario incluye la hermosa Laguna de Betânia, ubicada en el pequeño pueblo del mismo nombre. La laguna tiene una gran extensión y está junto a un hermoso río. Ambos están separados por una gran duna que ofrece un excelente punto de vista para disfrutar del paisaje.</p>
+        <p>El paseo comienza a las 09:00, con tres paradas en lagunas para disfrutar del entorno y bañarse. Se proporcionan sombrillas, sillas y hielo para el grupo.</p>
+        <p>Después, hay una parada para almorzar. Para llegar al restaurante, es necesario pagar una tarifa por el cruce en barco, que no está incluida en el paquete. Como alternativa, es posible regresar a la ciudad para almorzar.</p>
+        <p>Hasta 9 personas · Todos os dias · 09:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img1.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img2.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img3.webp" alt="Tour Santo Amaro           (Circuito Betânia) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img4.png" alt="Tour Santo Amaro           (Circuito Betânia) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img5.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img6.png" alt="Tour Santo Amaro           (Circuito Betânia) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img7.png" alt="Tour Santo Amaro           (Circuito Betânia) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img8.png" alt="Tour Santo Amaro           (Circuito Betânia) (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Manhã na Lagoa Azul</h3>
+        <p>Esta es una excursión de medio día a los Lençóis Maranhenses.</p>
+        <p>Comenzamos a recoger a los pasajeros en los hoteles de Barreirinhas alrededor de las 08:30. Una vez que todos estén a bordo, viajamos durante aproximadamente una hora hasta los Lençóis Maranhenses.</p>
+        <p>Caminaremos por las dunas del parque y, desde lo alto, tendrás una vista panorámica de su impresionante paisaje.</p>
+        <p>Después, es hora de explorar las lagunas. Tu guía te llevará a dar un corto paseo por la zona para visitar dos lagunas, donde tendrás tiempo libre para nadar, unos 30 minutos en cada una.</p>
+        <p>En este paseo visitarás el Circuito de la Laguna Azul o el Circuito de la Laguna de la Plata, dependiendo de las condiciones de profundidad de las lagunas en diferentes épocas del año.</p>
+        <p>El horario de recogida es aproximado. Ponte en contacto con nosotros para ajustar los detalles de la recogida.</p>
+        <p>Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img1.webp" alt="Manhã na Lagoa Azul (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img2.jpeg" alt="Manhã na Lagoa Azul (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img3.webp" alt="Manhã na Lagoa Azul (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img4.webp" alt="Manhã na Lagoa Azul (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img5.webp" alt="Manhã na Lagoa Azul (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Transfer de São Luís à Barreirinhas</h3>
+        <p>Salida de Barreirinhas hacia São Luís en minibús o furgoneta con aire acondicionado. El traslado se realiza con un conductor profesional y dura aproximadamente 4 horas y 30 minutos, con una parada a mitad del trayecto para comer y usar el baño.</p>
+        <p>El servicio incluye traslado de ida y vuelta a posadas, hoteles y albergues ubicados dentro del área urbana. Durante el trayecto, podrás contemplar una hermosa puesta de sol sobre el desierto y los paisajes rurales durante el regreso a Barreirinhas.</p>
+        <p>La hora de embarque seleccionada es la hora de salida del viaje, pero la recogida puede comenzar hasta una hora antes. Prepárate para salir una hora antes de la hora seleccionada.</p>
+        <p>Cada pasajero tiene derecho a una pieza de equipaje de hasta 10 kg. Se cobrará una tarifa por cada equipaje adicional.</p>
+        <p>5 horas · Todos os dias · 03:30,08:00,12:30,17:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img1.jpeg" alt="Transfer de São Luís à Barreirinhas (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img2.jpeg" alt="Transfer de São Luís à Barreirinhas (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img3.jpeg" alt="Transfer de São Luís à Barreirinhas (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img4.jpeg" alt="Transfer de São Luís à Barreirinhas (4)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Tour Lagoa Bonita (Entardecer)</h3>
+        <p>Esta es una excursión de medio día a Lençóis con una experiencia al atardecer.</p>
+        <p>Comenzamos a recoger a los pasajeros en los hoteles de Barreirinhas alrededor de las 14:00. Una vez que todos estén a bordo, viajamos durante aproximadamente una hora hasta el centro turístico de Lagoa Bonita.</p>
+        <p>Allí encontraremos un pequeño pueblo con comercios locales, como tiendas de recuerdos artesanales y pequeños bares familiares, además del acceso a la famosa escalinata de Lagoa Bonita.</p>
+        <p>Desde lo alto de la escalinata, tendrás una vista panorámica del impresionante paisaje del parque.</p>
+        <p>Después, es hora de explorar las lagunas. Tu guía te llevará a dar un corto paseo guiado por la zona para visitar dos o tres lagunas, donde tendrás tiempo libre para nadar, unos 40 minutos en cada una.</p>
+        <p>Por último, subirás a la duna más alta de la región para disfrutar de la increíble puesta de sol sobre Lençóis antes de regresar a la ciudad.</p>
+        <p>El horario de recogida es aproximado. Ponte en contacto con nosotros para ajustar los detalles de la recogida.</p>
+        <p>Hasta 9 personas · Todos os dias · 13:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img1.jpg" alt="Tour Lagoa Bonita (Entardecer) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img2.webp" alt="Tour Lagoa Bonita (Entardecer) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img3.webp" alt="Tour Lagoa Bonita (Entardecer) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img4.webp" alt="Tour Lagoa Bonita (Entardecer) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img5.webp" alt="Tour Lagoa Bonita (Entardecer) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img6.jpg" alt="Tour Lagoa Bonita (Entardecer) (6)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Um dia em Atins Beach (Praias e lagoas de Atins)</h3>
+        <p>Una expedición para admirar diferentes paisajes del paraíso de los Lençóis Maranhenses. Verás dunas, lagunas, playa y río, y también podrás probar el famoso camarón a la parrilla de la región, que no está incluido.</p>
+        <p>• Recorre paisajes naturales impresionantes en un vehículo 4x4.</p>
+        <p>• Descubre las paradisíacas lagunas del Parque Nacional de los Lençóis Maranhenses.</p>
+        <p>• Visita el pueblo de Atins y disfruta del sol en la playa.</p>
+        <p>• Pasea junto al río, atraviesa dunas ondulantes y explora la playa.</p>
+        <p>• Ten la oportunidad de probar el famoso camarón a la parrilla de la región, que no está incluido.</p>
+        <p>Hasta 9 personas · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img1.png" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img2.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img3.png" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img4.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img5.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Santo Amaro: Circuito Rancharia</h3>
+        <p>La salida es a las 09:00 hacia el albergue. El trayecto se realiza en vehículos 4x4 y dura como máximo 35 minutos por duna. Al llegar a Rancharia, el vehículo queda cerca de las montañas y es necesario recorrer un pequeño tramo a pie. Para llegar al destino principal, puedes elegir un paseo en barco, que dura unos 10 minutos, o una caminata por una zona inundada hasta la laguna, que dura unos 15 minutos. Finalmente, disfrutarás de una vista espectacular de la Lagoa Bicudo Gordo. La inmensidad de la laguna y las dunas de arena que forman los famosos lóbulos parecen el escenario de una película. Además del privilegio de contemplar los Lençóis Maranhenses en 360°, el agua es tan cristalina que no querrás irte. El paseo dura todo el día, con una pausa para almorzar en un pueblo cercano. Por último, habrá una parada en otras lagunas para un buen baño de despedida y, después, el regreso al punto más alto para disfrutar de la puesta de sol.</p>
+        <p>Hasta 9 personas · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img1.webp" alt="Santo Amaro: Circuito Rancharia (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img2.webp" alt="Santo Amaro: Circuito Rancharia (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img3.webp" alt="Santo Amaro: Circuito Rancharia (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img4.webp" alt="Santo Amaro: Circuito Rancharia (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img5.webp" alt="Santo Amaro: Circuito Rancharia (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Quadriciclo Adventure (Combo lancha + quadri)</h3>
+        <p>El paseo en quad hasta Caburé es una excursión de día completo. Recorrerás unos 80 km de ida y vuelta, pasando por zonas de restinga, cerrado, dunas y lagunas de los Pequeños Lençóis, además de tramos de playa. El tour se realiza en grupo, con el guía de turismo delante y los participantes detrás. El destino final es la playa de Caburé. El paseo termina al final del día, durante el regreso, con una parada en la comunidad de Vassouras. El precio es por quad, con capacidad para hasta 2 personas.</p>
+        <p>Hasta 2 personas por quadriciclo · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img1.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img2.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img3.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img4.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img5.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img6.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img7.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img8.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (8)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img9.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (9)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Passeio de lancha no rio Preguicas - Caburé</h3>
+        <p>Por la mañana, te recogeremos en tu hotel en Barreirinhas antes de dirigirnos al pintoresco río Preguiças. La aventura hacia el paraíso comienza por carretera asfaltada, en un vehículo 4x4, hasta llegar al puerto de Barreirinhas. Al embarcar en nuestra lancha, comenzarás a descubrir los diferentes paisajes a lo largo de las orillas del río más imponente de la región. Haremos paradas para que puedas caminar por las dunas de los Pequeños Lençóis, visitar la comunidad de Vassouras y conocer el Faro de Mandacaru. Finalmente, almorzaremos en Caburé, un lugar que conecta el océano Atlántico con nuestro majestuoso río.</p>
+        <p>Hasta 9 personas · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img1.png" alt="Passeio de lancha no rio Preguicas - Caburé (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img2.webp" alt="Passeio de lancha no rio Preguicas - Caburé (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img3.webp" alt="Passeio de lancha no rio Preguicas - Caburé (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img4.png" alt="Passeio de lancha no rio Preguicas - Caburé (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img5.png" alt="Passeio de lancha no rio Preguicas - Caburé (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img6.png" alt="Passeio de lancha no rio Preguicas - Caburé (6)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Day trekking nos Lençóis Maranhenses</h3>
+        <p>Caminata de un día – Aproximadamente 14 km</p>
+        <p>Salida de Barreirinhas:</p>
+        <p>03:30: Embarque en un vehículo 4x4 con destino al circuito de Lagoa Bonita. Se servirá un desayuno abundante antes de comenzar el paseo.</p>
+        <p>Inicio de la caminata:</p>
+        <p>Al amanecer, con la luz dorada de la mañana iluminando las dunas, iniciaremos una caminata de aproximadamente 14 km por los impresionantes paisajes de los Lençóis Maranhenses.</p>
+        <p>Durante el recorrido, haremos paradas estratégicas para bañarnos en lagunas de aguas cristalinas, aprovechando al máximo el paisaje natural.</p>
+        <p>Llegada al oasis de Mucambo</p>
+        <p>Nuestra primera parada será en el encantador oasis de Mucambo, donde seremos recibidos por familias locales. Allí disfrutaremos de un almuerzo casero tradicional, preparado con ingredientes típicos de la región.</p>
+        <p>Tiempo libre y puesta de sol en las lagunas</p>
+        <p>Después del almuerzo, tendrás tiempo libre para descansar y relajarte. A las 16:30, daremos un breve paseo para explorar las lagunas cercanas y admirar una magnífica puesta de sol sobre las dunas.</p>
+        <p>Final del día</p>
+        <p>(Regreso después de la puesta de sol)</p>
+        <p>1 día · Todos os dias · 03:15 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img1.png" alt="Day trekking nos Lençóis Maranhenses (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img2.png" alt="Day trekking nos Lençóis Maranhenses (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img3.png" alt="Day trekking nos Lençóis Maranhenses (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img4.webp" alt="Day trekking nos Lençóis Maranhenses (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img5.png" alt="Day trekking nos Lençóis Maranhenses (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img6.png" alt="Day trekking nos Lençóis Maranhenses (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img7.png" alt="Day trekking nos Lençóis Maranhenses (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img8.png" alt="Day trekking nos Lençóis Maranhenses (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Transfer de Barreirinhas à São Luís</h3>
+        <p>Salida de Barreirinhas hacia São Luís en minibús o furgoneta con aire acondicionado. El traslado se realiza con un conductor profesional y dura aproximadamente 4 horas y 30 minutos, con una parada a mitad del trayecto para comer y usar el baño.</p>
+        <p>El servicio incluye traslado de ida y vuelta a posadas, hoteles y albergues ubicados dentro del área urbana. Durante el trayecto, podrás contemplar una hermosa puesta de sol sobre el desierto y los paisajes rurales durante el regreso a Barreirinhas.</p>
+        <p>La hora de embarque seleccionada es la hora de salida del viaje, pero la recogida puede comenzar hasta una hora antes. Prepárate para salir una hora antes de la hora seleccionada.</p>
+        <p>Cada pasajero tiene derecho a una pieza de equipaje de hasta 10 kg. Se cobrará una tarifa por cada equipaje adicional.</p>
+        <p>5 horas · Todos os dias · 06:00,09:00,14:00,16:00,19:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img1.jpeg" alt="Transfer de Barreirinhas à São Luís (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img2.jpeg" alt="Transfer de Barreirinhas à São Luís (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img3.jpeg" alt="Transfer de Barreirinhas à São Luís (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img4.jpeg" alt="Transfer de Barreirinhas à São Luís (4)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>3 - Day Trekking Tour to Santo Amaro (Super trekking)</h3>
+        <p>SUPER TREKKING</p>
+        <p>PRIMER DÍA - APROXIMADAMENTE 14 km</p>
+        <p>Salida de Barreirinhas:</p>
+        <p>3:30: Embarque en un vehículo 4x4 con destino al circuito de Lagoa Bonita. Se servirá un desayuno abundante antes de comenzar el paseo.</p>
+        <p>Inicio de la caminata:</p>
+        <p>Al amanecer, con la luz dorada de la mañana iluminando las dunas, iniciaremos un recorrido de aproximadamente 14 km por los impresionantes paisajes de los Lençóis Maranhenses.</p>
+        <p>Durante el recorrido, haremos paradas estratégicas para bañarnos en lagunas de aguas cristalinas, aprovechando al máximo el paisaje natural.</p>
+        <p>Llegada al oasis de Mucambo</p>
+        <p>Nuestra primera parada será en el encantador oasis de Mucambo, donde seremos recibidos por familias locales. Allí disfrutaremos de un almuerzo casero tradicional preparado con ingredientes típicos de la región.</p>
+        <p>Tarde libre y puesta de sol en las lagunas</p>
+        <p>Después del almuerzo, tendrás tiempo libre para descansar y relajarte. A las 16:30, daremos un breve paseo para explorar las lagunas cercanas y admirar una magnífica puesta de sol sobre las dunas.</p>
+        <p>Fin del día</p>
+        <p>La cena se servirá a las 19:30. Tendrás tiempo libre para encender una fogata, conversar, contemplar el cielo estrellado o simplemente descansar y recuperar energías para la aventura del día siguiente.</p>
+        <p>SEGUNDO DÍA - APROXIMADAMENTE 16 km</p>
+        <p>Inicio del día: 5:00 de la mañana.</p>
+        <p>Comenzamos el día muy temprano con un desayuno sencillo y nutritivo, seguido del inicio de la ruta al amanecer, cuando el paisaje adquiere tonos dorados y la temperatura es más agradable para caminar.</p>
+        <p>Caminata matutina y baño en las lagunas (6 km)</p>
+        <p>Caminaremos aproximadamente 6 km por las dunas, con varias paradas para bañarnos en lagunas de aguas cristalinas. Lo más destacado de la mañana será la llegada a Barraca do Diel, una estructura rústica construida sobre las dunas, junto a una hermosa laguna.</p>
+        <p>Baño y pausa para el almuerzo</p>
+        <p>En Barraca do Diel haremos una parada para bañarnos y descansar, después almorzaremos y a las 14:00 partiremos hacia el siguiente destino.</p>
+        <p>Caminata por la tarde hasta el oasis de Rancharia (10 km)</p>
+        <p>Después del almuerzo y un breve descanso, retomaremos la caminata a las 14:00, recorriendo otros 10 km hacia nuestro segundo punto de apoyo: el oasis de Rancharia.</p>
+        <p>Fin del día</p>
+        <p>En Rancharia, seremos recibidos por familias locales, donde cenaremos y pasaremos la noche. El ambiente es sencillo, acogedor y rodeado de naturaleza, ideal para recuperar energías y prepararse para la aventura del día siguiente.</p>
+        <p>TERCER DÍA - APROXIMADAMENTE 14 km</p>
+        <p>Inicio del día: 4:00 de la mañana.</p>
+        <p>Nos despertaremos temprano para un desayuno ligero y, a las 4:40, iniciaremos la ruta todavía con luz, aprovechando la temperatura agradable y la belleza del amanecer sobre las dunas.</p>
+        <p>Ruta hacia la región de Betânia (17 km)</p>
+        <p>Este será el día más largo de la travesía: una caminata de unos 17 km hasta la Lagoa do Junco, en la región de Betânia. Haremos una pausa para bañarnos y luego continuaremos hacia Santo Amaro en un vehículo 4x4 para almorzar.</p>
+        <p>Almuerzo en Betânia</p>
+        <p>Al llegar, haremos una parada para un merecido almuerzo regional, con tiempo para descansar y disfrutar de las últimas vistas de los Lençóis Maranhenses.</p>
+        <p>Regreso a Barreirinhas</p>
+        <p>A las 14:00, subiremos a un vehículo que nos llevará a Barreirinhas.</p>
+        <p>El trayecto entre Santo Amaro y Barreirinhas dura en promedio 1 hora y 30 minutos.</p>
+        <p>Observación:</p>
+        <p>La hora prevista de regreso a Barreirinhas es a las 14:00.</p>
+        <p>Si necesitas un traslado a São Luís, la hora de salida del traslado es a las 14:00 (solicita el servicio con antelación).</p>
+        <p>Información importante</p>
+        <p>Qué llevar</p>
+        <p>Calzado cómodo</p>
+        <p>Gorra/Sombrero</p>
+        <p>Traje de baño</p>
+        <p>Cámara</p>
+        <p>Aperitivo</p>
+        <p>Protector solar</p>
+        <p>Agua</p>
+        <p>Qué llevar</p>
+        <p>Calzado cómodo</p>
+        <p>Gorra/Sombrero</p>
+        <p>Traje de baño</p>
+        <p>Cámara</p>
+        <p>Aperitivo</p>
+        <p>Protector solar</p>
+        <p>Agua</p>
+        <p>Ver menos</p>
+        <p>No permitido</p>
+        <p>Fumar</p>
+        <p>Alcohol o drogas</p>
+        <p>Tirar basura en el entorno</p>
+        <p>Es bueno saberlo antes</p>
+        <p>Los participantes deben tener un nivel moderado de condición física</p>
+        <p>Deberás caminar sobre superficies irregulares</p>
+        <p>Las condiciones climáticas pueden afectar el itinerario</p>
+        <p>Lleva tu propia botella de agua para rellenarla</p>
+        <p>Algunos días comenzarás temprano</p>
+        <p>3 días · Todos os dias · 03:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img1.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img2.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img3.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img4.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img5.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img6.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img7.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img8.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (8)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img9.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (9)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img10.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (10)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img11.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (11)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img12.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (12)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img13.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (13)" loading="lazy">
+      </article>
+    </div>
+    <script>(function(){var e=document.currentScript.previousElementSibling;if(e&&e.hasAttribute("data-snapshot"))e.style.display="none";})();</script>
+            <!-- fim do retrato de tours -->
+        </section>
+
+        <section class="rio-tours" id="expedicoes-privativas" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="privado_section_title">Experiências exclusivas</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour (modalidade "privado") entram aqui, montados via JS a partir do banco -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="transfers" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="transfers_section_title">Transfers</h2>
+            <div class="rio-section-divider rio-divider-small"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de transfer entram aqui -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="depoimentos">
+            <h2 class="rio-section-title">A galera que já curtiu os lençóis conosco</h2>
+            <div class="rio-section-divider rio-divider-small"></div>
+
+            <div class="rio-testimonials-quotes">
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Bem legal o passeio, em grupo e com guia. A experiência foi segura e muito bem conduzida.</p>
+                    <span class="rio-testimonial-author">Maximiliano Osaida</span>
+                </article>
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Conheci os locais com outro olhar. A guia explicou tudo e trouxe muita segurança durante o dia.</p>
+                    <span class="rio-testimonial-author">Marianna Burlamaqui</span>
+                </article>
+            </div>
+
+            <div class="rio-relatos-gallery" id="relatosGallery" data-cidade="Lencois">
+                <figure class="rio-relatos-item" data-photo-id="foto-escadaria-lagoa-bonita">
+                    <img src="../../imagem/Lencois/Relatos/foto-escadaria-lagoa-bonita-750.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="foto-lagoa-azul-1">
+                    <img src="../../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="gopr5987-01">
+                    <img src="../../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-01">
+                    <img src="../../imagem/Lencois/Relatos/img-01-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-02">
+                    <img src="../../imagem/Lencois/Relatos/img-02-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-03">
+                    <img src="../../imagem/Lencois/Relatos/img-03-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-04">
+                    <img src="../../imagem/Lencois/Relatos/img-04-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-05">
+                    <img src="../../imagem/Lencois/Relatos/img-05-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-06">
+                    <img src="../../imagem/Lencois/Relatos/img-06-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-07">
+                    <img src="../../imagem/Lencois/Relatos/img-07-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-08">
+                    <img src="../../imagem/Lencois/Relatos/img-08-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-09">
+                    <img src="../../imagem/Lencois/Relatos/img-09-1500.webp" alt="Foto de viaje en los Lençóis Maranhenses" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="rio-footer">
+            <div class="rio-footer-card" id="rioFooterCard">
+                <button class="footer-card-up" type="button" aria-label="Ir ao topo">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <h3 class="rio-footer-card-title" data-i18n="footer_info_title">Informações</h3>
+                <div class="rio-footer-card-body" id="rioFooterCardBody">
+                    Clique em "CONTATO" para ver as informações dentro deste cartão.
+                </div>
+                <div class="footer-info-icons">
+                    <a href="https://www.instagram.com/tourbyfootbrasil/?hl=en" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/5521970018590" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:riobyfoottour@gmail.com" aria-label="Email"><i class="fa fa-envelope"></i></a>
+                </div>
+                <!-- Links entre destinos: ligam as quatro paginas comerciais
+                     entre si (antes cada uma so linkava de volta pra home).
+                     Ficam depois do CTA e dos contatos, para nao competir
+                     com a conversao. -->
+                <nav class="rio-footer-destinos" aria-label="Outros destinos">
+                    <span class="rio-footer-destinos-titulo" data-i18n="footer_destinos_titulo">Outros destinos</span>
+                    <span class="rio-footer-destinos-links">
+                        <a href="/sao-luis/es/" data-i18n="footer_destino_saoluis">Tour pelo centro histórico de São Luís</a>
+                        <a href="/rio-de-janeiro/es/" data-i18n="footer_destino_rio">Free Walking Tour no Rio de Janeiro</a>
+                        <a href="/salvador/es/" data-i18n="footer_destino_salvador">Free Walking Tour em Salvador</a>
+                    </span>
+                </nav>
+                <div class="rio-footer-card-credit">
+                    <a href="https://exksvol.com/" target="_blank" rel="noopener noreferrer" aria-label="Exksvol — site do desenvolvedor" title="Exksvol" class="footer-credit-link">
+                        <span class="footer-credit-text" data-i18n="footer_developed_by_text"></span>
+                        <img src="../../imagem/Lencois/assets/exksvol.png" alt="Exksvol" class="footer-credit-logo" / loading="lazy" decoding="async">
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <div class="award-modal" id="awardModal" aria-hidden="true" aria-live="polite" aria-atomic="true">
+            <div class="award-modal__dialog" role="status" aria-labelledby="awardTitle">
+                <div class="award-modal__header">
+                    <span class="award-modal__badge-icon" aria-hidden="true"><i class="fa-solid fa-award"></i></span>
+                    <h3 id="awardTitle" class="award-modal__title" data-i18n="award_title">Reconhecimento Especial</h3>
+                    <button class="award-modal__close" type="button" data-close-award aria-label="Fechar">&times;</button>
+                </div>
+                <div class="hs-modal__body">
+                    <section class="hs-modal__leftImage"><span class="hs-icon js-hs-icon"><img src="https://app.hoversignal.com/AppImage/Signals/4bd5923d-79aa-4fa7-9ac0-e9ecac175d3e" alt="Premio TripAdvisor" loading="lazy" decoding="async"></span></section>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <section class="hs-modal__rightDescr">
+                        <div class="js-hs-description" data-signaltext="" data-i18n="award_text">Sabia que fomos premiados como a <b>melhor escolha</b> pelo <b>TripAdvisor</b> em 2021? 🥰</div>
+                    </section>
+                </div>
+                <div class="award-modal__footer">
+                    <a class="award-modal__cta" id="awardCta" href="#" target="_blank" rel="noopener" data-i18n="award_cta">Ver no TripAdvisor <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <div class="award-modal__countdown-wrap">
+                        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                        <div class="award-modal__countdown" id="awardCountdown" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reservationModal" class="reservation-modal-overlay hidden" role="dialog" aria-modal="true" data-i18n-aria="reservation_modal_title" aria-label="Formulário de reserva">
+            <div class="reservation-modal">
+                <div class="res-modal-header">
+                    <span class="res-modal-icon" aria-hidden="true"><i class="fas fa-calendar-check"></i></span>
+                    <div class="res-modal-heading">
+                        <h2 data-i18n="reservation_modal_title">Reservar Tour</h2>
+                        <p class="res-modal-subtitle" data-i18n="reservation_modal_subtitle">Preencha os dados abaixo para confirmar sua reserva.</p>
+                    </div>
+                </div>
+                <form id="reservationForm" novalidate>
+                    <input type="hidden" id="reservationTour">
+                    <div class="res-tour-box">
+                        <span class="res-tour-icon" aria-hidden="true"><img src="../../imagem/assets/img-tour-selecionado.png" alt="" / loading="lazy" decoding="async"></span>
+                        <div class="res-tour-info">
+                            <span class="res-tour-label" data-i18n="reservation_tour_selected_label">Tour selecionado</span>
+                            <strong id="reservationTourDisplay" class="res-tour-name"></strong>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationName" data-i18n="reservation_name_label">Nome</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-user res-input-icon" aria-hidden="true"></i>
+                                <input type="text" id="reservationName" data-i18n-placeholder="reservation_name_placeholder" placeholder="Seu nome" required>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationDate" data-i18n="reservation_date_label">Data da reserva</label>
+                            <input type="date" id="reservationDate" required>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field" id="reservationTimeField">
+                            <label for="reservationTime" data-i18n="reservation_time_label">Horário</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-clock res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationTime">
+                                    <option value="" data-i18n="reservation_time_placeholder">Selecione um horário</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationQuantity" data-i18n="reservation_quantity_label">Quantidade de pessoas</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-users res-input-icon" aria-hidden="true"></i>
+                                <input type="number" id="reservationQuantity" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationLanguage" data-i18n="reservation_language_label">Idioma</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-globe res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationLanguage" required>
+                                    <option value="" data-i18n="reservation_language_placeholder">Selecione um idioma</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationPhone" data-i18n="reservation_phone_label">Celular/WhatsApp</label>
+                            <div class="res-input-wrap">
+                                <i class="fab fa-whatsapp res-input-icon" aria-hidden="true"></i>
+                                <input type="tel" id="reservationPhone" data-i18n-placeholder="reservation_phone_placeholder" placeholder="(00) 00000-0000" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-field">
+                        <label for="reservationEmail" data-i18n="reservation_email_label">Email</label>
+                        <div class="res-input-wrap">
+                            <i class="fas fa-envelope res-input-icon" aria-hidden="true"></i>
+                            <input type="email" id="reservationEmail" data-i18n-placeholder="reservation_email_placeholder" placeholder="seuemail@exemplo.com" required>
+                        </div>
+                    </div>
+                    <div class="reservation-modal-actions">
+                        <button type="button" id="reservationCancel" class="btn-book" data-i18n="reservation_cancel_btn">Cancelar</button>
+                        <button type="submit" class="btn-book"><i class="fas fa-check-circle" id="reservationSubmitIcon" aria-hidden="true"></i> <span id="reservationSubmitLabel" data-i18n="reservation_confirm_btn">Confirmar Reserva</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api-auth.js?v=1"></script>
+    <script src="../../js/page-translations.js?v=1"></script>
+    <script src="../../js/ui-translations.js?v=12"></script>
+    <script src="../../js/tour-interacoes.js?v=12"></script>
+    <script src="../../js/site-shell.js?v=92"></script>
+    <script src="../../js/presenca.js?v=1"></script>
+    <script src="../../js/atividade-cliente.js?v=2"></script>
+    <script src="../../js/Lencoismaranhenses.js?v=12"></script>
+    <script src="../../js/cidade-visual.js?v=6"></script>
+</body>
+</html>

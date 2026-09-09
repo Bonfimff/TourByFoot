@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Checagem BLOQUEANTE de manutenção — precisa ser a primeira coisa no
+         <head>, antes de qualquer CSS/imagem, senão o navegador já pode ter
+         pintado parte da página real antes do redirect. XHR síncrono
+         (não fetch) é proposital: trava o parsing até a resposta chegar, só
+         assim não existe nem um frame do conteúdo real sendo exibido. Falha
+         de rede/CORS não bloqueia o acesso (fail open). admin/super_admin
+         nunca são redirecionados. -->
+    <script>
+    (function () {
+        try {
+            var role = (localStorage.getItem('userRole') || '').trim().toLowerCase();
+            if (role === 'admin' || role === 'super_admin') return;
+            // Rastreadores de busca e geradores de preview de link nao passam
+            // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
+            // travaria o rastreamento e entra na conta de tempo de carga que o
+            // Google avalia; (2) com a manutencao ligada o crawler seria
+            // redirecionado para manutencao.html, que e noindex — o Google
+            // entenderia que a pagina real saiu do ar e poderia tira-la do
+            // indice. Visitante humano segue com o comportamento de sempre.
+            if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api-tour.exksvol.com/get_site_config', false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                var targets = JSON.parse(xhr.responseText).maintenance_targets || [];
+                if (targets.indexOf('Inicio') !== -1) {
+                    window.location.replace('/manutencao.html');
+                }
+            }
+        } catch (e) { /* offline/CORS/erro: não bloqueia o acesso */ }
+    })();
+    </script>
+    <title>Tour by Foot — Tour Guidati a Piedi in Brasile</title>
+    <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
+         metadados — nada aqui altera o que o visitante vê na página. -->
+    <meta name="description" content="Tour guidati a piedi con guide locali autorizzate a Rio de Janeiro, Salvador e São Luís, ed escursioni nei Lençóis Maranhenses. Prenota online o su WhatsApp.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tour by Foot">
+    <meta property="og:locale" content="it_IT">
+    <meta property="og:title" content="Tour by Foot — Tour Guidati a Piedi in Brasile">
+    <meta property="og:description" content="Tour guidati a piedi con guide locali autorizzate a Rio de Janeiro, Salvador e São Luís, ed escursioni nei Lençóis Maranhenses. Prenota online o su WhatsApp.">
+    <meta property="og:url" content="https://www.tourbyfoot.com/it/">
+    <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tour by Foot — Tour Guidati a Piedi in Brasile">
+    <meta name="twitter:description" content="Tour guidati a piedi con guide locali autorizzate a Rio de Janeiro, Salvador e São Luís, ed escursioni nei Lençóis Maranhenses. Prenota online o su WhatsApp.">
+    <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
+    <link rel="apple-touch-icon" href="../imagem/assets/Logo.png?v=2">
+    <link rel="icon" type="image/png" href="../imagem/assets/Logo.png?v=2">
+    <!-- Reforça pro Google (e outros crawlers) que o favicon.ico na raiz é o
+         mesmo logo declarado acima — não muda o prazo de atualização do
+         cache deles, só deixa o sinal mais explícito. -->
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="../css/style.css?v=43">
+    <!-- Remove a imagem de fundo (ondas) só na página inicial; as demais
+         páginas continuam usando body::before/.main-container::after de
+         style.css normalmente. -->
+    <style>
+        body::before,
+        .main-container::after {
+            background-image: none;
+        }
+    </style>
+    <!-- Os painéis das cidades são pré-carregados por js/preload-paineis.js, a
+         partir das imagens cadastradas no banco. Não há preload estático aqui:
+         qualquer arte fixa no HTML acabaria exibida no lugar da configurada. -->
+<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+    <link rel="canonical" href="https://www.tourbyfoot.com/it/">
+    <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/">
+    <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/en/">
+    <link rel="alternate" hreflang="es" href="https://www.tourbyfoot.com/es/">
+    <link rel="alternate" hreflang="fr" href="https://www.tourbyfoot.com/fr/">
+    <link rel="alternate" hreflang="it" href="https://www.tourbyfoot.com/it/">
+    <link rel="alternate" hreflang="zh" href="https://www.tourbyfoot.com/zh/">
+    <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/">
+    <script>
+    // A URL manda no idioma. Quem abrir /en/ ve ingles, mesmo com
+    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
+    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
+    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
+    window.rotaIdioma = { base: "/", atual: "it", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
+    try { localStorage.setItem("preferredLanguage", "it"); } catch (e) {}
+    </script>
+    <!-- fim do bloco gerado -->
+</head>
+<body>
+    <div class="main-container" id="inicio">
+        <header>
+            <div class="lang-selector" id="langSelector">
+                <button class="lang-btn" type="button" id="langBtn">
+            	<span class="flag flag-pt"></span> Português
+                </button>
+                <ul class="lang-list" id="langList">
+                    <li data-lang="pt"><span class="flag flag-pt"></span> Português</li>
+                    <li data-lang="en"><span class="flag flag-en"></span> English</li>
+                    <li data-lang="fr"><span class="flag flag-fr"></span> Français</li>
+                    <li data-lang="es"><span class="flag flag-es"></span> Español</li>
+                    <li data-lang="it"><span class="flag flag-it"></span> Italiano</li>
+                    <li data-lang="zh"><span class="flag flag-zh"></span> 中文(普通话)</li>
+                   </ul>
+            </div>
+
+            <div class="nav-left">
+                <nav>
+                    <a href="#inicio" class="active" data-i18n="nav_home">INÍCIO</a>
+                    <a href="#sobre" data-i18n="nav_about">SOBRE</a>
+                    <a href="#contato" data-i18n="nav_contact">CONTATO</a>
+                    <a href="#ajuda" data-i18n="nav_help">AJUDA</a>
+                </nav>
+            </div>
+
+  
+
+            <!-- Botão hamburger para mobile -->
+            <button class="hamburger" id="hamburger" type="button" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="nav-right" id="navRight">
+                <div class="search-bar">
+                    <input type="text" placeholder="Pesquisar" data-i18n-placeholder="search_placeholder">
+                    <button type="button"><i class="fa fa-search"></i></button>
+                </div>
+
+                <div class="profile-menu">
+                    <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Conta"><i class="fa fa-user-circle"></i></button>
+                    <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Opções de conta">
+                        <a href="#" class="profile-item" data-profile-action="login" data-i18n="profile_login">Entrar</a>
+                        <a href="#" class="profile-item" data-profile-action="register" data-i18n="profile_register">Cadastrar</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+  
+        <main>
+            <div class="hero-text">
+                <h1 class="hero-title" data-i18n="hero_title">Free Walking Tour</h1>
+                <!-- Assinatura da marca sob o título (filetes dourados nas
+                     laterais vêm do ::before/::after em style.css). Não leva
+                     data-i18n: "Tour by Foot" é nome próprio, igual em todos
+                     os idiomas. -->
+                <div class="hero-brandline"><span>Tour by Foot</span></div>
+                <div class="subtitle" data-i18n="hero_subtitle">Sua próxima grande aventura começa aqui. Descubra destinos surpreendentes e viva roteiros inesquecíveis. <br> Aproveite também nossa experiência exclusiva nos Lençóis Maranhenses.</div>
+
+                <div class="city-title" data-i18n="choose_city">Escolha a cidade:</div>
+                <div class="city-list">
+                    <a class="city-card" href="/rio-de-janeiro/it/">
+                        <img class="city-thumb city-thumb-rio" src="../imagem/assets/RiodeJaneiro.jpeg" alt="Veduta di Rio de Janeiro con il Pan di Zucchero sullo sfondo" width="564" height="592" decoding="async">
+                        <span class="city-name" data-i18n="city_rio">Rio de Janeiro</span>
+                    </a>
+                    <a class="city-card" href="/salvador/it/">
+                        <img class="city-thumb city-thumb-salvador" src="../imagem/assets/Salvador.jpeg" alt="Case colorate del Pelourinho a Salvador" width="500" height="548" decoding="async">
+                        <span class="city-name" data-i18n="city_salvador">Salvador</span>
+                    </a>
+                    <a class="city-card" href="/sao-luis/it/">
+                        <img class="city-thumb city-thumb-saoluis" src="../imagem/assets/SaoLuis.jpeg" alt="Facciate di azulejos nel centro storico di São Luís" width="736" height="796" decoding="async">
+                        <span class="city-name" data-i18n="city_saoluis">São Luís do Maranhão</span>
+                    </a>
+                    <a class="city-card" href="/lencois-maranhenses/it/">
+                        <img class="city-thumb city-thumb-lencois" src="../imagem/assets/Lencois.jpeg" alt="Dune e lagune dei Lençóis Maranhenses" width="730" height="730" decoding="async">
+                        <span class="city-name" data-i18n="city_lencois">Lençóis Maranhenses</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="hero-images" aria-hidden="true">
+                <div class="capsule capsule-left">
+                    <video class="capsule-video" muted playsinline>
+                        <source src="../videos/video1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="capsule capsule-center">
+                    <video class="capsule-video" muted playsinline>
+                        <source src="../videos/video1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="capsule capsule-right">
+                    <video class="capsule-video" muted playsinline>
+                        <source src="../videos/video1.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </main>
+
+        <section class="site-sections is-empty" aria-label="Informações do site" id="infoSections">
+            <article class="site-section-card is-hidden" id="sobre">
+                <h2 data-i18n="about_title">Sobre</h2>
+                <p data-i18n="about_text">Somos uma equipe apaixonada por experiências locais autênticas, conectando viajantes a guias especialistas em cada destino.</p>
+            </article>
+
+            <article class="site-section-card is-hidden" id="contato">
+                <h2 data-i18n="contact_title">Contato</h2>
+                <p data-i18n="contact_text">Fale com a Travel the World para dúvidas, parcerias e reservas personalizadas.</p>
+                <div class="site-section-links">
+                    <a href="mailto:contato@traveltheworld.com">contato@traveltheworld.com</a>
+                    <a href="https://wa.me/5521970018590" target="_blank" rel="noopener">WhatsApp: +55 21 97001-8590</a>
+                </div>
+            </article>
+
+            <article class="site-section-card is-hidden" id="ajuda">
+                <h2 data-i18n="help_title">Ajuda</h2>
+                <p data-i18n="help_text">Precisa de suporte com idioma, horários, cancelamentos ou ponto de encontro? Nossa equipe está pronta para ajudar.</p>
+            </article>
+        </section>
+
+        <!-- Rodapé claro com as redes sociais. Fica fora do .hero-text (que é
+             limitado a 760px) para poder ocupar a largura toda: é ele que
+             pinta a faixa creme, e a onda dourada é desenhada no ::before
+             dele, logo acima. -->
+        <div class="social-icons">
+            <a href="https://www.instagram.com/tourbyfootbrasil/?hl=en" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/5521970018590" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+
+    </div>
+
+    <script src="../js/api-auth.js?v=1"></script>
+    <script src="../js/translations.js?v=2"></script>
+    <script src="../js/ui-translations.js?v=7"></script>
+    <script src="../js/script.js?v=8"></script>
+    <script src="../js/auth.js?v=8"></script>
+    <script src="../js/presenca.js?v=1"></script>
+    <script src="../js/preload-paineis.js?v=5"></script>
+    <!-- Dados estruturados: descrevem apenas fatos verificaveis do site
+         (nome, logo, canais de contato e idiomas realmente oferecidos).
+         Nao renderiza nada na tela. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.tourbyfoot.com/#organization",
+          "name": "Tour by Foot",
+          "url": "https://www.tourbyfoot.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.tourbyfoot.com/imagem/assets/Logo.png"
+          },
+          "sameAs": ["https://www.instagram.com/tourbyfootbrasil/"],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "telephone": "+5521970018590",
+            "email": "riobyfoottour@gmail.com",
+            "availableLanguage": ["pt-BR", "en", "es", "fr", "it", "zh"]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.tourbyfoot.com/#website",
+          "url": "https://www.tourbyfoot.com/",
+          "name": "Tour by Foot",
+          "inLanguage": "pt-BR",
+          "publisher": { "@id": "https://www.tourbyfoot.com/#organization" }
+        }
+      ]
+    }
+    </script>
+</body>
+</html>

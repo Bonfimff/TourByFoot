@@ -9,6 +9,11 @@
     z-index: 0;
     background: transparent !important;
     color: #2c3e50;
+    /* Base para telas entre os breakpoints de 900px e 1200px, que não
+       redefinem esta variável — sem isso o padding-top do hero (que depende
+       dela) fica inválido nessa faixa de largura e a logo/título deslizam
+       para debaixo do header. */
+    --rio-header-height: 72px;
 }
 
 .main-container.rio-page {
@@ -20,10 +25,13 @@
     position: relative !important;
 }
 
-/* Garante full-bleed do topo (header + painel) sem recuo lateral */
+/* Garante full-bleed do topo (header + painel) sem recuo lateral.
+   Usa 100vw (não 100%) porque .main-container.rio-page tem overflow-y:auto
+   e gera sua própria barra de rolagem interna, que "rouba" espaço de um
+   width:100% do lado direito. 100vw ignora essa barra e cola nas bordas reais. */
 .rio-page > header,
 .rio-page > .rio-hero {
-  width: 100%;
+  width: 100vw;
   margin-left: 0;
   margin-right: 0;
 }
@@ -35,12 +43,31 @@
     left: 0;
     width: 100%;
     height: 100%;
+    /* No Android, a barra de navegação some/aparece durante a rolagem e o
+       viewport recalcula; height:100% (equivalente a 100vh aqui) faz o fundo
+       "pular" e revelar uma faixa em branco. 100dvh acompanha essa transição
+       suavemente. height:100% acima é o fallback para navegadores sem suporte. */
+    height: 100dvh;
     z-index: -1;
-    background-color: #02415a;
-    background-image: url('../imagem/Lencois/assets/Fundo lencois.jpg');
+    /* Sem imagem por baixo — só a cor sólida (do admin via --city-fundo-cor,
+       com fallback fixo aqui). --city-fundo-img só existe quando o admin
+       escolhe explicitamente modo degradê/imagem para o fundo da cidade. */
+    background-color: var(--city-fundo-cor, #02415a);
+    background-image: var(--city-fundo-img, none);
     background-size: cover;
     background-position: center;
     will-change: transform;
+}
+
+/* O style.css compartilhado pinta a foto do Rio de Janeiro em DUAS camadas
+   fixas (body::before e .main-container::after, ambas z-index:-2) por baixo
+   de tudo. Como a cor de fundo desta página vem do admin com transparência
+   (ex.: 88%), essa foto aparecia por baixo da cor sólida. Neutralizada aqui
+   — só a cor sólida fica abaixo do conteúdo. Como este arquivo é carregado
+   depois do style.css, a mesma especificidade basta para vencer. */
+body::before,
+.main-container::after {
+    background-image: none;
 }
 
 html,
@@ -67,7 +94,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 100vw;
     z-index: 50;
     background: rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(10px);
@@ -211,6 +238,8 @@ body {
 }
 
 .mobile-lang-list {
+    display: block;
+    position: static;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -333,44 +362,102 @@ body {
 /* ===================================================== */
 .rio-hero {
     position: relative;
-    min-height: 80vh;
+    /* Abaixo de 1024px sobra de propósito uma ponta visível da seção de
+       tours logo abaixo, como dica de que há mais conteúdo por rolar. Por
+       isso vh puro (sem piso em px que force cobrir 100% da viewport).
+       A partir de 1024px o painel passa a cobrir a tela toda — ver o bloco
+       "HERO — TELAS GRANDES". */
+    min-height: 72vh;
     display: flex;
-    align-items: center;
+    /* flex-start (não center): com o hero bem mais alto que o conteúdo,
+       centralizar empurrava o bloco pin+título para bem abaixo do header,
+       deixando um vão vazio no topo. O espaçamento do header vem do
+       padding-top de .rio-hero-content em cada breakpoint. */
+    align-items: flex-start;
     justify-content: center;
     text-align: center;
     overflow: visible;
     padding-top: 0;
     padding-bottom: 0;
-    background:
-      url('../imagem/Lencois/assets/painel.jpeg') center/cover no-repeat;
-    -webkit-mask-image: none;
-    mask-image: none;
-    -webkit-mask-size: auto;
-    mask-size: auto;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
+    /* A foto em si vive em .rio-hero::before (ver abaixo) para poder ser
+       recortada seguindo a onda sem cortar junto o overlay, a onda decorativa
+       e o "Descubra mais". !important neutraliza o background inline que
+       cidade-visual.js ainda escreve neste elemento (compat com Salvador/São
+       Luís) — sem isso a foto retangular voltaria a aparecer por baixo do
+       recorte. */
+    background: transparent !important;
+    /* Recorte em onda, compartilhado pela foto (::before) e pelo véu escuro
+       (.rio-hero-overlay) — os dois cobrem o hero inteiro e precisam ficar
+       opacos em cima e cortar exatamente na mesma curva embaixo.
+
+       Não dá pra usar UMA curva só em % da altura do hero: a onda decorativa
+       (.rio-hero-wave-divider) é posicionada em pixels fixos (bottom:58px +
+       altura clamp(48px,9vw,90px)), e a altura real do hero varia demais
+       entre telas (não é só 72vh — o conteúdo estica além disso) pra uma
+       curva em % acompanhar. Por isso a máscara é 2 camadas UNIDAS (a
+       composição padrão do mask-image já é união — não precisa de
+       mask-composite, que é onde a tentativa anterior quebrou em alguns
+       navegadores):
+         camada 1: um retângulo 100% opaco cobrindo do topo do hero até o
+                   topo da faixa da onda (tudo isso nunca é cortado);
+         camada 2: dentro da faixa da onda (mesmos bottom:58px + clamp usados
+                   pela onda decorativa de verdade), a região ACIMA da curva
+                   da SEGUNDA linha (mais fraca/baixa, baseline 74) fica
+                   opaca; abaixo dela fica transparente.
+       As duas camadas juntas cobrem o hero inteiro sem sobra nem buraco. */
+    --hero-wave-band-height: calc(58px + clamp(48px, 9vw, 90px));
+    --hero-wave-band-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 148' preserveAspectRatio='none'%3E%3Cpath d='M0 74 C 240 34, 480 34, 720 62 S 1200 98, 1440 56 L1440 0 L0 0 Z' fill='white'/%3E%3C/svg%3E");
 }
 
-/* gradiente de transição em tom de areia com textura delicada */
+/* Foto de fundo do hero, recortada seguindo a curva de .rio-hero-wave-divider
+   para que a imagem termine em onda em vez de um retângulo reto. */
+.rio-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      var(--city-painel-bg, transparent);
+    -webkit-mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
+    mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
+    /* +2px: sobrepõe de propósito a borda das duas camadas — sem isso sobra
+       uma linha branca fina exatamente na costura entre o retângulo de cima
+       e a faixa da onda (artefato de arredondamento na renderização). */
+    -webkit-mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
+    mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
+    -webkit-mask-position: left top, left bottom;
+    mask-position: left top, left bottom;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+    mask-repeat: no-repeat, no-repeat;
+}
+
+/* Escurecimento da base para dar contraste à onda dourada e ao chevron.
+   Sempre ficou restrito à faixa perto do fundo (nunca cobriu o hero
+   inteiro), então só precisa da MESMA faixa/curva da onda decorativa,
+   sem precisar do retângulo superior que a foto/overlay usam. */
 .rio-hero::after {
     content: '';
     position: absolute;
-    bottom: -1px;
     left: 0;
-    width: 100%;
-    height: 120px;
+    right: 0;
+    bottom: 0;
+    height: var(--hero-wave-band-height);
     pointer-events: none;
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0) 0%,
-            rgba(0, 0, 0, 0.16) 45%,
-            rgba(0, 0, 0, 0.35) 68%,
-            rgba(0, 0, 0, 0.65) 100%
-        ),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='60'%3E%3Cpath d='M0 30 C30 10, 60 10, 90 30 S150 50, 180 30' fill='none' stroke='%236b4c20' stroke-width='4'/%3E%3Cpath d='M0 50 C30 30, 60 30, 90 50 S150 70, 180 50' fill='none' stroke='%236b4c20' stroke-width='3'/%3E%3C/svg%3E") center/cover no-repeat;
-    background-blend-mode: normal;
-    opacity: 0.50;
+    background: linear-gradient(
+        to bottom,
+        rgba(4, 22, 40, 0) 0%,
+        rgba(4, 22, 40, 0.35) 45%,
+        rgba(4, 22, 40, 0.72) 78%,
+        rgba(4, 22, 40, 0.92) 100%
+    );
+    -webkit-mask-image: var(--hero-wave-band-svg);
+    mask-image: var(--hero-wave-band-svg);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
     z-index: 2;
 }
 
@@ -381,11 +468,25 @@ body {
   bottom: 0;
   left: -1px;
   right: -1px;
+    -webkit-mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
+    mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
+    /* +2px: sobrepõe de propósito a borda das duas camadas — sem isso sobra
+       uma linha branca fina exatamente na costura entre o retângulo de cima
+       e a faixa da onda (artefato de arredondamento na renderização). */
+    -webkit-mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
+    mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
+    -webkit-mask-position: left top, left bottom;
+    mask-position: left top, left bottom;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+    mask-repeat: no-repeat, no-repeat;
+    /* Mais escuro no topo (contraste com header/logo) e na base (contraste com
+       texto/botão), com uma faixa central mais clara para revelar a foto. */
     background: linear-gradient(
         180deg,
-    rgba(7, 18, 36, 0.678) 0%,
-    rgba(11, 28, 52, 0.336) 58%,
-    rgba(7, 18, 36, 0.219) 100%
+    rgba(4, 20, 36, 0.72) 0%,
+    rgba(10, 40, 60, 0.32) 42%,
+    rgba(6, 28, 46, 0.50) 70%,
+    rgba(4, 18, 32, 0.86) 100%
     );
   pointer-events: none;
     z-index: 1;
@@ -395,8 +496,8 @@ body {
     position: relative;
     z-index: 5;
     width: 100%;
-    max-width: 860px;
-    padding: calc(var(--rio-header-height) + 16px) 2.5rem 3rem;
+    max-width: 1200px;
+    padding: calc(var(--rio-header-height, 72px) + 16px) 2.5rem 7rem;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -405,29 +506,183 @@ body {
     animation: heroIntro 0.9s ease-out forwards;
 }
 
-.rio-hero-logo {
+/* -----------------------------------------------------------------
+   LOCKUP DA MARCA
+   Em telas grandes a marca fica deitada (símbolo à esquerda,
+   tipografia à direita). Como a arte enviada pelo admin é um arquivo
+   único e empilhado, o lockup deitado é montado recortando a MESMA
+   imagem duas vezes. As caixas abaixo foram medidas sobre a arte
+   original (701x356 px):
+       símbolo + ondas ...... x124  y7    444x225
+       "VISIT LENÇÓIS" ...... x22   y247  657x104
+   Cada recorte é dimensionado apenas pela altura (--mark-h/--word-h);
+   largura e deslocamento derivam dessas proporções. As três imagens
+   mantêm a classe .rio-hero-logo para que cidade-visual.js continue
+   trocando todas pelo logo vindo do servidor.
+   ----------------------------------------------------------------- */
+.rio-hero-brand {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+.rio-hero-logo--full {
     display: block;
-    width: auto;
-    max-width: min(260px, 40vw);
+    width: min(320px, 62vw);
     height: auto;
+    aspect-ratio: 701 / 356;
+    object-fit: contain;
+    margin: 0 auto 0.3rem;
+    opacity: 1;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.85));
+}
+
+/* Os recortes só entram no lockup deitado (ver @media adiante). */
+.rio-hero-brand-mark,
+.rio-hero-brand-wordmark {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    flex: none;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.85));
+}
+
+.rio-hero-brand-mark > .rio-hero-logo,
+.rio-hero-brand-wordmark > .rio-hero-logo {
+    position: absolute;
+    height: auto;
+    max-width: none;
+    aspect-ratio: auto;
+    margin: 0;
+    filter: none;
+}
+
+.rio-hero-brand-mark {
+    width: calc(var(--mark-h) * 1.9733);   /* 444 / 225 */
+    height: var(--mark-h);
+}
+
+.rio-hero-brand-mark > .rio-hero-logo {
+    width: calc(var(--mark-h) * 3.1156);   /* 701 / 225 */
+    left: calc(var(--mark-h) * -0.5511);   /* -124 / 225 */
+    top: calc(var(--mark-h) * -0.0311);    /*   -7 / 225 */
+}
+
+.rio-hero-brand-wordmark {
+    width: calc(var(--word-h) * 6.3173);   /* 657 / 104 */
+    height: var(--word-h);
+}
+
+.rio-hero-brand-wordmark > .rio-hero-logo {
+    width: calc(var(--word-h) * 6.7404);   /* 701 / 104 */
+    left: calc(var(--word-h) * -0.2115);   /*  -22 / 104 */
+    top: calc(var(--word-h) * -2.375);     /* -247 / 104 */
+}
+
+.rio-hero-logo-sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    margin: 0.1rem 0 0;
+    font-family: "Lato", "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.72rem, 2.4vw, 0.95rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+}
+
+.rio-hero-logo-sub::before,
+.rio-hero-logo-sub::after {
+    content: '';
+    display: block;
+    width: clamp(26px, 8vw, 56px);
+    height: 1px;
+    background: #e0b653;
+}
+
+/* Bloco de texto alinhado à esquerda (logo permanece centralizada acima). */
+.rio-hero-text {
+    width: 100%;
+    max-width: 620px;
     margin: 0 auto;
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .rio-hero-title {
     font-family: "Playfair Display", Georgia, serif;
     font-weight: 900;
-    font-size: clamp(1.8rem, 4.5vw, 3.6rem);
-    color: #f0e5c0;
+    font-size: clamp(2.1rem, 6.2vw, 5.5rem);
+    color: #fdfbf7;
     text-transform: none;
     letter-spacing: 0.5px;
-    line-height: 1.15;
+    line-height: 1.05;
     margin: 0.4rem 0 0.2rem;
     text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
 
+/* Trechos dourados dentro da descrição (vêm marcados em translations.js). */
+.rio-hero-accent {
+    color: #e8c473;
+}
+
 #rioHeroDesc {
     color: #ffffff !important;
+}
+
+.rio-hero-content .btn-book {
+    /* z-index acima das duas ondas decorativas (.rio-hero-wave-divider,
+       z-index:4) — sem isso a onda passava por cima do botão em telas onde
+       o hero encolhe e as duas se sobrepõem. */
+    position: relative;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.85rem;
+    width: auto;
+    min-width: 0;
+    margin: 1.1rem 0 0;
+    padding: 0.75rem 1.7rem 0.75rem 0.75rem;
+    border: none;
+    color: #123049;
+    background: linear-gradient(180deg, #f7cf72 0%, #edbb4f 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: clamp(0.85rem, 3vw, 1rem);
+    transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* Badge circular escuro com a bússola, à esquerda do rótulo. */
+.rio-hero-content .btn-book::before {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.35em;
+    height: 2.35em;
+    border-radius: 50%;
+    background: #123049;
+    color: #f5c95f;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f14e";
+    font-size: 0.95em;
+    line-height: 1;
 }
 
 @media (min-width: 1200px) {
@@ -437,81 +692,216 @@ body {
     }
 
     .rio-hero-content .btn-book {
-        width: min(380px, 45%);
-        padding: 0.6rem 1.25rem;
+        width: auto;
+        padding: 0.6rem 1.6rem 0.6rem 0.6rem;
         max-width: 420px;
         overflow: visible;
         text-overflow: clip;
     }
 }
 
-.rio-hero-content .btn-book {
-    display: block;
-    width: min(180px, 75%);
-    margin: 0.5rem auto 0 auto;
-    padding: 0.5rem 1rem;
-    border: 2px solid #ffffff;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.20);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 999px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.85rem;
-    transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .rio-hero-content .btn-book:hover,
 .rio-hero-content .btn-book:focus {
-    background: rgba(255, 255, 255, 0.42);
+    filter: brightness(1.06);
     transform: translateY(-1px);
-    color: #a7834b;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+    color: #123049;
 }
 
 .rio-city-highlight {
     display: block;
-     font-family: "Montserrat", "Lato", sans-serif;
-    background: linear-gradient(120deg, #c2b280 0%, #f0e5c0 45%, #c2b280 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: #fdfbf7;
     text-transform: none;
-    text-shadow: none;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.55);
     letter-spacing: 0.5px;
 }
 
 .rio-hero-location {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
     font-family: "Lato", "Montserrat", sans-serif;
-    font-weight: 300;
-    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
-    color: rgba(255,255,255,0.80);
-    letter-spacing: 3px;
+    font-weight: 600;
+    font-size: clamp(0.95rem, 3.4vw, 1.35rem);
+    color: #e0b653;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    margin: 0.2rem 0 0.4rem;
+    margin: 0.15rem 0 0;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Fio dourado curto só à esquerda do local, como na referência. */
+.rio-hero-location::before {
+    content: '';
+    flex: none;
+    width: clamp(24px, 3.2vw, 46px);
+    height: 1px;
+    background: currentColor;
+    opacity: 0.9;
 }
 
 .rio-hero-desc {
-    font-family: "Lato", "Montserrat", sans-serif;
+    font-family: "Playfair Display", Georgia, serif;
     font-weight: 400;
-    color: #dfeeff;
-    font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-    line-height: 1.85;
-    width: min(100%, 680px);
-    max-width: 680px;
-    text-align: center;
-    margin: 0.3rem auto 1rem;
-    opacity: 0.92;
+    color: #edf1f3;
+    font-size: clamp(0.98rem, 1.55vw, 1.4rem);
+    line-height: 1.75;
+    width: 100%;
+    max-width: 100%;
+    text-align: left;
+    margin: 0.3rem 0 0;
     overflow-wrap: break-word;
     word-break: break-word;
     white-space: normal;
     display: block;
     text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+
+.rio-hero-wave-divider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 58px;
+    width: 100%;
+    height: clamp(48px, 9vw, 90px);
+    z-index: 4;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+}
+
+.rio-hero-scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.15rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.rio-hero-scroll-label {
+    font-family: "Lato", "Montserrat", sans-serif;
+    font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #e0b653;
+}
+
+/* A seta pulsa sozinha — o wrapper carrega o translateX(-50%) da centralização. */
+.rio-hero-scroll > .fa {
+    animation: rioScrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes rioScrollBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50% { transform: translateY(7px); opacity: 1; }
+}
+
+/* =====================================================
+   HERO — TELAS GRANDES
+   Composição de referência: conteúdo encostado à esquerda,
+   marca em lockup deitado e o lado direito da foto aberto.
+   ===================================================== */
+@media (min-width: 1024px) {
+    /* Aqui o painel cobre a tela inteira, como na referência. A "ponta
+       visível da seção de baixo" que servia de dica de rolagem (ver
+       comentário em .rio-hero) foi substituída pela dica explícita
+       "Descubra mais" + seta animada, que cumpre o mesmo papel. */
+    .rio-hero {
+        min-height: 100vh;
+    }
+
+    /* O escurecimento passa a vir da esquerda (onde mora o texto) em vez de
+       ser uma faixa horizontal, deixando as dunas visíveis à direita. */
+    .rio-hero-overlay {
+        background:
+            linear-gradient(180deg,
+                rgba(4, 20, 36, 0.55) 0%,
+                rgba(4, 20, 36, 0.05) 30%,
+                rgba(4, 20, 36, 0.05) 58%,
+                rgba(4, 18, 32, 0.88) 100%),
+            linear-gradient(95deg,
+                rgba(5, 22, 40, 0.90) 0%,
+                rgba(5, 22, 40, 0.68) 28%,
+                rgba(5, 22, 40, 0.28) 52%,
+                rgba(5, 22, 40, 0.04) 74%,
+                rgba(5, 22, 40, 0) 100%);
+    }
+
+    .rio-hero-content {
+        max-width: none;
+        align-items: flex-start;
+        text-align: left;
+        padding-left: clamp(3rem, 12vw, 15rem);
+        padding-right: 3rem;
+        padding-bottom: 8rem;
+    }
+
+    /* Troca a arte inteira pelos dois recortes, lado a lado. */
+    .rio-hero-brand {
+        --mark-h: clamp(60px, 5.9vw, 96px);
+        --word-h: clamp(34px, 3.35vw, 55px);
+        width: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: clamp(10px, 1.2vw, 20px);
+        margin-bottom: clamp(0.6rem, 1.6vw, 1.4rem);
+    }
+
+    .rio-hero-logo--full {
+        display: none;
+    }
+
+    .rio-hero-brand-mark,
+    .rio-hero-brand-wordmark {
+        display: block;
+    }
+
+    .rio-hero-brand-word {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .rio-hero-logo-sub {
+        font-size: clamp(0.62rem, 0.9vw, 0.82rem);
+        letter-spacing: 0.26em;
+        gap: 0.7rem;
+    }
+
+    .rio-hero-logo-sub::before,
+    .rio-hero-logo-sub::after {
+        width: clamp(20px, 2.2vw, 38px);
+    }
+
+    .rio-hero-text {
+        max-width: min(640px, 46vw);
+        margin: 0;
+    }
+
+    .rio-hero-title {
+        margin: 0.5rem 0 0.6rem;
+    }
+
+    .rio-hero-location {
+        margin-top: 0;
+    }
+
+    .rio-hero-desc {
+        margin-top: 1.1rem;
+    }
+
+    .rio-hero-content .btn-book {
+        margin-top: 1.9rem;
+    }
 }
 
 
@@ -570,9 +960,16 @@ body {
     font-size: 0.85rem;
 }
 
+.rio-notice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
 .rio-notice-text .btn-proceed {
     display: inline-block;
-    margin-top: 1.5rem;
     padding: 0.8rem 2rem;
     border-radius: 60px;
     background: #C2B280;
@@ -589,6 +986,24 @@ body {
     transform: scale(1.03);
 }
 
+.rio-notice-text .btn-dont-show {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    border-radius: 60px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    border: none;
+    transition: color 0.2s;
+}
+
+.rio-notice-text .btn-dont-show:hover {
+    color: #fff;
+}
+
 /* ===================================================== */
 /* SEÇÃO DE TOURS                                        */
 /* ===================================================== */
@@ -599,11 +1014,26 @@ body {
     position: relative;
 }
 
-/* Textura sutil inspirada no calçadão — ondas em baixíssima opacidade */
+/* Seções dinâmicas (ex.: #expedicoes-compartilhadas, #expedicoes-privativas)
+   só recebem cards via JS quando há tours daquela modalidade cadastrados no
+   banco para a cidade. O grid tem só um comentário HTML como marcador de
+   posição, então :empty não pega (o comentário + a quebra de linha ao redor
+   contam como texto); por isso a checagem real é feita em JS (ver
+   Lencoismaranhenses.js) e esta classe só existe para o JS aplicar. */
+.rio-tours.rio-tours-vazia {
+    display: none;
+}
+
+/* Textura sutil inspirada no calçadão — ondas em baixíssima opacidade.
+   z-index:0 (em vez do z-index:auto padrão) garante que fique DEBAIXO dos
+   cards: um pseudo-elemento position:absolute com z-index:auto pinta acima
+   do conteúdo em fluxo normal do mesmo contexto de empilhamento, mesmo
+   vindo antes no DOM — por isso o grid abaixo precisa de z-index:1. */
 .rio-tours::before {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;
     pointer-events: none;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='48'%3E%3Cpath d='M0,12 C60,4 120,4 180,12 C240,20 300,20 360,12 L360,17 C300,25 240,25 180,17 C120,9 60,9 0,17Z' fill='%23000' opacity='0.025'/%3E%3Cpath d='M0,30 C60,22 120,22 180,30 C240,38 300,38 360,30 L360,35 C300,43 240,43 180,35 C120,27 60,27 0,35Z' fill='%23000' opacity='0.02'/%3E%3C/svg%3E") repeat;
     background-size: 360px 48px;
@@ -656,6 +1086,8 @@ body {
 /* CARDS DE TOURS                                        */
 /* ===================================================== */
 .rio-tours-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.8rem;
@@ -667,6 +1099,7 @@ body {
     border: 1px solid rgba(0,0,0,0.08);
     border-radius: 24px;
     overflow: hidden;
+    position: relative; /* âncora de .rio-tour-float-actions */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -856,8 +1289,120 @@ body {
     font-size: 0.85rem;
 }
 
+/* Textos longos (Inclui, Roteiro, etc.) ficam limitados a 3 linhas — o
+   corte agora é feito no próprio TEXTO pelo JS (wireTourDetailToggles, busca
+   binária), não visualmente por CSS, porque só assim "Ler mais" termina
+   colado no fim do texto, na mesma linha (pedido explícito). O "…" e o botão
+   já saem prontos do JS dentro de .rio-tour-detail-value / .rio-tour-detail-line
+   — aqui só é preciso deixar tudo fluir normalmente. */
+.rio-tour-detail-line {
+    display: block;
+    width: 100%;
+    line-height: 1.5;
+}
+
+.rio-tour-detail-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.35em;
+    color: #1da194;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+.rio-tour-detail-toggle.rio-detail-visible {
+    display: inline;
+}
+
 .rio-tour-details strong {
     color: #2c3e50;
+}
+
+/* Inclui/Roteiro: parágrafos, listas com ✓/✕/* e negrito digitados no
+   admin. Clamp aqui é só visual (max-height), diferente do corte por
+   caractere usado no texto puro acima, porque agora o conteúdo é HTML. */
+.rio-tour-detail-rich-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+.rio-tour-detail-richbody {
+    flex: 1 1 100%;
+    max-height: 4.6em;
+    overflow: hidden;
+    margin-top: 0.2rem;
+}
+
+.rio-tour-detail-rich-item.rio-detail-expanded .rio-tour-detail-richbody {
+    max-height: none;
+}
+
+/* Parágrafo puro (sem lista): o corte agora é feito no próprio texto pelo
+   JS, igual ao texto simples — o max-height daqui atrapalharia a medição
+   (o scrollHeight já viria pré-cortado em 3 linhas mesmo com o texto real
+   menor) e é desativado por essa classe (ver wireTourDetailToggles). */
+.rio-tour-detail-richbody.rio-tour-detail-richbody-textcut {
+    max-height: none;
+    overflow: visible;
+}
+
+.rio-tour-detail-paragraph {
+    margin: 0 0 0.4em;
+}
+
+.rio-tour-detail-paragraph:last-child {
+    margin-bottom: 0;
+}
+
+.rio-tour-detail-list {
+    list-style: none;
+    margin: 0 0 0.4em;
+    padding: 0;
+    border-bottom: none !important;
+}
+
+.rio-tour-detail-list:last-child {
+    margin-bottom: 0;
+}
+
+.rio-tour-detail-list li {
+    border-bottom: none !important;
+    padding: 0.1rem 0 0.1rem 1.35em;
+    position: relative;
+}
+
+.rio-tour-list-check::before,
+.rio-tour-list-cross::before,
+.rio-tour-list-dot::before {
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+}
+
+.rio-tour-list-check::before {
+    content: '✓';
+    color: #1da194;
+}
+
+.rio-tour-list-cross::before {
+    content: '✕';
+    color: #c0392b;
+}
+
+.rio-tour-list-dot::before {
+    content: '•';
+    color: #c9a96e;
+}
+
+.rio-tour-detail-toggle-rich {
+    flex: 0 0 auto;
+    margin-left: auto;
 }
 
 /* ===================================================== */
@@ -872,12 +1417,20 @@ body {
     padding-top: 0.8rem;
 }
 
+/* "Ver no Mapa" e "Avaliações" (mesma classe rio-link-map) encolhem e
+   truncam com reticências quando faltar espaço na linha — o botão
+   "Reservar Agora" nunca deve ser cortado (ver .rio-btn-reserve abaixo). */
 .rio-link-map {
     color: #1da194;
     font-weight: 600;
     font-size: 0.9rem;
     text-decoration: none;
     transition: color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .rio-link-map:hover {
@@ -896,13 +1449,126 @@ body {
     order: 1;
 }
 
+/* Ícones flutuantes do card (compartilhar + favoritar) — ficam alinhados à
+   direita, na divisão entre a foto e o bloco de informações. A barra é filha
+   do .rio-tour-card (não de .rio-tour-images, que tem overflow:hidden pra
+   recortar a foto no 16/9 e cortaria os botões): ela cobre exatamente a área
+   da foto repetindo o mesmo aspect-ratio, e cada botão desce metade da
+   própria altura (translateY(50%)), ficando metade sobre a foto e metade
+   sobre o texto. Ver ensureShareButton / ensureFavButton em site-shell.js.
+   Os pontos do slideshow (.rio-tour-slider-dots) ficam centralizados e um
+   pouco acima, então não disputam espaço com eles. */
+.rio-tour-float-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-right: 1.1rem;
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* Fundo escuro translúcido porque a foto por baixo muda de tour pra tour. */
+.rio-link-share,
+.rio-tour-fav {
+    position: static;
+    transform: translateY(50%);
+    pointer-events: auto;
+    flex: 0 0 auto;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* Compartilhar: redondo, só o ícone. */
+.rio-link-share {
+    width: 34px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.rio-link-share:hover {
+    background: #1da194;
+    color: #ffffff;
+}
+
+/* Favoritar: pílula (retângulo de bordas bem arredondadas) com o coração e a
+   quantidade de pessoas que favoritaram — mesmo formato do botão de curtir da
+   galeria de relatos (.rio-relatos-like). A contagem vem de
+   /get_tour_favoritos; favoritar exige login (ver TourInteracoes em
+   tour-interacoes.js). */
+.rio-tour-fav {
+    width: auto;
+    border-radius: 999px;
+    padding: 0 0.75rem;
+    gap: 0.35rem;
+    font-weight: 700;
+}
+
+/* Coração: branco quando ainda não favoritado, vermelho quando já é
+   favorito — o fundo da pílula continua o mesmo círculo escuro desfocado
+   nos dois estados (não vira sólido vermelho), só o glifo do coração muda,
+   pedido explícito. */
+.rio-tour-fav i {
+    color: #ffffff;
+    transition: color 0.2s ease, transform 0.25s ease;
+}
+
+.rio-tour-fav:hover {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.rio-tour-fav.is-fav i {
+    color: #e63950;
+}
+
+.rio-tour-fav.just-faved i {
+    animation: rioTourFavPop 0.4s ease;
+}
+
+@keyframes rioTourFavPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+}
+
+/* Destaque temporário no card ao chegar por um link direto (?tour=<id>) —
+   some sozinho depois de alguns segundos (ver scrollToDirectLinkTourIfNeeded
+   em site-shell.js). */
+.rio-tour-card--highlight {
+    animation: rioTourCardHighlight 2.4s ease;
+}
+
+@keyframes rioTourCardHighlight {
+    0%, 100% { box-shadow: none; }
+    15%, 65% { box-shadow: 0 0 0 4px rgba(29, 161, 148, 0.55); }
+}
+
 .rio-btn-reserve {
-    padding: 0.55rem 1.2rem;
-    min-width: 160px;
+    padding: 0.45rem 0.9rem;
+    min-width: 120px;
     max-width: 220px;
     width: auto;
+    flex-shrink: 0;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     margin-top: 0;
     background: rgba(255, 255, 255, 0.65);
     color: #C2B280;
@@ -920,6 +1586,8 @@ body {
     transform: translateY(-2px) scale(1.08);
     filter: brightness(1.2);
     box-shadow: 0 12px 32px rgba(194, 178, 128, 0.55);
+    background: rgba(255, 255, 255, 0.65);
+    color: #C2B280;
 }
 
 .rio-btn-reserve.disabled,
@@ -1057,7 +1725,7 @@ body {
     }
 
     .rio-hero-content {
-        padding: calc(var(--rio-header-height) + 12px) 1.5rem 2.5rem;
+        padding: calc(var(--rio-header-height) + 12px) 1.5rem 6.5rem;
         gap: 0.45rem;
     }
 
@@ -1089,12 +1757,16 @@ body {
     }
 
     .rio-hero {
-        min-height: 55vh;
+        /* Sem piso fixo — o painel encolhe para caber só o conteúdo, sem
+           deixar espaço vazio entre o botão e a onda decorativa. A folga
+           necessária pra onda não colidir com o botão vem do padding-bottom
+           de .rio-hero-content, abaixo. */
+        min-height: 0;
         padding-top: 0;
     }
 
     .rio-hero-content {
-        padding: calc(var(--rio-header-height) + 10px) 1rem 2rem;
+        padding: calc(var(--rio-header-height) + 10px) 1rem calc(var(--hero-wave-band-height, 148px) + 24px);
         gap: 0.4rem;
     }
 
@@ -1107,7 +1779,9 @@ body {
     position: fixed;
     bottom: 1.25rem;
     right: 1.25rem;
-    z-index: 1100;
+    /* Sempre atrás do aviso "Informações Importantes" (.rio-notice,
+       z-index:1000). */
+    z-index: 900;
     max-width: 320px;
     width: min(92vw, 320px);
     background: rgba(255, 255, 255, 0.18);
@@ -1211,36 +1885,32 @@ body {
     }
 
     .rio-hero {
-        min-height: 60vh;
+        /* Sem piso fixo — o painel encolhe para caber só o conteúdo, sem
+           deixar espaço vazio entre o botão e a onda decorativa. A folga
+           necessária pra onda não colidir com o botão vem do padding-bottom
+           de .rio-hero-content, abaixo. */
+        min-height: 0;
         padding-top: 0;
     }
 
     .rio-hero-content {
         margin-top: 0;
-        padding: calc(var(--rio-header-height) + 10px) 1rem 2rem;
-        gap: 0.35rem;
-    }
-
-    .rio-hero-logo {
-        max-width: min(180px, 45vw);
+        padding: calc(var(--rio-header-height) + 34px) 1.35rem calc(var(--hero-wave-band-height, 148px) + 24px);
+        gap: 0.4rem;
     }
 
     .rio-hero-title {
-        font-size: clamp(1.4rem, 6vw, 2.2rem);
+        font-size: clamp(2.6rem, 12vw, 4rem);
         margin-bottom: 0.15rem;
     }
 
-    .rio-city-highlight {
-        font-size: clamp(2rem, 8vw, 3.2rem);
-    }
-
     .rio-hero-location {
-        font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+        font-size: clamp(0.75rem, 2.8vw, 0.95rem);
         letter-spacing: 2px;
     }
 
     .rio-hero-desc {
-        font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+        font-size: clamp(0.9rem, 3.5vw, 1rem);
         line-height: 1.7;
     }
 
@@ -1250,14 +1920,6 @@ body {
 
     .rio-tours-grid {
         grid-template-columns: 1fr;
-    }
-
-    .rio-hero-title {
-        font-size: clamp(1.4rem, 6vw, 2rem);
-    }
-
-    .rio-city-highlight {
-        font-size: clamp(2.2rem, 9vw, 3.4rem);
     }
 
     .rio-notice {
@@ -1308,13 +1970,14 @@ body {
         align-items: center;
         justify-content: flex-start;
         flex-wrap: nowrap;
-        gap: 1rem;
+        gap: 0.6rem;
     }
 
     .rio-btn-reserve {
         width: auto;
-        min-width: 180px;
+        min-width: 130px;
         max-width: 260px;
+        flex-shrink: 0;
         text-align: center;
     }
 }
@@ -1322,7 +1985,7 @@ body {
 @media (min-width: 1200px) {
     .rio-tour-actions {
         justify-content: space-between;
-        gap: 1.25rem;
+        gap: 0.75rem;
     }
 
     .rio-link-map {
@@ -1332,10 +1995,11 @@ body {
     .rio-btn-reserve {
         order: 1;
         margin-left: auto;
-        min-width: 240px;
+        min-width: 160px;
         max-width: 360px;
-        padding: 0.75rem 1.8rem;
-        font-size: 1rem;
+        flex-shrink: 0;
+        padding: 0.75rem 1.4rem;
+        font-size: 0.95rem;
     }
 }
 
@@ -1751,6 +2415,31 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay):not(.a
   font-weight: 600;
 }
 
+.user-data-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.user-data-photo-preview {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e8edf2;
+  border: 2px solid #d6dce4;
+}
+
+.user-data-photo-upload {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1a7a4a;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .user-data-form label {
   display: grid;
   gap: 0.25rem;
@@ -1758,11 +2447,13 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay):not(.a
   color: #33485f;
 }
 
-.user-data-form input {
+.user-data-form input,
+.user-data-form select {
   border: 1px solid #d6dce4;
   border-radius: 8px;
   padding: 0.48rem 0.55rem;
   font-size: 0.92rem;
+  background: #fff;
 }
 
 .user-data-actions {
@@ -1889,6 +2580,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay):not(.a
   margin: 0;
   font-size: clamp(1.2rem, 2.2vw, 1.5rem);
   font-weight: 800;
+  color: #0b3c6d;
 }
 
 .login-modal__close {
@@ -2476,23 +3168,18 @@ header {
 }
 
 @media (min-width: 1200px) {
-  .rio-hero {
-    min-height: 85vh;
-  }
-
+  /* Só o espaçamento vertical aqui — o recuo lateral do hero em telas
+     grandes é definido no bloco "HERO — TELAS GRANDES" (padding-left
+     proporcional). Usar o atalho `padding` neste ponto sobrescreveria
+     aquele recuo, já que esta regra vem depois no arquivo. */
   .rio-hero-content {
-    padding: calc(var(--rio-header-height) + 20px) 3.5rem 3.5rem;
+    padding-top: calc(var(--rio-header-height, 72px) + 20px);
     gap: 0.75rem;
   }
 
   #rioHeroDesc {
-    font-size: 1.1rem;
-    line-height: 1.85;
-  }
-
-  .rio-hero-content .btn-book {
-    margin-top: 1.4rem;
-    padding: 0.75rem 1.4rem;
+    font-size: 1.25rem;
+    line-height: 1.75;
   }
 }
 
@@ -2542,20 +3229,84 @@ header {
 }
 
 .reservation-modal {
-  width: min(90vw, 520px);
-  max-height: min(90vh, 640px);
+  /* Paleta local do modal — teal, igual ao botão "Confirmar Reserva" que já
+     existia (#1da194); o resto do site usa verde (#18b015)/azul (#0b3c6d),
+     então isso fica isolado aqui em vez de virar variável global. */
+  --res-accent: #1da194;
+  --res-accent-dark: #178f84;
+  --res-accent-light: #e5f6f4;
+  --res-border: #e2e8f0;
+  --res-text: #1f2937;
+  --res-text-muted: #6b7280;
+
+  /* Tudo dimensionado pra caber inteiro sem rolagem (nem vertical, nem
+     horizontal) em qualquer aparelho — inclusive celular deitado, a tela
+     mais baixa que existe na prática. Por isso os tamanhos abaixo usam
+     clamp() amarrado à altura da tela (dvh) em vez de rem fixo: o modal
+     encolhe sozinho conforme a tela fica mais baixa, sem precisar de uma
+     media query por breakpoint. dvh (não vh) porque no mobile a barra de
+     endereço do navegador some/aparece e muda a altura real disponível. */
+  width: min(92vw, 520px);
+  max-height: min(96dvh, 640px);
   background: #ffffff;
   border-radius: 16px;
-  padding: 1.2rem;
+  padding: clamp(0.5rem, 3dvh, 1.4rem) clamp(0.9rem, 4vw, 1.4rem);
   box-shadow: 0 12px 40px rgba(0,0,0,0.28);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.res-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: clamp(0.25rem, 1.6dvh, 0.9rem);
+}
+
+.res-modal-icon {
+  flex: 0 0 auto;
+  width: clamp(26px, 6dvh, 36px);
+  height: clamp(26px, 6dvh, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--res-accent-light);
+  color: var(--res-accent);
+  font-size: clamp(0.8rem, 2.6dvh, 1rem);
+}
+
+.res-modal-heading {
+  min-width: 0;
+}
+
+.reservation-modal h2 {
+  margin: 0 0 0.1rem;
+  font-size: clamp(0.86rem, 3.2dvh, 1.15rem);
+  font-weight: 700;
+  color: var(--res-text);
+  line-height: 1.15;
+}
+
+.res-modal-subtitle {
+  margin: 0;
+  font-size: clamp(0.6rem, 2dvh, 0.8rem);
+  color: var(--res-text-muted);
+  line-height: 1.2;
 }
 
 .reservation-modal form {
   display: grid;
-  gap: 0.75rem;
-  max-height: calc(90vh - 120px);
+  gap: clamp(0.22rem, 1.4dvh, 0.7rem);
+  flex: 1;
+  min-height: 0;
+  /* Fica como rede de segurança, não como plano: com os tamanhos acima o
+     conteúdo deve sempre caber sem precisar rolar. Se algum aparelho real
+     ainda assim não couber, é melhor um scroll discreto aqui do que
+     conteúdo cortado ou vazando pra fora do modal. */
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 0.25rem;
 }
 
@@ -2568,68 +3319,365 @@ header {
   border-radius: 999px;
 }
 
-
-.reservation-modal h2 {
-  margin-top: 0;
-  margin-bottom: 0.9rem;
-  font-size: 1.3rem;
+/* Nome+Data e Hora+Quantidade (e agora Idioma+Celular) sempre lado a lado,
+   em QUALQUER tamanho de tela, inclusive celular — pedido explícito: menos
+   linhas empilhadas = menos altura total, o que também ajuda a nunca
+   precisar rolar. */
+.res-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(0.5rem, 3vw, 0.9rem);
+  align-items: end;
 }
 
-.reservation-modal form {
-  display: grid;
-  gap: 0.75rem;
+.res-field {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.08rem, 0.6dvh, 0.3rem);
+  min-width: 0;
+}
+
+/* [hidden] sozinho (regra do navegador) empata em especificidade com
+   .res-field e o navegador prioriza a folha de estilo da página — sem esta
+   regra explícita, o campo "Hora" continuava ocupando espaço (e ficava
+   visível) mesmo com o atributo hidden, porque .res-field { display:flex }
+   vencia. */
+.res-field[hidden] {
+  display: none;
 }
 
 .reservation-modal label {
-  font-size: 0.9rem;
+  font-size: clamp(0.58rem, 1.75dvh, 0.75rem);
+  font-weight: 600;
+  color: var(--res-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Ícone à esquerda, dentro do campo — input/select não aceitam filhos, então
+   o ícone é posicionado por cima via wrapper relative + input com
+   padding-left reservado pro espaço do ícone. */
+.res-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.res-input-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: var(--res-accent);
+  font-size: clamp(0.75rem, 2dvh, 0.9rem);
+  pointer-events: none;
 }
 
 .reservation-modal input,
 .reservation-modal select {
   width: 100%;
-  padding: 0.55rem 0.65rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: clamp(0.26rem, 1.3dvh, 0.6rem) 0.65rem;
   border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid var(--res-border);
+  font-size: clamp(0.78rem, 2.1dvh, 0.88rem);
+  color: var(--res-text);
+  background: #fff;
+  transition: border-color 0.15s ease;
+}
+
+.res-input-wrap input,
+.res-input-wrap select {
+  padding-left: 1.95rem;
+}
+
+.reservation-modal input:focus,
+.reservation-modal select:focus {
+  outline: none;
+  border-color: var(--res-accent);
+}
+
+/* Setinha própria pro <select>, na cor do tema — a nativa do navegador não
+   dá pra recolorir, e aqui ela também precisa deixar espaço à direita
+   equivalente ao ícone da esquerda, pra ficar visualmente simétrico. */
+.reservation-modal select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 1.95rem;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231da194'%3e%3cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 13px;
+}
+
+/* Caixa de destaque "Tour selecionado" — nome do tour vem sempre do próprio
+   tour clicado (openReservationModal), nunca é fixo: cada tour mostra o seu. */
+.res-tour-box {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  background: #f4f8f9;
+  border-radius: 10px;
+  padding: clamp(0.3rem, 1.5dvh, 0.65rem) 0.7rem;
+}
+
+.res-tour-icon {
+  flex: 0 0 auto;
+  width: clamp(22px, 5dvh, 30px);
+  height: clamp(22px, 5dvh, 30px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #ffffff;
+  color: var(--res-accent);
+  font-size: clamp(0.7rem, 2dvh, 0.85rem);
+}
+
+/* A arte de "Tour selecionado" (imagem/assets/img-tour-selecionado.png, 481x519)
+   é redimensionada pra preencher exatamente a caixa quadrada acima: object-fit
+   cover recorta o excedente do lado mais longo em vez de distorcer. */
+.res-tour-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.res-tour-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.res-tour-label {
+  font-size: clamp(0.6rem, 1.7dvh, 0.7rem);
+  color: var(--res-accent-dark);
+  font-weight: 600;
+}
+
+.res-tour-name {
+  font-size: clamp(0.78rem, 2.2dvh, 0.92rem);
+  font-weight: 700;
+  color: var(--res-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Calendário customizado da data de reserva — o popup nativo de
+   <input type="date"> não é estilizável, então o campo vira um botão que
+   abre este mini-calendário próprio, onde os dias em que o tour funciona
+   (ver horarios_por_dia) ficam em verde. Estilizado igual aos demais campos
+   (mesma borda/altura/ícone à esquerda) pra não destoar do restante do form. */
+.res-date-display {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: clamp(0.26rem, 1.3dvh, 0.6rem) 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--res-border);
+  font-size: clamp(0.78rem, 2.1dvh, 0.88rem);
+  background: #fff;
+  color: var(--res-text);
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Uma linha só, cortando com "…": em telas estreitas "Selecione uma data"
+   quebrava em duas linhas, deixando este campo mais alto que o vizinho
+   ("Nome") e desalinhando a dupla dentro do .res-grid. */
+.res-date-display .res-date-display-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.res-date-display i {
+  color: var(--res-accent);
   font-size: 0.9rem;
+}
+
+.res-date-display:hover,
+.res-date-display:focus-visible {
+  border-color: var(--res-accent);
+}
+
+.res-calendar-popover {
+  z-index: 2100;
+  width: 260px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.25);
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  color: #1f2937;
+}
+
+.res-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.res-calendar-nav {
+  border: none;
+  background: rgba(11, 77, 139, 0.08);
+  color: #0b4d8b;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.res-calendar-nav:hover {
+  background: rgba(11, 77, 139, 0.18);
+}
+
+.res-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.res-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.res-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: default;
+}
+
+.res-calendar-day--empty {
+  visibility: hidden;
+}
+
+.res-calendar-day--available {
+  background: rgba(34, 139, 87, 0.15);
+  color: #1a7a4a;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.res-calendar-day--available:hover {
+  background: rgba(34, 139, 87, 0.32);
+}
+
+.res-calendar-day--unavailable {
+  color: #c1c7cf;
+  cursor: not-allowed;
+}
+
+.res-calendar-day--selected {
+  outline: 2px solid #1a7a4a;
+  outline-offset: -2px;
+}
+
+.res-calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: #4b5563;
+}
+
+.res-calendar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(34, 139, 87, 0.6);
+  display: inline-block;
 }
 
 .reservation-modal-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 0.6rem;
-  margin-top: 0.5rem;
+  margin-top: clamp(0.2rem, 1.4dvh, 0.7rem);
+  padding-top: clamp(0.25rem, 1.4dvh, 0.8rem);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .reservation-modal-actions .btn-book {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   border-radius: 999px;
-  min-width: 140px;
-  padding: 0.5rem 1rem;
-  border: 2px solid #b0b0b0;
-  color: #222;
-  background: #e0e0e0;
-  text-transform: uppercase;
+  padding: clamp(0.38rem, 1.8dvh, 0.7rem) 1rem;
+  font-size: clamp(0.75rem, 2dvh, 0.85rem);
   font-weight: 700;
-  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
+/* Sem sombra nestes dois botões, nem em repouso nem no hover — .btn-book (a
+   classe geral do site) traz uma sombra forte que não combina com o modal. */
+.reservation-modal-actions .btn-book,
+.reservation-modal-actions .btn-book:hover,
+.reservation-modal-actions .btn-book:focus {
+  box-shadow: none;
+}
+
+/* Cancelar — ação secundária, discreta (fundo transparente) */
+.reservation-modal-actions button[type="button"] {
+  background: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  color: #555;
+}
+
+.reservation-modal-actions button[type="button"]:hover,
+.reservation-modal-actions button[type="button"]:focus {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.35);
+  color: #222;
+  transform: none;
+}
+
+/* Confirmar Reserva — ação primária, preenchida na cor de destaque do site */
 .reservation-modal-actions button[type="submit"] {
-  background: #ffffff;
-  border: 2px solid #c2b280;
-  color: #c2b280;
+  background: #1da194;
+  border: 1.5px solid #1da194;
+  color: #ffffff;
 }
 
 .reservation-modal-actions button[type="submit"]:hover,
 .reservation-modal-actions button[type="submit"]:focus {
-  background: #fff8e5;
-  border-color: #b99e60;
-  color: #b99e60;
-}
-
-.reservation-modal-actions .btn-book:hover,
-.reservation-modal-actions .btn-book:focus {
-  background: rgba(220, 220, 220, 0.9);
+  background: #178f84;
+  border-color: #178f84;
+  color: #ffffff;
   transform: translateY(-1px);
-  color: #333;
 }
 
 .footer-info-icons {
@@ -2637,6 +3685,51 @@ header {
   justify-content: center;
   gap: 1rem;
   margin-top: 1.2rem;
+}
+
+/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao —
+   nao introduz cor, fonte nem espacamento novos: so organiza os links em
+   linha, quebrando naturalmente no mobile. */
+.rio-footer-destinos {
+    /* O cartao do rodape e um grid de ate 3 colunas. Sem grid-column:1/-1 este
+       bloco virava um 4o item e abria uma linha inteira nova (+214px de altura).
+       Ocupando a largura toda, os tres links cabem numa unica linha e o
+       acrescimo fica em poucas dezenas de pixels. */
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem 0.9rem;
+    text-align: center;
+    font-size: 0.82rem;
+}
+
+.rio-footer-destinos-titulo {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    opacity: 0.75;
+}
+
+.rio-footer-destinos-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 1rem;
+}
+
+.rio-footer-destinos a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+
+.rio-footer-destinos a:hover,
+.rio-footer-destinos a:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
 }
 
 .rio-footer-card-credit {
@@ -2728,6 +3821,14 @@ header {
   font-size: 1.4rem;
   color: #ffffff;
   line-height: 1;
+}
+
+.profile-btn-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .profile-btn:hover {
@@ -2835,6 +3936,168 @@ header {
   border: 0;
 }
 
+/* ===================================================== */
+/* DEPOIMENTOS: quotes + galeria de relatos               */
+/* ===================================================== */
+.rio-testimonials-quotes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto 2.5rem;
+}
+
+.rio-testimonial-quote {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  padding: 1.8rem 1.8rem 1.6rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.rio-testimonial-icon {
+  display: block;
+  color: #c2b280;
+  font-size: 1.4rem;
+  opacity: 0.65;
+  margin-bottom: 0.6rem;
+}
+
+.rio-testimonial-text {
+  color: #4a5568;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0 0 1rem;
+}
+
+.rio-testimonial-author {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.rio-testimonial-author::before {
+  content: '— ';
+  color: #c2b280;
+}
+
+.rio-relatos-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.rio-relatos-item {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rio-relatos-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+}
+
+.rio-relatos-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.rio-relatos-item:hover img {
+  transform: scale(1.06);
+}
+
+.rio-relatos-item::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+
+.rio-relatos-like {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  /* Ainda não curtida: coração branco. O fundo é escuro e desfocado pra ele
+     não se perder na foto (que muda de item pra item) nem competir com o
+     vermelho do estado curtido. */
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.rio-relatos-like i {
+  color: #ffffff;
+  transition: transform 0.25s ease;
+}
+
+.rio-relatos-like:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rio-relatos-like.is-liked {
+  background: #c0392b;
+  color: #fff;
+}
+
+.rio-relatos-like.is-liked i {
+  color: #fff;
+}
+
+.rio-relatos-like.just-liked i {
+  animation: relatosLikePulse 0.4s ease;
+}
+
+@keyframes relatosLikePulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 900px) {
+  .rio-relatos-gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .rio-relatos-gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+  }
+
+  .rio-testimonials-quotes {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Override final: container da página Lençóis em largura total */
 .main-container.rio-page {
   width: 100% !important;
@@ -2842,4 +4105,70 @@ header {
   margin: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+   #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
+   e precisa de contraste suficiente sobre o fundo claro do modal. */
+.login-modal__switch {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: #1a7f37;
+}
+
+.login-modal__switch button {
+  background: none;
+  border: none;
+  color: #1a7f37;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+   e o título de .my-reservations-*, só os itens da lista são próprios.
+   Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
+.my-favorites-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.my-favorites-card:last-child {
+  border-bottom: none;
+}
+
+.my-favorites-thumb {
+  width: 84px;
+  height: 60px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.my-favorites-info {
+  min-width: 0;
+}
+
+.my-favorites-name {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.my-favorites-meta {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  color: #6b7a8d;
+}
+
+.my-favorites-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1da194;
+  text-decoration: underline;
 }

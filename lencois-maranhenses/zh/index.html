@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Checagem BLOQUEANTE de manutenção — ver comentário em index.html. -->
+    <script>
+    (function () {
+        try {
+            var role = (localStorage.getItem('userRole') || '').trim().toLowerCase();
+            if (role === 'admin' || role === 'super_admin') return;
+            // Rastreadores de busca e geradores de preview de link nao passam
+            // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
+            // travaria o rastreamento e entra na conta de tempo de carga que o
+            // Google avalia; (2) com a manutencao ligada o crawler seria
+            // redirecionado para manutencao.html, que e noindex — o Google
+            // entenderia que a pagina real saiu do ar e poderia tira-la do
+            // indice. Visitante humano segue com o comportamento de sempre.
+            if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://api-tour.exksvol.com/get_site_config', false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                var targets = JSON.parse(xhr.responseText).maintenance_targets || [];
+                if (targets.indexOf('Lencois') !== -1) {
+                    window.location.replace('/manutencao.html');
+                }
+            }
+        } catch (e) {}
+    })();
+    </script>
+    <title>马拉尼昂千湖沙漠游览 | Tour by Foot</title>
+    <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
+         metadados — nada aqui altera o que o visitante vê na página. -->
+    <meta name="description" content="蓝湖、美丽湖、沙滩车、徒步与巴雷里尼亚斯接送服务。马拉尼昂千湖沙漠游览，含交通、向导与保险，可在线预订。">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tour by Foot">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="马拉尼昂千湖沙漠游览 | Tour by Foot">
+    <meta property="og:description" content="蓝湖、美丽湖、沙滩车、徒步与巴雷里尼亚斯接送服务。马拉尼昂千湖沙漠游览，含交通、向导与保险，可在线预订。">
+    <meta property="og:url" content="https://www.tourbyfoot.com/lencois-maranhenses/zh/">
+    <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="马拉尼昂千湖沙漠游览 | Tour by Foot">
+    <meta name="twitter:description" content="蓝湖、美丽湖、沙滩车、徒步与巴雷里尼亚斯接送服务。马拉尼昂千湖沙漠游览，含交通、向导与保险，可在线预订。">
+    <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg">
+    <link rel="apple-touch-icon" href="../../imagem/Lencois/assets/Logo2.png?v=4">
+    <link rel="icon" type="image/png" href="../../imagem/Lencois/assets/Logo2.png?v=4">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@400;500;700;900&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/style.css?v=28">
+
+    <link rel="stylesheet" href="../../css/Lencoismaranhenses.css?v=74">
+    <link rel="stylesheet" href="../../css/tour-interacoes.css?v=9">
+<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+    <link rel="canonical" href="https://www.tourbyfoot.com/lencois-maranhenses/zh/">
+    <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/lencois-maranhenses/">
+    <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/lencois-maranhenses/en/">
+    <link rel="alternate" hreflang="es" href="https://www.tourbyfoot.com/lencois-maranhenses/es/">
+    <link rel="alternate" hreflang="fr" href="https://www.tourbyfoot.com/lencois-maranhenses/fr/">
+    <link rel="alternate" hreflang="it" href="https://www.tourbyfoot.com/lencois-maranhenses/it/">
+    <link rel="alternate" hreflang="zh" href="https://www.tourbyfoot.com/lencois-maranhenses/zh/">
+    <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/lencois-maranhenses/">
+    <script>
+    // A URL manda no idioma. Quem abrir /lencois-maranhenses/en/ ve ingles, mesmo com
+    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
+    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
+    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
+    window.rotaIdioma = { base: "/lencois-maranhenses/", atual: "zh", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
+    try { localStorage.setItem("preferredLanguage", "zh"); } catch (e) {}
+    </script>
+    <!-- fim do bloco gerado -->
+</head>
+<body>
+    <div class="main-container rio-page">
+        <header>
+            <div class="nav-left">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <nav>
+                    <a href="/" data-i18n="nav_home">INÍCIO</a>
+                    <a href="#" data-footer-action="sobre" data-i18n="nav_about">SOBRE</a>
+                    <a href="#" data-footer-action="contato" data-i18n="nav_contact">CONTATO</a>
+                    <a href="#" data-footer-action="ajuda" data-i18n="nav_help">AJUDA</a>
+                </nav>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="header-center">
+                <div class="lang-selector" id="langSelector">
+                    <button class="lang-btn" type="button" id="langBtn">
+                        <span class="flag flag-pt"></span><span class="lang-label" data-i18n="lang_label">Português</span>
+                    </button>
+                    <ul class="lang-list" id="langList">
+                        <li data-lang="pt"><span class="flag flag-pt"></span><span class="lang-label">Português</span></li>
+                        <li data-lang="en"><span class="flag flag-en"></span><span class="lang-label">English</span></li>
+                        <li data-lang="fr"><span class="flag flag-fr"></span><span class="lang-label">Français</span></li>
+                        <li data-lang="es"><span class="flag flag-es"></span><span class="lang-label">Español</span></li>
+                        <li data-lang="it"><span class="flag flag-it"></span><span class="lang-label">Italiano</span></li>
+                        <li data-lang="zh"><span class="flag flag-zh"></span><span class="lang-label">中文(普通话)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="header-spacer" aria-hidden="true"></div>
+
+            <div class="profile-menu">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Conta"><i class="fa fa-user-circle"></i></button>
+                <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Opções de conta">
+                    <a href="#" class="profile-item" data-profile-action="login" data-i18n="profile_login">Entrar</a>
+                    <a href="#" class="profile-item" data-profile-action="register" data-i18n="profile_register">Cadastrar</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-menu-container" id="mobileMenuContainer" aria-hidden="true">
+            <div class="mobile-menu-panel">
+                <div class="mobile-menu-header">
+                    <button class="mobile-menu-back" id="mobileMenuBack" type="button" aria-label="Voltar">←</button>
+                    <span class="mobile-menu-title" id="mobileMenuTitle">Menu</span>
+                    <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Fechar">×</button>
+                </div>
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-view mobile-menu-main" data-view="main"></div>
+                    <div class="mobile-menu-view mobile-menu-lang" data-view="lang"></div>
+                    <div class="mobile-menu-view mobile-menu-user" data-view="user"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERO LENÇÓIS -->
+        <section class="rio-hero">
+            <div class="rio-hero-overlay"></div>
+            <div class="rio-hero-content">
+                <div class="rio-hero-brand">
+                    <!-- Telas pequenas: a arte completa do logo (símbolo sobre a tipografia). -->
+                    <img src="../../imagem/Lencois/assets/Logo2.png" alt="Visit Lençóis" class="rio-hero-logo rio-hero-logo--full" loading="eager" decoding="async">
+                    <!-- Telas grandes: a MESMA arte recortada em símbolo + tipografia para
+                         ficarem lado a lado. Os recortes vivem em --mark-*/--word-* no CSS;
+                         as três imagens compartilham a classe .rio-hero-logo para que
+                         cidade-visual.js continue trocando todas pelo logo do servidor. -->
+                    <span class="rio-hero-brand-mark" aria-hidden="true">
+                        <img src="../../imagem/Lencois/assets/Logo2.png" alt="" class="rio-hero-logo" loading="eager" decoding="async">
+                    </span>
+                    <span class="rio-hero-brand-word">
+                        <span class="rio-hero-brand-wordmark">
+                            <img src="../../imagem/Lencois/assets/Logo2.png" alt="Visit Lençóis" class="rio-hero-logo" loading="eager" decoding="async">
+                        </span>
+                        <p class="rio-hero-logo-sub">Tour by Foot</p>
+                    </span>
+                </div>
+                <div class="rio-hero-text">
+                    <h1 class="rio-hero-title"><span class="rio-city-highlight">Lençóis Maranhenses</span></h1>
+                    <p class="rio-hero-location">Maranhão • Brasil</p>
+                    <p class="rio-hero-desc">Descubra o <span class="rio-hero-accent">paraíso das dunas</span> e lagoas cristalinas no coração do <span class="rio-hero-accent">Maranhão</span>. Uma experiência única em um dos cenários naturais mais impressionantes do planeta.</p>
+                    <a href="#tours" class="btn-book">Conhecer Tours</a>
+                </div>
+            </div>
+            <svg class="rio-hero-wave-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 58 C 240 18, 480 18, 720 46 S 1200 82, 1440 40" fill="none" stroke="#e0b653" stroke-width="3"/>
+                <path d="M0 74 C 240 34, 480 34, 720 62 S 1200 98, 1440 56" fill="none" stroke="#e0b653" stroke-width="2" opacity="0.5"/>
+            </svg>
+        </section>
+
+        <!-- AVISO (oculto por padrão; controlado por Gerenciamento > Gerenciamento da página > Aviso "Informações Importantes") -->
+        <section class="rio-notice" style="display:none;">
+            
+            <div class="rio-notice-text">
+                <h2 class="rio-notice-title">Informações Importantes</h2>
+                <!-- Sem texto fixo aqui de propósito: o conteúdo do aviso vem do
+                     servidor (Gerenciamento > Aviso), já traduzido. Texto escrito no
+                     HTML envelhecia sem ninguém perceber e aparecia em português nas
+                     seis versões de idioma. Sem aviso cadastrado, a seção não aparece. -->
+                <div class="rio-notice-actions">
+                    <button class="btn-proceed" type="button">Prosseguir</button>
+                    <button class="btn-dont-show" type="button">Não mostrar novamente</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOURS -->
+        <section class="rio-tours" id="tours">
+            <h2 class="rio-section-title" data-i18n="tours_section_title">Nossas Experiências</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour entram aqui, montados via JS a partir do banco (ver fetchToursFromBackend em site-shell.js) -->
+            </div>
+
+            <!-- Retrato dos tours para o rastreador: os cards de verdade vem da
+                 API por JavaScript, e o Google le o HTML puro. Este bloco e escrito
+                 por tools/snapshot_tours.py e removido da tela pelo JS antes do
+                 primeiro card aparecer — ninguem chega a ve-lo. Nao editar a mao. -->
+            <!-- inicio do retrato de tours -->
+    <div class="tours-snapshot" data-snapshot>
+      <h2>我们的体验</h2>
+      <article class="tours-snapshot-item">
+        <h3>Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita)</h3>
+        <p>早上在您的酒店与导游会合。随后乘坐吉普车从巴雷里尼亚斯前往伦索伊斯马拉赫塞斯国家公园，沿途可欣赏广阔的沙丘和沙漠般的景观。抵达公园后，从一个湖泊开始徒步，穿过沙地前往另一个湖泊。在绿洲中的当地餐厅停留，享用美味午餐。用餐后，前往沙丘欣赏美丽的日落，观看夕阳映照下不断变换色彩的天空。最后返回吉普车，回到巴雷里尼亚斯的酒店，结束行程。</p>
+        <p>最多9人 · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img1.jpeg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img2.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img3.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img4.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img5.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img6.webp" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img7.jpg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Duas%20Lagoas/img8.jpg" alt="Passeio de Dia Inteiro - Duas Lagoas (Azul e Bonita) (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Tour Santo Amaro           (Circuito Betânia)</h3>
+        <p>行程包括美丽的贝塔尼亚湖（Lagoa Betânia），位于与湖泊同名的小村庄。湖泊面积广阔，旁边还有一条美丽的河流，两片水域之间由一座巨大的沙丘分隔，沙丘提供了欣赏周围景色的绝佳观景点。</p>
+        <p>行程于09:00开始，共在三个湖泊停留，供游客休闲和游泳。我们为团队提供遮阳伞、椅子和冰块。</p>
+        <p>随后安排午餐。前往餐厅需要支付过河船费，该费用不包含在套餐内。也可以选择返回城里用餐。</p>
+        <p>最多9人 · Todos os dias · 09:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img1.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img2.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img3.webp" alt="Tour Santo Amaro           (Circuito Betânia) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img4.png" alt="Tour Santo Amaro           (Circuito Betânia) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img5.jpeg" alt="Tour Santo Amaro           (Circuito Betânia) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img6.png" alt="Tour Santo Amaro           (Circuito Betânia) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img7.png" alt="Tour Santo Amaro           (Circuito Betânia) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Lagoas%20de%20Santo%20Amaro/img8.png" alt="Tour Santo Amaro           (Circuito Betânia) (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Manhã na Lagoa Azul</h3>
+        <p>这是一次前往伦索伊斯马拉赫塞斯国家公园的半日游。</p>
+        <p>我们大约在08:30开始从巴雷里尼亚斯的酒店接送游客。所有游客上车后，我们将行驶约一个小时抵达伦索伊斯马拉赫塞斯国家公园。</p>
+        <p>我们将步行穿越公园的沙丘，从沙丘顶部可以欣赏壮丽的全景。</p>
+        <p>随后，我们将探索湖泊。导游会带您在当地进行短途步行，参观两个湖泊，并在每个湖泊享有约30分钟的自由游泳时间。</p>
+        <p>本次行程将游览蓝湖线路（Lagoa Azul）或普拉塔湖线路（Lagoa da Prata），具体取决于不同季节的湖泊水深情况。</p>
+        <p>接送时间为预计时间。请联系我们，以便确认接送的具体安排。</p>
+        <p>Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img1.webp" alt="Manhã na Lagoa Azul (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img2.jpeg" alt="Manhã na Lagoa Azul (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img3.webp" alt="Manhã na Lagoa Azul (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img4.webp" alt="Manhã na Lagoa Azul (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Manh%C3%A3%20na%20Lagoa%20Azul/img5.webp" alt="Manhã na Lagoa Azul (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Transfer de São Luís à Barreirinhas</h3>
+        <p>从巴雷里尼亚斯乘坐空调小巴或面包车前往圣路易斯。接送服务由专业司机负责，全程约4小时30分钟，中途会停留一次，方便用餐和使用洗手间。</p>
+        <p>服务包括往返市区范围内旅馆、酒店和青年旅舍的接送。途中，您可以欣赏沙漠中的美丽日落以及返回巴雷里尼亚斯时的乡村景色。</p>
+        <p>您选择的上车时间即为行程出发时间，但接送可能会提前最多一小时开始。请在所选时间前一小时做好出发准备。</p>
+        <p>每位乘客可携带一件不超过10公斤的行李。额外行李需支付相应费用。</p>
+        <p>5小时 · Todos os dias · 03:30,08:00,12:30,17:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img1.jpeg" alt="Transfer de São Luís à Barreirinhas (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img2.jpeg" alt="Transfer de São Luís à Barreirinhas (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img3.jpeg" alt="Transfer de São Luís à Barreirinhas (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20S%C3%A3o%20Lu%C3%ADs%20%C3%A0%20Barreirinhas/img4.jpeg" alt="Transfer de São Luís à Barreirinhas (4)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Tour Lagoa Bonita (Entardecer)</h3>
+        <p>这是一次前往伦索伊斯并欣赏日落的半日游。</p>
+        <p>我们大约在14:00开始从巴雷里尼亚斯的酒店接送游客。所有游客上车后，我们将行驶约一个小时抵达拉戈阿博尼塔旅游中心。</p>
+        <p>这里有一个小村庄，可以看到当地商店，例如手工纪念品店和家庭经营的小吃店，还有著名的拉戈阿博尼塔阶梯。</p>
+        <p>从阶梯顶部可以欣赏公园壮丽的全景。</p>
+        <p>随后，我们将探索湖泊。导游会带您在当地进行短途导览步行，参观两个或三个湖泊，并在每个湖泊享有约40分钟的自由游泳时间。</p>
+        <p>最后，您将登上该地区最高的沙丘，在返回城市之前欣赏伦索伊斯令人难忘的日落。</p>
+        <p>接送时间为预计时间。请联系我们，以便确认接送的具体安排。</p>
+        <p>最多9人 · Todos os dias · 13:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img1.jpg" alt="Tour Lagoa Bonita (Entardecer) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img2.webp" alt="Tour Lagoa Bonita (Entardecer) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img3.webp" alt="Tour Lagoa Bonita (Entardecer) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img4.webp" alt="Tour Lagoa Bonita (Entardecer) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img5.webp" alt="Tour Lagoa Bonita (Entardecer) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Entardecer%20na%20Lagoa%20Bonita/img6.jpg" alt="Tour Lagoa Bonita (Entardecer) (6)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Um dia em Atins Beach (Praias e lagoas de Atins)</h3>
+        <p>一次探索伦索伊斯马拉赫塞斯天堂般景观的探险之旅。您将看到沙丘、湖泊、海滩和河流，还可以品尝当地著名的烤虾，但餐食费用不包含在行程内。</p>
+        <p>• 乘坐4x4车辆穿越令人惊叹的自然景观。</p>
+        <p>• 探索伦索伊斯马拉赫塞斯国家公园的迷人湖泊。</p>
+        <p>• 参观阿廷斯村，在海滩上享受阳光。</p>
+        <p>• 沿河游览，穿越起伏的沙丘并探索海滩。</p>
+        <p>• 有机会品尝当地著名的烤虾，但费用不包含在行程内。</p>
+        <p>最多9人 · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img1.png" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img2.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img3.png" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img4.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Um%20dia%20em%20Atins%20Beach/img5.webp" alt="Um dia em Atins Beach (Praias e lagoas de Atins) (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Santo Amaro: Circuito Rancharia</h3>
+        <p>09:00出发前往旅舍。行程使用4x4车辆，每穿越一座沙丘最长约需35分钟。抵达兰查里亚后，车辆停在山地附近，需要步行一小段路。前往主要目的地时，您可以选择乘船，约需10分钟；也可以步行穿过积水区域前往湖泊，约需15分钟。最后，您将欣赏到比库杜戈杜湖的壮丽景色。辽阔的湖面以及形成著名沙丘 lobos 的沙丘景观仿佛电影场景。除了可以360°欣赏伦索伊斯马拉赫塞斯国家公园，湖水还清澈见底，让人舍不得离开。行程持续一整天，中途在附近村庄享用午餐。最后将在其他湖泊停留，进行一次畅快的告别式游泳，然后返回最高处欣赏日落。</p>
+        <p>最多9人 · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img1.webp" alt="Santo Amaro: Circuito Rancharia (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img2.webp" alt="Santo Amaro: Circuito Rancharia (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img3.webp" alt="Santo Amaro: Circuito Rancharia (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img4.webp" alt="Santo Amaro: Circuito Rancharia (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Expedi%C3%A7%C3%A3o%20Santo%20Amaro/img5.webp" alt="Santo Amaro: Circuito Rancharia (5)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Quadriciclo Adventure (Combo lancha + quadri)</h3>
+        <p>前往卡布雷的ATV之旅为全天行程。您将体验约80公里的往返路线，途经沙海岸植被、塞拉多植被、小伦索伊斯地区的沙丘和湖泊，以及部分海滩路段。行程以团队形式进行，导游在前，参与者跟随其后。最终目的地为卡布雷海滩。返程途中将在瓦苏拉斯社区停留，行程于当天结束。价格按每辆ATV计算，每辆最多可乘坐2人。</p>
+        <p>每辆ATV最多2人 · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img1.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img2.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img3.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img4.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img5.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img6.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img7.png" alt="Quadriciclo Adventure (Combo lancha + quadri) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img8.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (8)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Quadriciclo%20Adventure/img9.webp" alt="Quadriciclo Adventure (Combo lancha + quadri) (9)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Passeio de lancha no rio Preguicas - Caburé</h3>
+        <p>早上，我们将在巴雷里尼亚斯的酒店接您，然后前往风景如画的普雷吉萨斯河。通往天堂的旅程从公路开始，乘坐4x4车辆前往巴雷里尼亚斯港口。登上我们的快艇后，您将开始欣赏这条当地最壮观河流沿岸的不同景观。途中我们会停留，让您步行探索小伦索伊斯的沙丘、参观瓦苏拉斯社区以及曼达卡鲁灯塔。最后，我们将在卡布雷享用午餐，这里连接着大西洋与壮丽的普雷吉萨斯河。</p>
+        <p>最多9人 · Todos os dias · 08:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img1.png" alt="Passeio de lancha no rio Preguicas - Caburé (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img2.webp" alt="Passeio de lancha no rio Preguicas - Caburé (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img3.webp" alt="Passeio de lancha no rio Preguicas - Caburé (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img4.png" alt="Passeio de lancha no rio Preguicas - Caburé (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img5.png" alt="Passeio de lancha no rio Preguicas - Caburé (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Povoados%20do%20Maranh%C3%A3o/img6.png" alt="Passeio de lancha no rio Preguicas - Caburé (6)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Day trekking nos Lençóis Maranhenses</h3>
+        <p>一日徒步 – 约14公里</p>
+        <p>从巴雷里尼亚斯出发：</p>
+        <p>03:30：乘坐4x4车辆前往拉戈阿博尼塔线路。行程开始前将提供丰盛早餐。</p>
+        <p>徒步开始：</p>
+        <p>日出时分，金色晨光照亮沙丘，我们将开始约14公里的徒步，穿越伦索伊斯马拉赫塞斯壮丽的景观。</p>
+        <p>途中，我们将在清澈的湖泊停留游泳，充分感受自然风光。</p>
+        <p>抵达穆坎博绿洲</p>
+        <p>第一站是迷人的穆坎博绿洲，当地家庭将在这里接待我们。我们将在这里享用传统家常午餐，使用当地特色食材烹制。</p>
+        <p>湖泊自由活动与日落</p>
+        <p>午餐后，您将有自由时间休息放松。16:30，我们将短途步行探索附近湖泊，并欣赏沙丘上的壮丽日落。</p>
+        <p>行程结束</p>
+        <p>（日落后返回）</p>
+        <p>1天 · Todos os dias · 03:15 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img1.png" alt="Day trekking nos Lençóis Maranhenses (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img2.png" alt="Day trekking nos Lençóis Maranhenses (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img3.png" alt="Day trekking nos Lençóis Maranhenses (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img4.webp" alt="Day trekking nos Lençóis Maranhenses (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img5.png" alt="Day trekking nos Lençóis Maranhenses (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img6.png" alt="Day trekking nos Lençóis Maranhenses (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img7.png" alt="Day trekking nos Lençóis Maranhenses (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Delta%20das%20Am%C3%A9ricas/img8.png" alt="Day trekking nos Lençóis Maranhenses (8)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>Transfer de Barreirinhas à São Luís</h3>
+        <p>从巴雷里尼亚斯乘坐空调小巴或面包车前往圣路易斯。接送服务由专业司机负责，全程约4小时30分钟，中途会停留一次，方便用餐和使用洗手间。</p>
+        <p>服务包括往返市区范围内旅馆、酒店和青年旅舍的接送。途中，您可以欣赏沙漠中的美丽日落以及返回巴雷里尼亚斯时的乡村景色。</p>
+        <p>您选择的上车时间即为行程出发时间，但接送可能会提前最多一小时开始。请在所选时间前一小时做好出发准备。</p>
+        <p>每位乘客可携带一件不超过10公斤的行李。额外行李需支付相应费用。</p>
+        <p>5小时 · Todos os dias · 06:00,09:00,14:00,16:00,19:30 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img1.jpeg" alt="Transfer de Barreirinhas à São Luís (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img2.jpeg" alt="Transfer de Barreirinhas à São Luís (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img3.jpeg" alt="Transfer de Barreirinhas à São Luís (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/Transfer%20de%20Barreirinhas%20%C3%A0%20S%C3%A3o%20Lu%C3%ADs/img4.jpeg" alt="Transfer de Barreirinhas à São Luís (4)" loading="lazy">
+      </article>
+      <article class="tours-snapshot-item">
+        <h3>3 - Day Trekking Tour to Santo Amaro (Super trekking)</h3>
+        <p>超级徒步</p>
+        <p>第一天 - 约14公里</p>
+        <p>从巴雷里尼亚斯出发：</p>
+        <p>03:30：乘坐4x4车辆前往拉戈阿博尼塔线路。行程开始前将提供丰盛早餐。</p>
+        <p>徒步开始：</p>
+        <p>日出时分，金色晨光照亮沙丘，我们将开始约14公里的徒步，穿越伦索伊斯马拉赫塞斯令人惊叹的景观。</p>
+        <p>途中，我们将在清澈的湖泊停留游泳，充分感受自然风光。</p>
+        <p>抵达穆坎博绿洲</p>
+        <p>第一站是迷人的穆坎博绿洲，当地家庭将在这里接待我们。我们将在这里享用传统家常午餐，使用当地特色食材烹制。</p>
+        <p>湖泊自由活动与日落</p>
+        <p>午餐后，您将有自由时间休息放松。16:30，我们将短途步行探索附近湖泊，并欣赏沙丘上的壮丽日落。</p>
+        <p>行程结束</p>
+        <p>19:30供应晚餐。您可以自由生火、聊天、欣赏星空，或休息并为第二天的冒险恢复体力。</p>
+        <p>第二天 - 约16公里</p>
+        <p>开始时间：早上5:00。</p>
+        <p>我们将以简单而营养的早餐开始新的一天，随后在日出时开始徒步，此时景色呈现金色，温度也更适合步行。</p>
+        <p>上午徒步及湖泊游泳（6公里）</p>
+        <p>我们将在沙丘间步行约6公里，并多次停留，在清澈的湖泊中游泳。上午的亮点是抵达迪尔小屋（Barraca do Diel），这是一座建在沙丘上的质朴建筑，位于美丽湖泊旁。</p>
+        <p>游泳与午餐休息</p>
+        <p>在迪尔小屋停留游泳和休息，然后用午餐，14:00出发前往下一个目的地。</p>
+        <p>下午徒步前往兰查里亚绿洲（10公里）</p>
+        <p>午餐和短暂休息后，我们于14:00继续徒步，再行10公里前往第二个补给点：兰查里亚绿洲。</p>
+        <p>行程结束</p>
+        <p>在兰查里亚，当地家庭将接待我们，我们将在这里用餐并过夜。这里环境简单、温馨，被大自然环绕，非常适合恢复体力并为第二天的冒险做准备。</p>
+        <p>第三天 - 约14公里</p>
+        <p>开始时间：凌晨4:00。</p>
+        <p>我们将早起享用简单早餐，并在4:40开始徒步，此时天色已亮，可以利用凉爽的气温欣赏沙丘日出的美景。</p>
+        <p>前往贝塔尼亚地区的徒步（17公里）</p>
+        <p>这是整个穿越行程中最长的一天：徒步约17公里前往贝塔尼亚地区的容库湖（Lagoa do Junco）。我们将在湖泊停留游泳，然后乘坐4x4车辆前往圣阿马鲁享用午餐。</p>
+        <p>贝塔尼亚午餐</p>
+        <p>抵达后，我们将享用一顿值得期待的当地午餐，并留出时间休息，欣赏伦索伊斯马拉赫塞斯最后的景色。</p>
+        <p>返回巴雷里尼亚斯</p>
+        <p>14:00，我们将乘坐车辆返回巴雷里尼亚斯。</p>
+        <p>圣阿马鲁到巴雷里尼亚斯的车程平均需要1小时30分钟。</p>
+        <p>注意：</p>
+        <p>预计返回巴雷里尼亚斯的时间为14:00。</p>
+        <p>如果您需要前往圣路易斯的接送服务，接送出发时间为14:00（请提前申请服务）。</p>
+        <p>重要信息</p>
+        <p>需要携带</p>
+        <p>舒适的鞋子</p>
+        <p>帽子</p>
+        <p>泳衣</p>
+        <p>相机</p>
+        <p>零食</p>
+        <p>防晒霜</p>
+        <p>水</p>
+        <p>需要携带</p>
+        <p>舒适的鞋子</p>
+        <p>帽子</p>
+        <p>泳衣</p>
+        <p>相机</p>
+        <p>零食</p>
+        <p>防晒霜</p>
+        <p>水</p>
+        <p>收起</p>
+        <p>禁止事项</p>
+        <p>吸烟</p>
+        <p>酒精或毒品</p>
+        <p>向环境中乱扔垃圾</p>
+        <p>提前了解</p>
+        <p>参加者应具备中等程度的身体素质</p>
+        <p>您需要在不平整的地面上行走</p>
+        <p>天气状况可能影响行程</p>
+        <p>请自带水瓶以便补水</p>
+        <p>部分日程需要早起</p>
+        <p>3天 · Todos os dias · 03:00 · Português</p>
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img1.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (1)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img2.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (2)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img3.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (3)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img4.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (4)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img5.jpg" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (5)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img6.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (6)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img7.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (7)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img8.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (8)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img9.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (9)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img10.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (10)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img11.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (11)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img12.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (12)" loading="lazy">
+        <img src="https://api-tour.exksvol.com/imagem/Lencois/3-Day%20Trekking%20Tour%20to%20Santo%20Amaro/img13.png" alt="3 - Day Trekking Tour to Santo Amaro (Super trekking) (13)" loading="lazy">
+      </article>
+    </div>
+    <script>(function(){var e=document.currentScript.previousElementSibling;if(e&&e.hasAttribute("data-snapshot"))e.style.display="none";})();</script>
+            <!-- fim do retrato de tours -->
+        </section>
+
+        <section class="rio-tours" id="expedicoes-privativas" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="privado_section_title">Experiências exclusivas</h2>
+            <div class="rio-section-divider"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de tour (modalidade "privado") entram aqui, montados via JS a partir do banco -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="transfers" style="display:none;">
+            <h2 class="rio-section-title" data-i18n="transfers_section_title">Transfers</h2>
+            <div class="rio-section-divider rio-divider-small"></div>
+
+            <div class="rio-tours-grid">
+                <!-- Cards de transfer entram aqui -->
+            </div>
+        </section>
+
+        <section class="rio-tours" id="depoimentos">
+            <h2 class="rio-section-title">A galera que já curtiu os lençóis conosco</h2>
+            <div class="rio-section-divider rio-divider-small"></div>
+
+            <div class="rio-testimonials-quotes">
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Bem legal o passeio, em grupo e com guia. A experiência foi segura e muito bem conduzida.</p>
+                    <span class="rio-testimonial-author">Maximiliano Osaida</span>
+                </article>
+                <article class="rio-testimonial-quote">
+                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
+                    <p class="rio-testimonial-text">Conheci os locais com outro olhar. A guia explicou tudo e trouxe muita segurança durante o dia.</p>
+                    <span class="rio-testimonial-author">Marianna Burlamaqui</span>
+                </article>
+            </div>
+
+            <div class="rio-relatos-gallery" id="relatosGallery" data-cidade="Lencois">
+                <figure class="rio-relatos-item" data-photo-id="foto-escadaria-lagoa-bonita">
+                    <img src="../../imagem/Lencois/Relatos/foto-escadaria-lagoa-bonita-750.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="foto-lagoa-azul-1">
+                    <img src="../../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="gopr5987-01">
+                    <img src="../../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-01">
+                    <img src="../../imagem/Lencois/Relatos/img-01-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-02">
+                    <img src="../../imagem/Lencois/Relatos/img-02-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-03">
+                    <img src="../../imagem/Lencois/Relatos/img-03-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-04">
+                    <img src="../../imagem/Lencois/Relatos/img-04-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-05">
+                    <img src="../../imagem/Lencois/Relatos/img-05-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-06">
+                    <img src="../../imagem/Lencois/Relatos/img-06-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-07">
+                    <img src="../../imagem/Lencois/Relatos/img-07-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-08">
+                    <img src="../../imagem/Lencois/Relatos/img-08-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+                <figure class="rio-relatos-item" data-photo-id="img-09">
+                    <img src="../../imagem/Lencois/Relatos/img-09-1500.webp" alt="游客在马拉尼昂千湖沙漠拍摄的照片" loading="lazy">
+                    <button type="button" class="rio-relatos-like" aria-label="Curtir foto" data-i18n-aria="relatos_like_label">
+                        <i class="fa fa-heart"></i>
+                        <span class="rio-relatos-like-count">0</span>
+                    </button>
+                </figure>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="rio-footer">
+            <div class="rio-footer-card" id="rioFooterCard">
+                <button class="footer-card-up" type="button" aria-label="Ir ao topo">
+                    <i class="fa fa-arrow-up"></i>
+                </button>
+                <h3 class="rio-footer-card-title" data-i18n="footer_info_title">Informações</h3>
+                <div class="rio-footer-card-body" id="rioFooterCardBody">
+                    Clique em "CONTATO" para ver as informações dentro deste cartão.
+                </div>
+                <div class="footer-info-icons">
+                    <a href="https://www.instagram.com/tourbyfootbrasil/?hl=en" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/5521970018590" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:riobyfoottour@gmail.com" aria-label="Email"><i class="fa fa-envelope"></i></a>
+                </div>
+                <!-- Links entre destinos: ligam as quatro paginas comerciais
+                     entre si (antes cada uma so linkava de volta pra home).
+                     Ficam depois do CTA e dos contatos, para nao competir
+                     com a conversao. -->
+                <nav class="rio-footer-destinos" aria-label="Outros destinos">
+                    <span class="rio-footer-destinos-titulo" data-i18n="footer_destinos_titulo">Outros destinos</span>
+                    <span class="rio-footer-destinos-links">
+                        <a href="/sao-luis/zh/" data-i18n="footer_destino_saoluis">Tour pelo centro histórico de São Luís</a>
+                        <a href="/rio-de-janeiro/zh/" data-i18n="footer_destino_rio">Free Walking Tour no Rio de Janeiro</a>
+                        <a href="/salvador/zh/" data-i18n="footer_destino_salvador">Free Walking Tour em Salvador</a>
+                    </span>
+                </nav>
+                <div class="rio-footer-card-credit">
+                    <a href="https://exksvol.com/" target="_blank" rel="noopener noreferrer" aria-label="Exksvol — site do desenvolvedor" title="Exksvol" class="footer-credit-link">
+                        <span class="footer-credit-text" data-i18n="footer_developed_by_text"></span>
+                        <img src="../../imagem/Lencois/assets/exksvol.png" alt="Exksvol" class="footer-credit-logo" / loading="lazy" decoding="async">
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <div class="award-modal" id="awardModal" aria-hidden="true" aria-live="polite" aria-atomic="true">
+            <div class="award-modal__dialog" role="status" aria-labelledby="awardTitle">
+                <div class="award-modal__header">
+                    <span class="award-modal__badge-icon" aria-hidden="true"><i class="fa-solid fa-award"></i></span>
+                    <h3 id="awardTitle" class="award-modal__title" data-i18n="award_title">Reconhecimento Especial</h3>
+                    <button class="award-modal__close" type="button" data-close-award aria-label="Fechar">&times;</button>
+                </div>
+                <div class="hs-modal__body">
+                    <section class="hs-modal__leftImage"><span class="hs-icon js-hs-icon"><img src="https://app.hoversignal.com/AppImage/Signals/4bd5923d-79aa-4fa7-9ac0-e9ecac175d3e" alt="TripAdvisor 奖项" loading="lazy" decoding="async"></span></section>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <section class="hs-modal__rightDescr">
+                        <div class="js-hs-description" data-signaltext="" data-i18n="award_text">Sabia que fomos premiados como a <b>melhor escolha</b> pelo <b>TripAdvisor</b> em 2021? 🥰</div>
+                    </section>
+                </div>
+                <div class="award-modal__footer">
+                    <a class="award-modal__cta" id="awardCta" href="#" target="_blank" rel="noopener" data-i18n="award_cta">Ver no TripAdvisor <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+                    <span class="award-modal__divider" aria-hidden="true"></span>
+                    <div class="award-modal__countdown-wrap">
+                        <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                        <div class="award-modal__countdown" id="awardCountdown" aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reservationModal" class="reservation-modal-overlay hidden" role="dialog" aria-modal="true" data-i18n-aria="reservation_modal_title" aria-label="Formulário de reserva">
+            <div class="reservation-modal">
+                <div class="res-modal-header">
+                    <span class="res-modal-icon" aria-hidden="true"><i class="fas fa-calendar-check"></i></span>
+                    <div class="res-modal-heading">
+                        <h2 data-i18n="reservation_modal_title">Reservar Tour</h2>
+                        <p class="res-modal-subtitle" data-i18n="reservation_modal_subtitle">Preencha os dados abaixo para confirmar sua reserva.</p>
+                    </div>
+                </div>
+                <form id="reservationForm" novalidate>
+                    <input type="hidden" id="reservationTour">
+                    <div class="res-tour-box">
+                        <span class="res-tour-icon" aria-hidden="true"><img src="../../imagem/assets/img-tour-selecionado.png" alt="" / loading="lazy" decoding="async"></span>
+                        <div class="res-tour-info">
+                            <span class="res-tour-label" data-i18n="reservation_tour_selected_label">Tour selecionado</span>
+                            <strong id="reservationTourDisplay" class="res-tour-name"></strong>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationName" data-i18n="reservation_name_label">Nome</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-user res-input-icon" aria-hidden="true"></i>
+                                <input type="text" id="reservationName" data-i18n-placeholder="reservation_name_placeholder" placeholder="Seu nome" required>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationDate" data-i18n="reservation_date_label">Data da reserva</label>
+                            <input type="date" id="reservationDate" required>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field" id="reservationTimeField">
+                            <label for="reservationTime" data-i18n="reservation_time_label">Horário</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-clock res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationTime">
+                                    <option value="" data-i18n="reservation_time_placeholder">Selecione um horário</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationQuantity" data-i18n="reservation_quantity_label">Quantidade de pessoas</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-users res-input-icon" aria-hidden="true"></i>
+                                <input type="number" id="reservationQuantity" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationLanguage" data-i18n="reservation_language_label">Idioma</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-globe res-input-icon" aria-hidden="true"></i>
+                                <select id="reservationLanguage" required>
+                                    <option value="" data-i18n="reservation_language_placeholder">Selecione um idioma</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationPhone" data-i18n="reservation_phone_label">Celular/WhatsApp</label>
+                            <div class="res-input-wrap">
+                                <i class="fab fa-whatsapp res-input-icon" aria-hidden="true"></i>
+                                <input type="tel" id="reservationPhone" data-i18n-placeholder="reservation_phone_placeholder" placeholder="(00) 00000-0000" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-field">
+                        <label for="reservationEmail" data-i18n="reservation_email_label">Email</label>
+                        <div class="res-input-wrap">
+                            <i class="fas fa-envelope res-input-icon" aria-hidden="true"></i>
+                            <input type="email" id="reservationEmail" data-i18n-placeholder="reservation_email_placeholder" placeholder="seuemail@exemplo.com" required>
+                        </div>
+                    </div>
+                    <div class="reservation-modal-actions">
+                        <button type="button" id="reservationCancel" class="btn-book" data-i18n="reservation_cancel_btn">Cancelar</button>
+                        <button type="submit" class="btn-book"><i class="fas fa-check-circle" id="reservationSubmitIcon" aria-hidden="true"></i> <span id="reservationSubmitLabel" data-i18n="reservation_confirm_btn">Confirmar Reserva</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/api-auth.js?v=1"></script>
+    <script src="../../js/page-translations.js?v=1"></script>
+    <script src="../../js/ui-translations.js?v=12"></script>
+    <script src="../../js/tour-interacoes.js?v=12"></script>
+    <script src="../../js/site-shell.js?v=92"></script>
+    <script src="../../js/presenca.js?v=1"></script>
+    <script src="../../js/atividade-cliente.js?v=2"></script>
+    <script src="../../js/Lencoismaranhenses.js?v=12"></script>
+    <script src="../../js/cidade-visual.js?v=6"></script>
+</body>
+</html>
