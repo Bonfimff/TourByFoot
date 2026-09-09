@@ -383,22 +383,32 @@
         });
 
         // SOBRE/CONTATO/AJUDA (menu do topo) usam o mesmo painel de resposta.
-        // window.updateFooterInfo (site-shell.js) escreve o titulo em
-        // qualquer elemento .rio-footer-card-title (por isso o h3 do guia
-        // tambem tem essa classe, ver HTML) e o corpo em #rioFooterCardBody
-        // - aqui, um elemento OCULTO que so existe pra isso. Observa
-        // mudancas nele em vez de interceptar o clique diretamente: assim
-        // funciona nao importa de onde updateFooterInfo seja chamado
-        // (menu, ou um override de admin carregado depois do clique).
+        // Só reage a clique de verdade no menu (nao ao carregamento da
+        // pagina): a primeira versao usava um MutationObserver no
+        // #rioFooterCardBody oculto, mas a pagina roda updateFooterInfo('informacoes')
+        // sozinha ao carregar quando ha um texto configurado em Gerenciamento
+        // > Textos SOBRE/CONTATO/AJUDA > Informacoes - isso abria o painel
+        // (com o texto antigo "Clique em CONTATO...") assim que a pagina
+        // abria, sem ninguem ter clicado em nada. Ouvindo so o clique, o
+        // painel so aparece quando a pessoa realmente pede.
         const corpoLegado = document.getElementById('rioFooterCardBody');
-        if (corpoLegado) {
-            const observador = new MutationObserver(() => {
-                const conteudo = corpoLegado.innerHTML;
-                if (!conteudo || !conteudo.trim()) return;
-                abrirResposta(titulo.textContent, conteudo);
+        document.querySelectorAll('[data-footer-action]').forEach((link) => {
+            const acao = link.getAttribute('data-footer-action');
+            if (!['sobre', 'contato', 'ajuda'].includes(acao)) return;
+            link.addEventListener('click', () => {
+                // window.updateFooterInfo (site-shell.js), ja chamado pelo
+                // listener proprio do menu, escreve o conteudo aqui; espera
+                // um instante (mesmo ciclo de eventos) pra garantir que ja
+                // rodou antes de a gente ler.
+                setTimeout(() => {
+                    if (!corpoLegado) return;
+                    const conteudo = corpoLegado.innerHTML;
+                    if (!conteudo || !conteudo.trim()) return;
+                    const tituloAcao = strings()['footer_' + acao + '_title'] || strings()['nav_' + (acao === 'sobre' ? 'about' : acao === 'contato' ? 'contact' : 'help')] || acao;
+                    abrirResposta(tituloAcao, conteudo);
+                }, 0);
             });
-            observador.observe(corpoLegado, { childList: true, characterData: true, subtree: true });
-        }
+        });
     }
 
     if (document.readyState === 'loading') {
