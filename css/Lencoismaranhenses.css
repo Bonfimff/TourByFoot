@@ -3720,9 +3720,10 @@ header {
     gap: 0.3rem 1rem;
 }
 
-.rio-footer-destinos a {
+.rio-page .rio-footer-destinos a {
     color: #02415a;
     text-decoration: none;
+    text-shadow: none;
     opacity: 1;
     transition: opacity 0.2s;
 }
