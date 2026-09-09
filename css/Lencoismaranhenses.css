@@ -4316,23 +4316,38 @@ header {
 }
 
 .rio-guide-links {
-    display: flex;
+    /* style.css tem um seletor generico "nav" (menu do topo) que, no
+       celular, vira um menu suspenso com fundo verde e itens em bloco.
+       Como esse card tambem usa uma tag <nav>, essas propriedades
+       precisam ser sobrescritas aqui explicitamente, ou vazam pra
+       este componente sem querer. */
+    display: flex !important;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 0.6rem;
-    padding-top: 1.1rem;
+    width: auto;
+    padding: 1.1rem 0 0;
     border-top: 1px solid rgba(2, 65, 90, 0.12);
+    border-radius: 0;
+    margin-top: 0;
     margin-bottom: 0.9rem;
+    background: none;
+    order: initial;
 }
 
 .rio-guide-links a {
+    display: inline;
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #0d5548;
     text-decoration: none;
+    text-shadow: none;
+    padding: 0;
+    border-bottom: none;
+    text-align: center;
 }
 
 .rio-guide-links a:hover,
