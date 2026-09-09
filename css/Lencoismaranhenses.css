@@ -4418,6 +4418,14 @@ header {
    Ocupa o mesmo espaco/largura do carrossel; ver JS que alterna
    rioGuideGrid.hidden / rioGuideAnswer.hidden.
    ========================================================= */
+/* [hidden] tem a mesma especificidade de uma classe (0,1,0), e como regra
+   de autor sempre vence empate com o padrao do navegador (que tambem so
+   aplica display:none via [hidden]) - sem esse seletor extra, o painel
+   ficava sempre visivel mesmo com o atributo hidden presente. */
+.rio-guide-answer[hidden] {
+    display: none;
+}
+
 .rio-guide-answer {
     position: relative;
     min-height: 230px;
