@@ -4228,30 +4228,51 @@ header {
 }
 
 .rio-guide-grid {
-    /* Sempre em fileira unica: quando nao cabem os 4 lado a lado, em vez de
-       quebrar linha, a fileira ganha rolagem horizontal suave (mesmo padrao
-       usado em .loja-filtros/.pedido-filtro). */
+    /* Esteira automatica: esta e so a "janela" que esconde o que passa dos
+       limites. Quem se move e .rio-guide-track, por dentro dela, via
+       animacao CSS continua. Sem overflow-x nem scroll manual de proposito
+       - o usuario nao consegue arrastar/segurar a faixa em outro lugar. */
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+    padding-bottom: 2px;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
+
+.rio-guide-track {
     display: flex;
     flex-wrap: nowrap;
     gap: 1rem;
-    margin-bottom: 1.4rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 2px;
+    width: max-content;
+    /* Anda devagar e sem parar; o grupo de cards se repete 2x no HTML, entao
+       mover exatamente metade da largura da faixa fecha o loop sem deixar
+       buraco nem dar salto visivel quando reinicia do zero. */
+    animation: rio-guide-scroll 34s linear infinite;
 }
 
-.rio-guide-grid::-webkit-scrollbar {
-    display: none;
+/* Passar o mouse ou tocar (:focus-within, pelo teclado) pausa a esteira -
+   sem isso, ler o texto de um card ou clicar nele fica dificil com tudo
+   deslizando. Ao soltar/tirar o mouse, ela retoma sozinha de onde parou. */
+.rio-guide-grid:hover .rio-guide-track,
+.rio-guide-grid:focus-within .rio-guide-track {
+    animation-play-state: paused;
+}
+
+@keyframes rio-guide-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rio-guide-track {
+        animation: none;
+    }
 }
 
 .rio-guide-item {
     display: flex;
     flex-direction: column;
     flex: 0 0 230px;
-    scroll-snap-align: start;
     background: rgba(255, 255, 255, 0.55);
     border: 1px solid rgba(2, 65, 90, 0.12);
     border-radius: 16px;

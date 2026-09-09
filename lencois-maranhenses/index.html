@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css?v=28">
 
-    <link rel="stylesheet" href="../css/Lencoismaranhenses.css?v=80">
+    <link rel="stylesheet" href="../css/Lencoismaranhenses.css?v=81">
     <link rel="stylesheet" href="../css/tour-interacoes.css?v=9">
 <!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
     <link rel="canonical" href="https://www.tourbyfoot.com/lencois-maranhenses/">
@@ -652,60 +652,125 @@
                 <p class="rio-guide-subtitle">Dicas, informações e roteiros para aproveitar melhor sua viagem aos Lençóis Maranhenses.</p>
 
                 <!-- Conteudo placeholder: titulos, textos e links (#) sao
-                     provisorios ate o conteudo real ser definido. -->
+                     provisorios ate o conteudo real ser definido.
+
+                     Esteira automatica: .rio-guide-grid e so a "janela"
+                     (overflow:hidden), e .rio-guide-track desliza sem parar
+                     por dentro dela via animacao CSS. O grupo de 4 cards
+                     aparece duas vezes seguidas (original + copia identica,
+                     marcada aria-hidden e tabindex="-1" para nao duplicar
+                     pra quem usa teclado/leitor de tela) so pra fechar o
+                     loop sem deixar buraco quando a faixa "reinicia" -
+                     visualmente parece uma correia sem fim. Arrastar nao
+                     muda a posicao (nao ha scroll manual aqui: o usuario
+                     nao consegue "segurar" a faixa em outro lugar). -->
                 <div class="rio-guide-grid">
-                    <a href="#" class="rio-guide-item">
-                        <span class="rio-guide-item-media">
-                            <img src="../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="Lagoa Azul nos Lençóis Maranhenses" loading="lazy">
-                            <span class="rio-guide-item-num">01</span>
-                        </span>
-                        <span class="rio-guide-item-body">
-                            <span class="rio-guide-item-head">
-                                <span class="rio-guide-item-title">Quando visitar os Lençóis</span>
-                                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    <div class="rio-guide-track">
+                        <a href="#" class="rio-guide-item">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="Lagoa Azul nos Lençóis Maranhenses" loading="lazy">
+                                <span class="rio-guide-item-num">01</span>
                             </span>
-                            <span class="rio-guide-item-desc">Descubra a melhor época, clima e período das lagoas.</span>
-                        </span>
-                    </a>
-                    <a href="#" class="rio-guide-item">
-                        <span class="rio-guide-item-media">
-                            <img src="../imagem/Lencois/Relatos/img-01-1500.webp" alt="Como chegar aos Lençóis Maranhenses" loading="lazy">
-                            <span class="rio-guide-item-num">02</span>
-                        </span>
-                        <span class="rio-guide-item-body">
-                            <span class="rio-guide-item-head">
-                                <span class="rio-guide-item-title">Como chegar aos Lençóis</span>
-                                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Quando visitar os Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Descubra a melhor época, clima e período das lagoas.</span>
                             </span>
-                            <span class="rio-guide-item-desc">Saiba como chegar por Barreirinhas, Santo Amaro e outras rotas.</span>
-                        </span>
-                    </a>
-                    <a href="#" class="rio-guide-item">
-                        <span class="rio-guide-item-media">
-                            <img src="../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="O que fazer nos Lençóis Maranhenses" loading="lazy">
-                            <span class="rio-guide-item-num">03</span>
-                        </span>
-                        <span class="rio-guide-item-body">
-                            <span class="rio-guide-item-head">
-                                <span class="rio-guide-item-title">O que fazer nos Lençóis</span>
-                                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="rio-guide-item">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/img-01-1500.webp" alt="Como chegar aos Lençóis Maranhenses" loading="lazy">
+                                <span class="rio-guide-item-num">02</span>
                             </span>
-                            <span class="rio-guide-item-desc">Lagoas, dunas, pôr do sol, passeios e experiências inesquecíveis.</span>
-                        </span>
-                    </a>
-                    <a href="#" class="rio-guide-item">
-                        <span class="rio-guide-item-media">
-                            <img src="../imagem/Lencois/Relatos/gopr5328-01-1500.webp" alt="Onde ficar nos Lençóis Maranhenses" loading="lazy">
-                            <span class="rio-guide-item-num">04</span>
-                        </span>
-                        <span class="rio-guide-item-body">
-                            <span class="rio-guide-item-head">
-                                <span class="rio-guide-item-title">Onde ficar nos Lençóis</span>
-                                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Como chegar aos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Saiba como chegar por Barreirinhas, Santo Amaro e outras rotas.</span>
                             </span>
-                            <span class="rio-guide-item-desc">Conheça as principais bases e hospedagens da região.</span>
-                        </span>
-                    </a>
+                        </a>
+                        <a href="#" class="rio-guide-item">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="O que fazer nos Lençóis Maranhenses" loading="lazy">
+                                <span class="rio-guide-item-num">03</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">O que fazer nos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Lagoas, dunas, pôr do sol, passeios e experiências inesquecíveis.</span>
+                            </span>
+                        </a>
+                        <a href="#" class="rio-guide-item">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/gopr5328-01-1500.webp" alt="Onde ficar nos Lençóis Maranhenses" loading="lazy">
+                                <span class="rio-guide-item-num">04</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Onde ficar nos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Conheça as principais bases e hospedagens da região.</span>
+                            </span>
+                        </a>
+                        <a href="#" class="rio-guide-item" aria-hidden="true" tabindex="-1">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/foto-lagoa-azul-1-750.webp" alt="" loading="lazy">
+                                <span class="rio-guide-item-num">01</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Quando visitar os Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Descubra a melhor época, clima e período das lagoas.</span>
+                            </span>
+                        </a>
+                        <a href="#" class="rio-guide-item" aria-hidden="true" tabindex="-1">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/img-01-1500.webp" alt="" loading="lazy">
+                                <span class="rio-guide-item-num">02</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Como chegar aos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Saiba como chegar por Barreirinhas, Santo Amaro e outras rotas.</span>
+                            </span>
+                        </a>
+                        <a href="#" class="rio-guide-item" aria-hidden="true" tabindex="-1">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/gopr5987-01-1500.webp" alt="" loading="lazy">
+                                <span class="rio-guide-item-num">03</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">O que fazer nos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Lagoas, dunas, pôr do sol, passeios e experiências inesquecíveis.</span>
+                            </span>
+                        </a>
+                        <a href="#" class="rio-guide-item" aria-hidden="true" tabindex="-1">
+                            <span class="rio-guide-item-media">
+                                <img src="../imagem/Lencois/Relatos/gopr5328-01-1500.webp" alt="" loading="lazy">
+                                <span class="rio-guide-item-num">04</span>
+                            </span>
+                            <span class="rio-guide-item-body">
+                                <span class="rio-guide-item-head">
+                                    <span class="rio-guide-item-title">Onde ficar nos Lençóis</span>
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                                <span class="rio-guide-item-desc">Conheça as principais bases e hospedagens da região.</span>
+                            </span>
+                        </a>
+                    </div>
                 </div>
 
                 <nav class="rio-guide-links" aria-label="Seções do guia de viagem">
