@@ -15,19 +15,42 @@
         try {
             var role = (localStorage.getItem('userRole') || '').trim().toLowerCase();
             if (role === 'admin' || role === 'super_admin') return;
+            // Rastreadores de busca e geradores de preview de link nao passam
+            // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
+            // travaria o rastreamento e entra na conta de tempo de carga que o
+            // Google avalia; (2) com a manutencao ligada o crawler seria
+            // redirecionado para manutencao.html, que e noindex — o Google
+            // entenderia que a pagina real saiu do ar e poderia tira-la do
+            // indice. Visitante humano segue com o comportamento de sempre.
+            if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
             var xhr = new XMLHttpRequest();
             xhr.open('GET', 'https://api-tour.exksvol.com/get_site_config', false);
             xhr.send(null);
             if (xhr.status === 200) {
                 var targets = JSON.parse(xhr.responseText).maintenance_targets || [];
                 if (targets.indexOf('Inicio') !== -1) {
-                    window.location.replace('manutencao.html');
+                    window.location.replace('/manutencao.html');
                 }
             }
         } catch (e) { /* offline/CORS/erro: não bloqueia o acesso */ }
     })();
     </script>
-    <title>Tour by foot · Experiências</title>
+    <title>Tour by Foot — Passeios Guiados a Pé no Brasil</title>
+    <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
+         metadados — nada aqui altera o que o visitante vê na página. -->
+    <meta name="description" content="Passeios guiados a pé com guias credenciados no Rio de Janeiro, Salvador e São Luís, e excursões nos Lençóis Maranhenses. Reserve online ou pelo WhatsApp.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tour by Foot">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Tour by Foot — Passeios Guiados a Pé no Brasil">
+    <meta property="og:description" content="Passeios guiados a pé com guias credenciados no Rio de Janeiro, Salvador e São Luís, e excursões nos Lençóis Maranhenses. Reserve online ou pelo WhatsApp.">
+    <meta property="og:url" content="https://www.tourbyfoot.com/">
+    <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tour by Foot — Passeios Guiados a Pé no Brasil">
+    <meta name="twitter:description" content="Passeios guiados a pé com guias credenciados no Rio de Janeiro, Salvador e São Luís, e excursões nos Lençóis Maranhenses. Reserve online ou pelo WhatsApp.">
+    <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
     <link rel="apple-touch-icon" href="imagem/assets/Logo.png?v=2">
     <link rel="icon" type="image/png" href="imagem/assets/Logo.png?v=2">
     <!-- Reforça pro Google (e outros crawlers) que o favicon.ico na raiz é o
@@ -38,7 +61,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- CSS externo -->
-    <link rel="stylesheet" href="css/style.css?v=41">
+    <link rel="stylesheet" href="css/style.css?v=43">
     <!-- Remove a imagem de fundo (ondas) só na página inicial; as demais
          páginas continuam usando body::before/.main-container::after de
          style.css normalmente. -->
@@ -51,6 +74,25 @@
     <!-- Os painéis das cidades são pré-carregados por js/preload-paineis.js, a
          partir das imagens cadastradas no banco. Não há preload estático aqui:
          qualquer arte fixa no HTML acabaria exibida no lugar da configurada. -->
+<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+    <link rel="canonical" href="https://www.tourbyfoot.com/">
+    <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/">
+    <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/en/">
+    <link rel="alternate" hreflang="es" href="https://www.tourbyfoot.com/es/">
+    <link rel="alternate" hreflang="fr" href="https://www.tourbyfoot.com/fr/">
+    <link rel="alternate" hreflang="it" href="https://www.tourbyfoot.com/it/">
+    <link rel="alternate" hreflang="zh" href="https://www.tourbyfoot.com/zh/">
+    <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/">
+    <script>
+    // A URL manda no idioma. Quem abrir /en/ ve ingles, mesmo com
+    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
+    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
+    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
+    window.rotaIdioma = { base: "/", atual: "pt", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
+    try { localStorage.setItem("preferredLanguage", "pt"); } catch (e) {}
+    </script>
+    <!-- fim do bloco gerado -->
 </head>
 <body>
     <div class="main-container" id="inicio">
@@ -113,20 +155,20 @@
 
                 <div class="city-title" data-i18n="choose_city">Escolha a cidade:</div>
                 <div class="city-list">
-                    <a class="city-card" href="html/Riodejaneiro.html">
-                        <span class="city-thumb city-thumb-rio"></span>
+                    <a class="city-card" href="/rio-de-janeiro/">
+                        <img class="city-thumb city-thumb-rio" src="imagem/assets/RiodeJaneiro.jpeg" alt="Vista do Rio de Janeiro com o Pão de Açúcar ao fundo" width="564" height="592" decoding="async">
                         <span class="city-name" data-i18n="city_rio">Rio de Janeiro</span>
                     </a>
-                    <a class="city-card" href="html/Salvador.html">
-                        <span class="city-thumb city-thumb-salvador"></span>
+                    <a class="city-card" href="/salvador/">
+                        <img class="city-thumb city-thumb-salvador" src="imagem/assets/Salvador.jpeg" alt="Casarões coloridos do Pelourinho em Salvador" width="500" height="548" decoding="async">
                         <span class="city-name" data-i18n="city_salvador">Salvador</span>
                     </a>
-                    <a class="city-card" href="html/Saolu%C3%ADsdomaranhao.html">
-                        <span class="city-thumb city-thumb-saoluis"></span>
+                    <a class="city-card" href="/sao-luis/">
+                        <img class="city-thumb city-thumb-saoluis" src="imagem/assets/SaoLuis.jpeg" alt="Fachadas de azulejos no Centro Histórico de São Luís" width="736" height="796" decoding="async">
                         <span class="city-name" data-i18n="city_saoluis">São Luís do Maranhão</span>
                     </a>
-                    <a class="city-card" href="html/Lencoismaranhenses.html">
-                        <span class="city-thumb city-thumb-lencois"></span>
+                    <a class="city-card" href="/lencois-maranhenses/">
+                        <img class="city-thumb city-thumb-lencois" src="imagem/assets/Lencois.jpeg" alt="Dunas e lagoas dos Lençóis Maranhenses" width="730" height="730" decoding="async">
                         <span class="city-name" data-i18n="city_lencois">Lençóis Maranhenses</span>
                     </a>
                 </div>
@@ -185,12 +227,48 @@
 
     </div>
 
-    <script src="js/api-auth.js"></script>
-    <script src="js/translations.js?v=1"></script>
-    <script src="js/ui-translations.js?v=6"></script>
-    <script src="js/script.js?v=7"></script>
+    <script src="js/api-auth.js?v=1"></script>
+    <script src="js/translations.js?v=2"></script>
+    <script src="js/ui-translations.js?v=7"></script>
+    <script src="js/script.js?v=8"></script>
     <script src="js/auth.js?v=8"></script>
     <script src="js/presenca.js?v=1"></script>
     <script src="js/preload-paineis.js?v=5"></script>
+    <!-- Dados estruturados: descrevem apenas fatos verificaveis do site
+         (nome, logo, canais de contato e idiomas realmente oferecidos).
+         Nao renderiza nada na tela. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.tourbyfoot.com/#organization",
+          "name": "Tour by Foot",
+          "url": "https://www.tourbyfoot.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.tourbyfoot.com/imagem/assets/Logo.png"
+          },
+          "sameAs": ["https://www.instagram.com/tourbyfootbrasil/"],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "telephone": "+5521970018590",
+            "email": "riobyfoottour@gmail.com",
+            "availableLanguage": ["pt-BR", "en", "es", "fr", "it", "zh"]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.tourbyfoot.com/#website",
+          "url": "https://www.tourbyfoot.com/",
+          "name": "Tour by Foot",
+          "inLanguage": "pt-BR",
+          "publisher": { "@id": "https://www.tourbyfoot.com/#organization" }
+        }
+      ]
+    }
+    </script>
 </body>
 </html>

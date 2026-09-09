@@ -37,7 +37,10 @@ body::before {
     height: 100%;
     height: 100dvh;
     z-index: -2;
-    background: url("../imagem/Rio de Janeiro/assets/fundo rj.png") center center / cover no-repeat;
+    /* WebP, e nao o PNG de mesmo nome: a versao PNG tem 2,4 MB e era 68% do
+       peso de cada página de cidade. Mesma imagem, 285 KB. O PNG continua no
+       repositório porque Gerenciamento.css ainda o usa. */
+    background: url("../imagem/Rio de Janeiro/assets/fundo-rj.webp") center center / cover no-repeat;
     pointer-events: none;
 }
 
@@ -70,7 +73,7 @@ body::before {
     height: 100%;
     height: 100dvh;
     z-index: -2;
-    background: url("../imagem/Rio de Janeiro/assets/fundo rj.png") center center / cover no-repeat;
+    background: url("../imagem/Rio de Janeiro/assets/fundo-rj.webp") center center / cover no-repeat;
     pointer-events: none;
 }
 
@@ -582,6 +585,28 @@ main {
 }
 
 /* Imagens de cada cidade */
+/* As miniaturas de cidade viraram <img> reais (antes eram background-image em
+   <span>) para terem ALT e aparecerem na busca por imagens. object-fit:cover
+   reproduz exatamente o recorte que background-size:cover fazia — o resultado
+   renderizado e identico ao anterior. As classes .city-thumb-* continuam
+   existindo como fallback visual caso a imagem falhe ao carregar. */
+img.city-thumb {
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Dentro de #inicio o thumb e posicionado com "position:absolute; inset:0;
+   width:auto; height:auto" — regra escrita para o <span> com background-image,
+   onde inset:0 ja definia o tamanho. Um <img> e elemento substituido: com
+   width/height auto ele ignora o inset e desenha no tamanho intrinseco da foto
+   (564px dentro de um card de 167px), sendo cortado pelo overflow do cartao.
+   Voltar width/height para 100% devolve exatamente o enquadramento anterior. */
+#inicio img.city-thumb {
+    width: 100%;
+    height: 100%;
+}
+
 .city-thumb-rio { background-image: url('../imagem/assets/RiodeJaneiro.jpeg'); background-position: center top; }
 .city-thumb-salvador { background-image: url('../imagem/assets/Salvador.jpeg'); }
 .city-thumb-saoluis { background-image: url('../imagem/assets/SaoLuis.jpeg'); }

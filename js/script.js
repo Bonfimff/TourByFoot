@@ -34,6 +34,10 @@ console.log('Layout da imagem de referência carregado.');
 		zh: { label: "中文(普通话)", flag: "flag-zh" }
 	};
 
+	// Idioma do HTML por extenso. Sem isto a página anunciaria "en-EN" e
+	// "pt-PT", que ou não existem ou apontam para o país errado.
+	const TAG_IDIOMA = { pt: "pt-BR", en: "en", es: "es", fr: "fr", it: "it", zh: "zh" };
+
 	const btn = document.getElementById("langBtn");
 	const list = document.getElementById("langList");
 	const wrapper = document.getElementById("langSelector");
@@ -47,7 +51,9 @@ console.log('Layout da imagem de referência carregado.');
 		// para o idioma escolhido numa aba valer nas outras (ver listener de
 		// "storage" mais abaixo).
 		try { localStorage.setItem('preferredLanguage', currentLang); } catch(e) {}
-		document.documentElement.lang = currentLang;
+		// pt-BR, nao pt: "pt" sozinho o Google lê como português de Portugal, e
+		// o hreflang da página promete pt-BR. Os dois precisam bater.
+		document.documentElement.lang = TAG_IDIOMA[currentLang] || currentLang;
 
 		const dict = translations[currentLang] || translations.pt;
 		document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -75,7 +81,13 @@ console.log('Layout da imagem de referência carregado.');
 		let savedLang;
 		try { savedLang = localStorage.getItem('preferredLanguage'); } catch(e) {}
 		const browserLang = (navigator.language || "pt").slice(0, 2);
-		const initialLang = savedLang && translations[savedLang] ? savedLang : (translations[browserLang] ? browserLang : "pt");
+		// Quem manda é a URL: /en/ mostra inglês mesmo com outro idioma salvo no
+		// navegador. Senão a página exibiria um idioma enquanto a URL e o
+		// hreflang prometem outro, e o Google indexaria o conteúdo errado. Só
+		// quando não há rota de idioma (página avulsa) vale a preferência salva.
+		const rota = window.rotaIdioma;
+		const initialLang = (rota && translations[rota.atual]) ? rota.atual
+			: (savedLang && translations[savedLang] ? savedLang : (translations[browserLang] ? browserLang : "pt"));
 		applyLang(initialLang);
 
 		btn.addEventListener("click", () => {
@@ -85,8 +97,19 @@ console.log('Layout da imagem de referência carregado.');
 		list.addEventListener("click", (e) => {
 			const item = e.target.closest("li");
 			if (!item) return;
-			applyLang(item.dataset.lang);
 			wrapper.classList.remove("open");
+			const escolhido = item.dataset.lang;
+			// Cada idioma tem endereço próprio, então trocar de idioma é NAVEGAR
+			// até ele — trocar o texto no lugar deixaria a URL mentindo sobre o
+			// que a página mostra. A busca e a âncora vão junto.
+			const rota = window.rotaIdioma;
+			if (rota && rota.base) {
+				try { localStorage.setItem('preferredLanguage', escolhido); } catch(err) {}
+				const destino = escolhido === "pt" ? rota.base : rota.base + escolhido + "/";
+				window.location.assign(destino + window.location.search + window.location.hash);
+				return;
+			}
+			applyLang(escolhido);
 		});
 
 		document.addEventListener("click", (e) => {
@@ -98,6 +121,9 @@ console.log('Layout da imagem de referência carregado.');
 		// NÃO fizeram a mudança, então não conflita com applyLang() acima.
 		window.addEventListener('storage', (event) => {
 			if (event.key !== 'preferredLanguage' || !event.newValue) return;
+			// Numa página com endereço por idioma, quem manda é a URL: trocar o
+			// texto aqui faria /en/ aparecer em português.
+			if (window.rotaIdioma) return;
 			if (event.newValue !== currentLang) {
 				applyLang(event.newValue);
 			}

@@ -3687,6 +3687,51 @@ header {
   margin-top: 1.2rem;
 }
 
+/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao —
+   nao introduz cor, fonte nem espacamento novos: so organiza os links em
+   linha, quebrando naturalmente no mobile. */
+.rio-footer-destinos {
+    /* O cartao do rodape e um grid de ate 3 colunas. Sem grid-column:1/-1 este
+       bloco virava um 4o item e abria uma linha inteira nova (+214px de altura).
+       Ocupando a largura toda, os tres links cabem numa unica linha e o
+       acrescimo fica em poucas dezenas de pixels. */
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem 0.9rem;
+    text-align: center;
+    font-size: 0.82rem;
+}
+
+.rio-footer-destinos-titulo {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    opacity: 0.75;
+}
+
+.rio-footer-destinos-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 1rem;
+}
+
+.rio-footer-destinos a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+
+.rio-footer-destinos a:hover,
+.rio-footer-destinos a:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+}
+
 .rio-footer-card-credit {
   grid-column: 1 / -1;
   justify-self: center;

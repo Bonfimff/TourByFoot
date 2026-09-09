@@ -1,3 +1,60 @@
+// Retrato dos tours (ver tools/snapshot_tours.py). O bloco existe no HTML para
+// o rastreador de busca, que nao roda JavaScript: sem ele o Google nao ve nem o
+// nome nem as fotos dos tours, que chegam da API. Some assim que os cards de
+// verdade estao na tela, e volta se a busca falhar — o visitante nunca fica sem
+// tour.
+//
+// Vive em window, e nao dentro de um IIFE, porque este arquivo tem dois escopos
+// separados e quem monta os cards nao esta no mesmo que este trecho.
+// Reserva por WhatsApp: alem de abrir a conversa com o guia, registra a reserva
+// como Pendente no painel. Antes disso, nada ficava gravado — se a conversa se
+// perdesse, a reserva se perdia junto.
+//
+// Nao usa await de proposito. O window.open que abre o WhatsApp precisa
+// acontecer no mesmo passo do clique, senao o navegador o trata como popup e
+// bloqueia. Entao o envio sai por fora, com keepalive para sobreviver a saida da
+// pagina, e uma falha aqui nunca atrapalha o cliente: ele segue para o WhatsApp
+// do mesmo jeito, que continua sendo o canal que vale.
+window.registrarReservaWhatsApp = (dados) => {
+    const base = window.API_BASE_URL || 'https://api-tour.exksvol.com';
+    try {
+        fetch(`${base}/add_reserva_whatsapp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados),
+            keepalive: true
+        }).catch((e) => console.warn('Reserva por WhatsApp nao registrada:', e));
+    } catch (e) {
+        console.warn('Reserva por WhatsApp nao registrada:', e);
+    }
+};
+
+window.retratoDeTours = {
+    _blocos: () => document.querySelectorAll('[data-snapshot]'),
+    _prazo: null,
+    descartar() {
+        clearTimeout(this._prazo);
+        this._blocos().forEach((el) => el.remove());
+    },
+    restaurar() {
+        clearTimeout(this._prazo);
+        this._blocos().forEach((el) => { el.style.display = ''; });
+    },
+    // Rede de segurança por tempo, e não por caminho de erro: a busca dos tours
+    // pode falhar em vários pontos deste arquivo, e depender de acertar todos
+    // deixaria a seção vazia justamente no dia em que a API cair. Aqui a
+    // pergunta é só uma — passou o tempo e não existe card na tela? Então o
+    // retrato volta. Um descartar() bem-sucedido cancela isto antes de disparar.
+    armarRede(segundos) {
+        clearTimeout(this._prazo);
+        this._prazo = setTimeout(() => {
+            if (!document.querySelector('.rio-tour-card')) this.restaurar();
+        }, segundos * 1000);
+    }
+};
+
+window.retratoDeTours.armarRede(8);
+
 
 // version 1.0
 // Link direto pra um tour (?tour=<id>, gerado em Gerenciamento > Editar
@@ -78,13 +135,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     const getCurrentUserEmail = () => (localStorage.getItem('userEmail') || '').toLowerCase();
 
     const redirectToPrincipalPage = () => {
-        const path = window.location.pathname || '';
-        // As páginas de cidade e o Gerenciamento vivem em /html/; o index fica na raiz.
-        if (path.includes('/html/')) {
-            window.location.href = '../index.html';
-        } else {
-            window.location.href = 'index.html';
-        }
+        // Caminho absoluto, e nao relativo: as páginas de cidade agora vivem em
+        // /salvador/ e as versões de idioma em /salvador/en/, então 'index.html'
+        // relativo apontaria para dentro da própria pasta. E a home tem uma
+        // versão por idioma — de /salvador/en/ o retorno é /en/, não /.
+        const idioma = (window.rotaIdioma && window.rotaIdioma.atual) || 'pt';
+        window.location.href = idioma === 'pt' ? '/' : '/' + idioma + '/';
     };
 
     const redirectToManagementPage = () => {
@@ -264,7 +320,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     console.debug('API_BASE_URL configurado para:', API_BASE_URL);
 
     // Modo de manutenção: a checagem que decide isso é o script bloqueante
-    // no <head> de Riodejaneiro.html (redireciona pra ../manutencao.html
+    // no <head> da página (redireciona pra /manutencao.html
     // antes de qualquer conteúdo renderizar — sem flash da página real).
 
     // 2. Método padronizado para adicionar reserva
@@ -585,6 +641,9 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 window.startTourSliders();
             }
 
+            // Cards de verdade na tela: o retrato ja cumpriu o papel dele.
+            window.retratoDeTours.descartar();
+
             // Reaplica idioma para garantir que conteúdo dinâmico vença qualquer texto estático.
             if (typeof window.dispatchLanguageChange === 'function' && typeof window.getCurrentLang === 'function') {
                 window.dispatchLanguageChange(window.getCurrentLang());
@@ -593,6 +652,9 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             return tours;
         } catch (error) {
             console.error('Erro ao conectar com a API:', error);
+            // Sem cards para montar, o retrato dos tours volta a aparecer: é o
+            // mesmo conteúdo, só sem interação — melhor do que a seção vazia.
+            window.retratoDeTours.restaurar();
             throw error;
         }
     };
@@ -1319,13 +1381,15 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         if (typeof window.startTourSliders === 'function') {
             window.startTourSliders();
         }
+
+        // Cards de verdade na tela: o retrato ja cumpriu o papel dele.
+        window.retratoDeTours.descartar();
     };
 
     const applyPageLanguage = (lang) => {
         const t = pageTranslations[lang] || pageTranslations.pt;
         currentFooterInfo = t.footer_info || currentFooterInfo;
         const cards = document.querySelectorAll('.rio-tour-card');
-        const noticeItems = document.querySelectorAll('.rio-notice-text p');
         const subtitles = document.querySelectorAll('.rio-section-subtitle');
 
         const heroTitle = document.querySelector('.rio-hero-title');
@@ -1345,10 +1409,6 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         if (!window.__cidadeAvisoCarregado) {
             const noticeTitle = document.querySelector('.rio-notice-title');
             if (noticeTitle) noticeTitle.textContent = t.notice_title;
-
-            noticeItems.forEach((item, index) => {
-                if (t.notice_lines[index]) item.innerHTML = `<i class="fa fa-circle-info"></i> ${t.notice_lines[index]}`;
-            });
         } else if (window.__cidadeAvisoData && typeof window.applyCidadeAviso === 'function') {
             // Reaplica o aviso já carregado do banco, agora com a tradução
             // automática do novo idioma (em vez do fallback hardcoded).
@@ -1844,8 +1904,17 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         return saved || htmlLang || navLang || 'pt';
     };
 
+    // Codigo de idioma valido para o atributo lang. A forma antiga montava
+    // `${lang}-${lang.toUpperCase()}`, o que produzia "pt-PT" (portugues de
+    // Portugal, nao do Brasil) e "en-EN", que nem existe. O Google le este
+    // atributo junto com o hreflang; um valor invalido aqui contradiz o que a
+    // pagina declara no <head> e enfraquece o conjunto de idiomas.
+    const TAG_IDIOMA = {
+        pt: 'pt-BR', en: 'en', es: 'es', fr: 'fr', it: 'it', zh: 'zh'
+    };
+
     const setDocumentLang = (lang) => {
-        document.documentElement.lang = `${lang}-${lang.toUpperCase()}`;
+        document.documentElement.lang = TAG_IDIOMA[lang] || lang;
     };
 
     const applyTranslations = (lang) => {
@@ -1945,6 +2014,19 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         setDocumentLang(normalized);
         updateLangSelectorButton(normalized);
         dispatchLanguageChange(normalized);
+
+        // Numa pagina que existe em varias URLs por idioma, trocar de idioma e
+        // NAVEGAR, nao recarregar: recarregar deixaria a URL dizendo /en/ com o
+        // conteudo em outro idioma — exatamente o que o hreflang promete que nao
+        // acontece, e o que faria o Google indexar o idioma errado.
+        // window.rotaIdioma e definido no <head> de cada pagina gerada; onde ele
+        // nao existe (paginas ainda sem versao por idioma), recarrega como antes.
+        const rota = window.rotaIdioma;
+        if (rota && rota.base) {
+            const destino = normalized === 'pt' ? rota.base : `${rota.base}${normalized}/`;
+            window.location.assign(destino + window.location.search + window.location.hash);
+            return;
+        }
 
         // Reload the page after switching language so all content reflects the selection.
         window.location.reload();
@@ -3574,7 +3656,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                                     <button type="button" class="login-modal__close" id="auth-support-overlay-close" aria-label="Fechar">&times;</button>
                                 </div>
                                 <div class="login-modal__body" style="padding:16px; color:#333; line-height:1.5;">
-                                    <img class="login-modal__image" src="../imagem/assets/erro.gif" alt="${escapeHtml(imageAlt)}" loading="lazy" />
+                                    <img class="login-modal__image" src="/imagem/assets/erro.gif" alt="${escapeHtml(imageAlt)}" loading="lazy" />
                                     <p>${bodyMessage}</p>
                                     <p>${actionMessage}</p>
                                     <p><a href="${whatsUrl}" target="_blank" rel="noopener" style="color:#007bff; text-decoration:underline;">WhatsApp</a> ou <a href="${mailUrl}" id="auth-support-email-link" style="color:#007bff; text-decoration:underline;">Email</a>.</p>
@@ -3765,6 +3847,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         return merged;
     };
 
+
     const fetchToursFromBackend = async () => {
         const endpoints = [
             `${API_BASE_URL}/get_tours_pagina`,
@@ -3784,6 +3867,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 console.warn('Erro ao buscar tours no backend:', endpoint, error);
             }
         }
+        // Nenhum endereço respondeu: sem cards para montar, o retrato volta a
+        // aparecer. É o mesmo conteúdo, só sem interação — melhor do que a
+        // seção de tours vazia.
+        window.retratoDeTours.restaurar();
         return null;
     };
 
@@ -4020,10 +4107,20 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // um tour de Lençóis). Nesse caso, navega até a página certa e pede pra
     // ela abrir o painel de avaliação assim que os tours carregarem.
     const CITY_PAGE_BY_CIDADE = {
-        'rio de janeiro': 'Riodejaneiro.html',
-        'lencois': 'Lencoismaranhenses.html',
-        'sao luis': 'Saoluísdomaranhao.html',
-        'salvador': 'Salvador.html'
+        'rio de janeiro': 'rio-de-janeiro',
+        'lencois': 'lencois-maranhenses',
+        'sao luis': 'sao-luis',
+        'salvador': 'salvador'
+    };
+
+    // Monta a URL de uma cidade a partir do slug. Absoluta a partir da raiz
+    // porque a pagina atual pode estar em /<cidade>/ ou em /<cidade>/<idioma>/
+    // — um caminho relativo estaria certo numa profundidade e errado na outra.
+    // Preserva o idioma da pagina atual (window.rotaIdioma e definido no
+    // <head> de cada pagina gerada); sem ele, cai no portugues, que e a raiz.
+    const urlDaCidade = (slug) => {
+        const idioma = window.rotaIdioma?.atual || 'pt';
+        return idioma === 'pt' ? `/${slug}/` : `/${slug}/${idioma}/`;
     };
 
     const findTourByName = (tourName) => {
@@ -4042,9 +4139,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const paginaAlvo = CITY_PAGE_BY_CIDADE[normalizeTourKey(tour.cidade || '')];
         if (!paginaAlvo) return;
 
-        const estaEmHtml = (window.location.pathname || '').includes('/html/');
-        const base = estaEmHtml ? paginaAlvo : `html/${paginaAlvo}`;
-        window.location.href = `${base}?avaliar_tour=${tour.id}`;
+        window.location.href = `${urlDaCidade(paginaAlvo)}?avaliar_tour=${tour.id}`;
     };
 
     // Ao chegar numa página vinda desse redirecionamento (?avaliar_tour=ID),
@@ -4600,17 +4695,19 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // mesmo quando o favorito é de outra cidade que não a página atual.
     const buildTourPageUrl = (tour) => {
         if (!tour || tour.id == null) return '';
-        const paginaPorCidade = {
-            'Rio de Janeiro': 'Riodejaneiro.html',
-            'Salvador': 'Salvador.html',
-            'Sao Luis': 'Saolu%C3%ADsdomaranhao.html',
-            'São Luís': 'Saolu%C3%ADsdomaranhao.html',
-            'Lencois': 'Lencoismaranhenses.html',
-            'Lençóis': 'Lencoismaranhenses.html'
+        const slugPorCidade = {
+            'Rio de Janeiro': 'rio-de-janeiro',
+            'Salvador': 'salvador',
+            'Sao Luis': 'sao-luis',
+            'São Luís': 'sao-luis',
+            'Lencois': 'lencois-maranhenses',
+            'Lençóis': 'lencois-maranhenses'
         };
-        const arquivo = paginaPorCidade[tour.cidade];
-        if (!arquivo) return `?tour=${encodeURIComponent(tour.id)}`;
-        return `${arquivo}?tour=${encodeURIComponent(tour.id)}`;
+        const slug = slugPorCidade[tour.cidade];
+        if (!slug) return `?tour=${encodeURIComponent(tour.id)}`;
+        const idioma = window.rotaIdioma?.atual || 'pt';
+        const base = idioma === 'pt' ? `/${slug}/` : `/${slug}/${idioma}/`;
+        return `${base}?tour=${encodeURIComponent(tour.id)}`;
     };
 
     window.openMyReservationsModal = openMyReservationsModal;
@@ -5376,7 +5473,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 if (!navigator.onLine) {
                     showGlobalNotification(ui.connectivity_error_body_offline || 'Sem conexão com a internet. Verifique sua rede e tente novamente.', 'error', {
                         titleText: ui.connectivity_error_title || 'Erro de conexão',
-                        gifUrl: '../imagem/assets/erro.gif'
+                        gifUrl: '/imagem/assets/erro.gif'
                     });
                     return;
                 }
@@ -5457,6 +5554,19 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         `Celular: ${phone}`,
                         `Email: ${email}`
                     ].filter(Boolean).join('\n');
+                    // Registra no painel antes de sair para o WhatsApp (ver
+                    // window.registrarReservaWhatsApp: sai sem await, para o
+                    // window.open abaixo continuar valendo como clique).
+                    window.registrarReservaWhatsApp({
+                        tour,
+                        data: date,
+                        hora: finalTime,
+                        idioma: language,
+                        quantas_pessoas: quantity,
+                        nome: clientName,
+                        celular: phone,
+                        email
+                    });
                     window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
                     closeReservationModal();
                     return;
@@ -5523,7 +5633,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
                         showGlobalNotification(ui.booking_success_title || 'Reserva concluída com sucesso.', 'success', {
                             titleText: '',
-                            gifUrl: '../imagem/assets/certo.mp4',
+                            gifUrl: '/imagem/assets/certo.mp4',
                             detailsHtml
                         });
                         closeReservationModal();

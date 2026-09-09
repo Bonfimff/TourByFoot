@@ -44,12 +44,7 @@
         if (!window.__cidadeAvisoCarregado) {
             const noticeTitle = document.querySelector('.rio-notice-title');
             if (noticeTitle) noticeTitle.textContent = t.notice_title;
-
-            document.querySelectorAll('.rio-notice-text p').forEach((item, index) => {
-                if (t.notice_lines[index]) {
-                    item.innerHTML = `<i class="fa fa-circle-info"></i> ${t.notice_lines[index]}`;
-                }
-            });
+
         } else if (window.__cidadeAvisoData && typeof window.applyCidadeAviso === 'function') {
             // Reaplica o aviso já carregado do banco, agora com a tradução
             // automática do novo idioma (em vez do fallback hardcoded).
@@ -195,7 +190,7 @@
             const fallbackCount = folderImages[folder];
             const imageUrls = (Array.isArray(dbImages) && dbImages.length)
                 ? dbImages
-                : (fallbackCount ? Array.from({ length: fallbackCount }, (_, i) => `../imagem/Lencois/${folder}/img${i + 1}.webp`) : null);
+                : (fallbackCount ? Array.from({ length: fallbackCount }, (_, i) => `/imagem/Lencois/${folder}/img${i + 1}.webp`) : null);
             if (!imageUrls) return;
             const total = imageUrls.length;
 

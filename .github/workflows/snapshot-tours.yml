@@ -1,0 +1,62 @@
+# Retrato dos tours no HTML.
+#
+# Os tours entram na pagina por JavaScript, a partir da API. O rastreador do
+# Google le o HTML puro, onde a grade de tours e um comentario vazio — entao o
+# nome, o roteiro e as fotos dos tours nao existem para a Busca nem para a
+# Busca de Imagens. Esta rotina busca os tours e escreve o equivalente em HTML,
+# nos seis idiomas, sem ninguem precisar tocar em nada.
+#
+# Roda sozinha algumas vezes por dia. Quando alguem altera um tour no
+# Gerenciamento, o site acompanha no ciclo seguinte.
+
+name: Retrato dos tours
+
+on:
+  schedule:
+    # A cada seis horas. O conteudo muda pouco; rodar de hora em hora so geraria
+    # commit a toa.
+    - cron: '0 */6 * * *'
+  # Permite disparar a mao pelo painel do GitHub, para nao esperar o horario
+  # depois de cadastrar um tour novo.
+  workflow_dispatch:
+
+permissions:
+  # Necessario para o passo de commit. E a permissao nativa do Actions: nao
+  # exige criar token nenhum.
+  contents: write
+
+concurrency:
+  # Duas execucoes ao mesmo tempo brigariam pelo mesmo commit.
+  group: retrato-de-tours
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Buscar os tours na API
+        run: python tools/snapshot_tours.py
+
+      - name: Reescrever as paginas e o sitemap
+        run: python tools/gerar_paginas.py
+
+      - name: Publicar se algo mudou
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nada mudou desde a ultima execucao."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Atualiza o retrato dos tours
+
+          Gerado por tools/snapshot_tours.py a partir da API. Nao editar a mao:
+          a proxima execucao sobrescreve."
+          git push

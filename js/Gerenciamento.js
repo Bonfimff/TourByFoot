@@ -2176,10 +2176,10 @@ const initFinanceControls = () => {
 // a partir do id do tour + página da cidade; não é salva em lugar nenhum.
 const TOUR_DIRECT_URL_BASE = 'https://bonfimff.github.io/Web-Teste';
 const TOUR_DIRECT_URL_PAGINA_POR_CIDADE = {
-  'Rio de Janeiro': 'html/Riodejaneiro.html',
-  'Salvador': 'html/Salvador.html',
-  'Sao Luis': 'html/Saolu%C3%ADsdomaranhao.html',
-  'Lencois': 'html/Lencoismaranhenses.html',
+  'Rio de Janeiro': 'rio-de-janeiro/',
+  'Salvador': 'salvador/',
+  'Sao Luis': 'sao-luis/',
+  'Lencois': 'lencois-maranhenses/',
 };
 
 const montarTourDirectUrl = (tourId, cidade) => {
