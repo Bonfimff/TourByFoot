@@ -151,7 +151,7 @@ const renderAccountsTable = (accounts) => {
     const emptyMessage = query
       ? `Nenhuma conta encontrada para "${escapeHtml(query)}".`
       : 'Nenhuma conta encontrada.';
-    tableBody.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">${emptyMessage}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">${escapeHtml(emptyMessage)}</td></tr>`;
     return;
   }
 
@@ -1376,23 +1376,29 @@ const renderTourComments = (comentarios) => {
 
   container.innerHTML = lista.map(c => {
     const status = c.status || 'pendente';
+    // Comentário e nome do cliente são texto livre enviado por ele. Esta é a
+    // tela de moderação: por definição mostra conteúdo ainda NÃO revisado, o
+    // que a torna o pior lugar possível para interpolar sem escapar.
+    // A nota é forçada a inteiro 0–5 antes do repeat() para não virar um
+    // repeat() gigante (trava a aba) nem quebrar a marcação.
+    const nota = Math.max(0, Math.min(5, parseInt(c.nota, 10) || 0));
     const fotosHtml = Array.isArray(c.fotos) && c.fotos.length
-      ? `<div class="tour-comment-admin-fotos">${c.fotos.map(url => `<img src="${url}" alt="Foto da avaliação" loading="lazy" />`).join('')}</div>`
+      ? `<div class="tour-comment-admin-fotos">${c.fotos.map(url => `<img src="${escapeHtml(url)}" alt="Foto da avaliação" loading="lazy" />`).join('')}</div>`
       : '';
     return `
-    <div class="tour-comment-admin-item tour-comment-admin-status-${status}" data-comment-id="${c.id}">
+    <div class="tour-comment-admin-item tour-comment-admin-status-${escapeHtml(status)}" data-comment-id="${escapeHtml(c.id)}">
       <div class="tour-comment-admin-header">
-        <strong>${c.usuario_nome || 'Usuário'}</strong>
-        ${c.nota ? `<span class="tour-comment-admin-stars">${'★'.repeat(c.nota)}${'☆'.repeat(5 - c.nota)}</span>` : ''}
-        <span class="tour-comment-admin-badge">${TOUR_COMMENT_STATUS_LABEL[status] || status}</span>
-        ${canModerate ? `<button type="button" class="tour-comment-admin-delete" data-comment-id="${c.id}" aria-label="Excluir comentário">&times;</button>` : ''}
+        <strong>${escapeHtml(c.usuario_nome || 'Usuário')}</strong>
+        ${nota ? `<span class="tour-comment-admin-stars">${'★'.repeat(nota)}${'☆'.repeat(5 - nota)}</span>` : ''}
+        <span class="tour-comment-admin-badge">${escapeHtml(TOUR_COMMENT_STATUS_LABEL[status] || status)}</span>
+        ${canModerate ? `<button type="button" class="tour-comment-admin-delete" data-comment-id="${escapeHtml(c.id)}" aria-label="Excluir comentário">&times;</button>` : ''}
       </div>
-      <p>${c.comentario || ''}</p>
+      <p>${escapeHtml(c.comentario || '')}</p>
       ${fotosHtml}
       ${canModerate ? `
       <div class="tour-comment-admin-actions">
-        ${status !== 'aprovado' ? `<button type="button" class="btn-book tour-comment-admin-approve" data-comment-id="${c.id}">Aprovar</button>` : ''}
-        ${status !== 'rejeitado' ? `<button type="button" class="btn-book tour-comment-admin-reject" data-comment-id="${c.id}">Rejeitar</button>` : ''}
+        ${status !== 'aprovado' ? `<button type="button" class="btn-book tour-comment-admin-approve" data-comment-id="${escapeHtml(c.id)}">Aprovar</button>` : ''}
+        ${status !== 'rejeitado' ? `<button type="button" class="btn-book tour-comment-admin-reject" data-comment-id="${escapeHtml(c.id)}">Rejeitar</button>` : ''}
       </div>` : ''}
     </div>
   `;
@@ -1602,7 +1608,7 @@ const carregarFinanceiro = async () => {
     if (!response.ok || !result.success) {
       const msg = escapeHtml(result.message || 'Erro ao carregar o financeiro.');
       Object.values(corpos).forEach((tbody) => {
-        tbody.innerHTML = `<tr><td colspan="6" style="padding:0.75rem;">${msg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:0.75rem;">${escapeHtml(msg)}</td></tr>`;
       });
       return;
     }
@@ -4045,13 +4051,13 @@ const carregarAgendamentosDoBanco = async () => {
       const response = await fetchWithApiFallback(`/check_permission?email=${encodeURIComponent(userEmail)}&permission=manageReservas`);
       if (!response.ok) {
         const reasonData = await response.json().catch(() => ({}));
-        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado no servidor: ${reasonData.reason || reasonData.message || 'sem razão'}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado no servidor: ${escapeHtml(reasonData.reason || reasonData.message || 'sem razão')}.</td></tr>`;
         return;
       }
 
       const result = await response.json();
       if (!result.allowed) {
-        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${result.reason || 'não autorizado'}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${escapeHtml(result.reason || 'não autorizado')}.</td></tr>`;
         return;
       }
 
@@ -4151,16 +4157,20 @@ const carregarAgendamentosDoBanco = async () => {
       const guiaValue = ag.guia || '-';
       const origemValue = ag.origem || 'Tour by food';
 
+      // Tudo aqui vem de reserva gravada pelo cliente — inclusive por rota
+      // pública (/add_reserva_whatsapp). Sem escapeHtml, um "guia" com
+      // <img onerror=...> executava no navegador de todo admin que abrisse
+      // esta aba, com acesso ao localStorage da sessão.
       row.innerHTML = `
-        <td data-label="Tour">${ag.tour}</td>
-        <td data-label="Idioma">${idiomaValue}</td>
-        <td data-label="Modalidade">${modalidadeValue}</td>
-        <td data-label="Guia">${guiaValue}</td>
-        <td data-label="Data">${ag.data}</td>
-        <td data-label="Hora">${ag.hora}</td>
-        <td data-label="Pessoas">${qtdValue}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${statusValue}</span></td>
-        <td data-label="Origem">${origemValue}</td>
+        <td data-label="Tour">${escapeHtml(ag.tour)}</td>
+        <td data-label="Idioma">${escapeHtml(idiomaValue)}</td>
+        <td data-label="Modalidade">${escapeHtml(modalidadeValue)}</td>
+        <td data-label="Guia">${escapeHtml(guiaValue)}</td>
+        <td data-label="Data">${escapeHtml(ag.data)}</td>
+        <td data-label="Hora">${escapeHtml(ag.hora)}</td>
+        <td data-label="Pessoas">${escapeHtml(qtdValue)}</td>
+        <td data-label="Status"><span class="status-badge ${escapeHtml(statusClass)}">${escapeHtml(statusValue)}</span></td>
+        <td data-label="Origem">${escapeHtml(origemValue)}</td>
       `;
 
       if (currentUserPermissions?.manageReservas) {
@@ -4333,7 +4343,7 @@ const carregarAgendamentosDoBanco = async () => {
   } catch (error) {
     console.error('Erro de conexão ao carregar tabela:', error);
     const detail = (error && error.message) ? ` Detalhe: ${error.message}` : '';
-    tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Erro de conexão com a API ao carregar reservas.${detail}</td></tr>`;
+    tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Erro de conexão com a API ao carregar reservas.${escapeHtml(detail)}</td></tr>`;
   }
 };
 
@@ -4659,7 +4669,7 @@ const carregarContasDoBanco = async () => {
     }
   } catch (error) {
     console.error('Erro ao carregar contas:', error);
-    tableBody.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Erro de conexão: ${error.message || error}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Erro de conexão: ${escapeHtml(error.message || error)}</td></tr>`;
   }
 };
 
@@ -4710,7 +4720,7 @@ const carregarNiveisDeAcesso = async () => {
   selectRole(Object.keys(currentRolesConfig)[0] || 'cliente_user');
   } catch (error) {
     console.error('Erro ao carregar níveis de acesso:', error);
-    rolesBody.innerHTML = `<tr><td colspan="4" style="padding:0.75rem;">Erro de conexão: ${error.message || error}</td></tr>`;
+    rolesBody.innerHTML = `<tr><td colspan="4" style="padding:0.75rem;">Erro de conexão: ${escapeHtml(error.message || error)}</td></tr>`;
   }
 };
 

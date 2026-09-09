@@ -1,0 +1,28 @@
+# O backend NÃO pertence a este repositório: aqui é o site público (GitHub
+# Pages). Antes, Python/ estava apenas untracked — não ignorado — e um
+# `git add -A` distraído publicaria o código da API, com credenciais, num repo
+# aberto. A linha abaixo é o que impede isso.
+/Python/
+
+# Segredos — em qualquer caminho, mesmo que o backend volte para cá um dia.
+*.env
+!*.env.example
+credencial.env
+
+# Estado da aplicação com dados de clientes
+push_subscriptions.json
+whatsapp_alertas.jsonl
+reservation_activity.json
+*.flag
+
+# Uploads e artefatos Python
+Python/static/uploads/
+Python/__pycache__/
+__pycache__/
+*.pyc
+
+# Ambiente virtual
+.venv/
+
+# Backup local da auditoria de segurança
+.backup-pre-auditoria/
