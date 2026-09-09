@@ -44,7 +44,7 @@
         if (!window.__cidadeAvisoCarregado) {
             const noticeTitle = document.querySelector('.rio-notice-title');
             if (noticeTitle) noticeTitle.textContent = t.notice_title;
-
+
         } else if (window.__cidadeAvisoData && typeof window.applyCidadeAviso === 'function') {
             // Reaplica o aviso já carregado do banco, agora com a tradução
             // automática do novo idioma (em vez do fallback hardcoded).
@@ -328,16 +328,22 @@
 
         if (!grid || !painel || !textoResposta || !botaoFechar || !titulo) return;
 
-        const tituloPadrao = titulo.textContent;
+        // Pergunta/resposta ficam guardadas como CHAVE de traducao no HTML
+        // (data-question="guide_q1"), nao como texto fixo - assim funcionam
+        // no idioma que a pessoa estiver usando no momento do clique, sem
+        // precisar duplicar HTML por idioma (isso seria apagado de qualquer
+        // forma: tools/gerar_paginas.py reconstroi as paginas de idioma a
+        // partir desta pagina em portugues a cada execucao automatica).
+        const idiomaAtual = () => (typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'pt');
+        const strings = () => window.uiTranslations?.[idiomaAtual()] || window.uiTranslations?.pt || {};
+        const tituloPadraoAtual = () => strings().guide_title_default || titulo.textContent;
 
-        function abrirResposta(item) {
-            const pergunta = item.getAttribute('data-question');
-            const resposta = item.getAttribute('data-answer');
-            if (!pergunta || !resposta) return;
+        function abrirResposta(pergunta, respostaHtml) {
+            if (!pergunta || !respostaHtml) return;
 
             titulo.textContent = pergunta;
             if (subtitulo) subtitulo.hidden = true;
-            textoResposta.textContent = resposta;
+            textoResposta.innerHTML = respostaHtml;
 
             grid.hidden = true;
             painel.hidden = false;
@@ -345,7 +351,7 @@
         }
 
         function fecharResposta() {
-            titulo.textContent = tituloPadrao;
+            titulo.textContent = tituloPadraoAtual();
             if (subtitulo) subtitulo.hidden = false;
             painel.hidden = true;
             grid.hidden = false;
@@ -357,11 +363,42 @@
         grid.querySelectorAll('.rio-guide-item[data-question]').forEach((item) => {
             item.addEventListener('click', (evento) => {
                 evento.preventDefault();
-                abrirResposta(item);
+                const dados = strings();
+                const qKey = item.getAttribute('data-question');
+                const aKey = item.getAttribute('data-answer');
+                abrirResposta(dados[qKey], dados[aKey]);
             });
         });
 
         botaoFechar.addEventListener('click', fecharResposta);
+
+        // Trocou de idioma com o painel fechado: so garante que, da proxima
+        // vez que fechar, volte pro titulo padrao no idioma novo (o proprio
+        // data-i18n do <h3> ja cuida do texto quando o painel esta fechado,
+        // ver applyTranslations em site-shell.js). Com o painel ABERTO,
+        // fecha para evitar mostrar o titulo/resposta trocados de idioma
+        // pela metade.
+        document.addEventListener('app:language-changed', () => {
+            if (!painel.hidden) fecharResposta();
+        });
+
+        // SOBRE/CONTATO/AJUDA (menu do topo) usam o mesmo painel de resposta.
+        // window.updateFooterInfo (site-shell.js) escreve o titulo em
+        // qualquer elemento .rio-footer-card-title (por isso o h3 do guia
+        // tambem tem essa classe, ver HTML) e o corpo em #rioFooterCardBody
+        // - aqui, um elemento OCULTO que so existe pra isso. Observa
+        // mudancas nele em vez de interceptar o clique diretamente: assim
+        // funciona nao importa de onde updateFooterInfo seja chamado
+        // (menu, ou um override de admin carregado depois do clique).
+        const corpoLegado = document.getElementById('rioFooterCardBody');
+        if (corpoLegado) {
+            const observador = new MutationObserver(() => {
+                const conteudo = corpoLegado.innerHTML;
+                if (!conteudo || !conteudo.trim()) return;
+                abrirResposta(titulo.textContent, conteudo);
+            });
+            observador.observe(corpoLegado, { childList: true, characterData: true, subtree: true });
+        }
     }
 
     if (document.readyState === 'loading') {
