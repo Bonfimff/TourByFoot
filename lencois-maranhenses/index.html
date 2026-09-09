@@ -587,6 +587,15 @@
                     <span class="rio-testimonial-author">Marianna Burlamaqui</span>
                 </article>
             </div>
+
+            <!-- A galeria de fotos que existia aqui foi removida (a pedido),
+                 mas varios scripts (cidade-visual.js, site-shell.js) leem
+                 data-cidade DESTE elemento para saber "qual cidade e essa
+                 pagina" - sem ele, tudo cai no padrao 'Rio de Janeiro'
+                 (fundo, cores, painel viravam os do Rio). Mantido oculto so
+                 por isso; nao remover sem antes migrar essas leituras para
+                 outro marcador. -->
+            <div id="relatosGallery" data-cidade="Lencois" hidden></div>
         </section>
 
         <!-- FOOTER -->
