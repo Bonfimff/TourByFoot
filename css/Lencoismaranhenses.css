@@ -4315,13 +4315,12 @@ header {
     line-height: 1.4;
 }
 
-.rio-guide-links {
-    /* style.css tem um seletor generico "nav" (menu do topo) que, no
-       celular, vira um menu suspenso com fundo verde e itens em bloco.
-       Como esse card tambem usa uma tag <nav>, essas propriedades
-       precisam ser sobrescritas aqui explicitamente, ou vazam pra
-       este componente sem querer. */
-    display: flex !important;
+/* Prefixado com .rio-page para ganhar especificidade de ".rio-page nav a"
+   (regra do menu do topo, em style.css, que tambem "pega" qualquer <nav>
+   da pagina - mesmo problema que ja resolvemos no .rio-footer-destinos). */
+.rio-page .rio-guide-links {
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -4336,7 +4335,7 @@ header {
     order: initial;
 }
 
-.rio-guide-links a {
+.rio-page .rio-guide-links a {
     display: inline;
     font-size: 0.75rem;
     font-weight: 800;
