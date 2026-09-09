@@ -4228,15 +4228,30 @@ header {
 }
 
 .rio-guide-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    /* Sempre em fileira unica: quando nao cabem os 4 lado a lado, em vez de
+       quebrar linha, a fileira ganha rolagem horizontal suave (mesmo padrao
+       usado em .loja-filtros/.pedido-filtro). */
+    display: flex;
+    flex-wrap: nowrap;
     gap: 1rem;
     margin-bottom: 1.4rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+
+.rio-guide-grid::-webkit-scrollbar {
+    display: none;
 }
 
 .rio-guide-item {
     display: flex;
     flex-direction: column;
+    flex: 0 0 230px;
+    scroll-snap-align: start;
     background: rgba(255, 255, 255, 0.55);
     border: 1px solid rgba(2, 65, 90, 0.12);
     border-radius: 16px;
@@ -4361,17 +4376,7 @@ header {
     font-weight: 400;
 }
 
-@media (max-width: 900px) {
-    .rio-guide-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
 @media (max-width: 520px) {
-    .rio-guide-grid {
-        grid-template-columns: 1fr;
-    }
-
     .rio-guide-top {
         flex-wrap: wrap;
     }
