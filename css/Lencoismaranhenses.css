@@ -4174,3 +4174,201 @@ header {
   color: #1da194;
   text-decoration: underline;
 }
+
+/* =========================================================
+   GUIA DE VIAGEM (cartao do rodape, so na pagina dos Lencois)
+   Substitui o antigo cartao de Informacoes/Outros destinos.
+   Conteudo dos 4 itens e os links do rodape sao provisorios.
+   ========================================================= */
+.rio-guide-card {
+    display: block;
+    text-align: left;
+}
+
+.rio-guide-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.rio-guide-eyebrow span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0d5548;
+}
+
+.rio-guide-eyebrow span::after {
+    content: '';
+    width: 32px;
+    height: 2px;
+    background: #0d5548;
+    opacity: 0.4;
+}
+
+.rio-guide-title {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+    font-weight: 800;
+    color: #02415a;
+}
+
+.rio-guide-subtitle {
+    margin: 0 0 1.4rem;
+    max-width: 640px;
+    color: rgba(44, 62, 80, 0.75);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.rio-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.rio-guide-item {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(2, 65, 90, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rio-guide-item:hover,
+.rio-guide-item:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(2, 65, 90, 0.15);
+}
+
+.rio-guide-item-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+}
+
+.rio-guide-item-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.rio-guide-item-num {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    color: #0d5548;
+    font-size: 0.75rem;
+    font-weight: 800;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.rio-guide-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem 0.9rem 1rem;
+}
+
+.rio-guide-item-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.rio-guide-item-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #02415a;
+    line-height: 1.25;
+}
+
+.rio-guide-item-head i {
+    color: #0d5548;
+    font-size: 0.85rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.rio-guide-item-desc {
+    font-size: 0.82rem;
+    color: rgba(44, 62, 80, 0.7);
+    line-height: 1.4;
+}
+
+.rio-guide-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(2, 65, 90, 0.12);
+    margin-bottom: 0.9rem;
+}
+
+.rio-guide-links a {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0d5548;
+    text-decoration: none;
+}
+
+.rio-guide-links a:hover,
+.rio-guide-links a:focus-visible {
+    text-decoration: underline;
+}
+
+.rio-guide-links a:not(:last-child)::after {
+    content: '•';
+    margin-left: 0.6rem;
+    color: rgba(2, 65, 90, 0.35);
+    font-weight: 400;
+}
+
+@media (max-width: 900px) {
+    .rio-guide-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .rio-guide-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rio-guide-top {
+        flex-wrap: wrap;
+    }
+}
+
+/* .footer-info-icons por padrao fica centralizado embaixo do texto (uso
+   antigo). Aqui ele mora ao lado do rotulo "Guia de viagem", entao
+   precisa ficar a direita, sem a margem superior, com espaco reservado
+   pro botao circular "voltar ao topo" (posicionado em cima, absoluto). */
+.rio-guide-top .footer-info-icons {
+    justify-content: flex-end;
+    margin-top: 0;
+    padding-right: 2.6rem;
+}
