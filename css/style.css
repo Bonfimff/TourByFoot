@@ -783,11 +783,15 @@ img.city-thumb {
     position: relative;
     pointer-events: auto;
     width: 100%;
-    background: #0c352d;
-    color: #f5f2e9;
+    /* Mesmo efeito de vidro fosco do .award-toast (canto do Rio de Janeiro):
+       fundo translucido + blur, em vez de verde solido. */
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(0, 0, 0, 0.9);
     border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     animation: awardToastIn 0.4s ease-out;
     overflow: hidden;
 }
@@ -797,7 +801,7 @@ img.city-thumb {
     align-items: center;
     gap: 0.8rem;
     padding: 1rem 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .award-modal__badge-icon {
@@ -808,8 +812,8 @@ img.city-thumb {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: 2px solid #f6df99;
-    color: #f6df99;
+    border: 2px solid #b8860b;
+    color: #b8860b;
     font-size: 1.05rem;
 }
 
@@ -818,7 +822,7 @@ img.city-thumb {
     margin: 0;
     font-size: 1.2rem;
     font-weight: 800;
-    color: #f5f2e9;
+    color: rgba(0, 0, 0, 0.9);
     letter-spacing: 0.2px;
 }
 
@@ -829,19 +833,19 @@ img.city-thumb {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.08);
     border: none;
     border-radius: 10px;
     font-size: 1.4rem;
     line-height: 1;
-    color: rgba(245, 242, 233, 0.85);
+    color: rgba(0, 0, 0, 0.75);
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 
 .award-modal__close:hover {
-    background: rgba(255, 255, 255, 0.16);
-    color: #f6df99;
+    background: rgba(0, 0, 0, 0.14);
+    color: #b8860b;
 }
 
 .hs-modal__body {
@@ -850,7 +854,7 @@ img.city-thumb {
     gap: 1.1rem;
     align-items: center;
     padding: 1.1rem 1.2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .hs-modal__leftImage img {
@@ -863,12 +867,13 @@ img.city-thumb {
 .award-modal__divider {
     align-self: stretch;
     width: 1px;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.12);
 }
 
 .js-hs-description {
     line-height: 1.5;
     font-size: 1rem;
+    color: rgba(0, 0, 0, 0.85);
 }
 
 .award-modal__footer {
@@ -911,11 +916,11 @@ img.city-thumb {
     align-items: center;
     gap: 0.5rem;
     white-space: nowrap;
-    color: rgba(245, 242, 233, 0.85);
+    color: rgba(0, 0, 0, 0.7);
 }
 
 .award-modal__countdown-wrap i {
-    color: #4fd1a5;
+    color: #1f8a68;
     font-size: 1rem;
 }
 
