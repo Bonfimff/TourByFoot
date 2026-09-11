@@ -2434,7 +2434,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     #inicio .city-thumb {
         position: static;
         width: 100%;
-        aspect-ratio: 4 / 3.6;
+        aspect-ratio: 3 / 4;
         border: none;
         border-radius: 9px;
         box-shadow: none;
