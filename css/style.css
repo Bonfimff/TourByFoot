@@ -2553,3 +2553,58 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
         max-width: 90px;
     }
 }
+
+/* Sugestoes da busca do site (js/busca-site.js). */
+.search-bar {
+    position: relative;
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    min-width: 300px;
+    max-height: 360px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.4rem;
+    list-style: none;
+    background: #fbf8f1;
+    border: 1px solid rgba(206, 168, 82, 0.55);
+    border-radius: 16px;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    text-align: left;
+}
+
+.search-results li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.search-results li.is-active {
+    background: rgba(13, 85, 72, 0.12);
+}
+
+.search-results-title {
+    color: #14325c;
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.25;
+}
+
+.search-results-type {
+    color: #8a7440;
+    font-size: 0.75rem;
+}
+
+.search-results li.search-results-empty {
+    color: #6b7b77;
+    font-size: 0.88rem;
+    cursor: default;
+}
