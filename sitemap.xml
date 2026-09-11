@@ -30,6 +30,10 @@
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>Dunas e lagoas dos Lençóis Maranhenses</image:title>
     </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.tourbyfoot.com/en/</loc>
@@ -58,6 +62,10 @@
     <image:image>
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>Dunes and lagoons of the Lençóis Maranhenses</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -88,6 +96,10 @@
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>Dunas y lagunas de los Lençóis Maranhenses</image:title>
     </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.tourbyfoot.com/fr/</loc>
@@ -116,6 +128,10 @@
     <image:image>
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>Dunes et lagunes des Lençóis Maranhenses</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -146,6 +162,10 @@
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>Dune e lagune dei Lençóis Maranhenses</image:title>
     </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.tourbyfoot.com/zh/</loc>
@@ -174,6 +194,10 @@
     <image:image>
       <image:loc>https://www.tourbyfoot.com/imagem/assets/Lencois.jpeg</image:loc>
       <image:title>马拉尼昂千湖沙漠的沙丘与湖泊</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.tourbyfoot.com/imagem/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -309,8 +333,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -446,8 +470,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -583,8 +607,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -720,8 +744,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -857,8 +881,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -994,8 +1018,8 @@
       <image:title>Tour Bossa Nova: Copacabana e Ipanema (2)</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Rio%20de%20Janeiro/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1039,8 +1063,8 @@
       <image:title>Relato de viagem em Salvador</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1084,8 +1108,8 @@
       <image:title>Traveller's photo from Salvador</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1129,8 +1153,8 @@
       <image:title>Foto de viaje en Salvador</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1174,8 +1198,8 @@
       <image:title>Photo de voyage à Salvador</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1219,8 +1243,8 @@
       <image:title>Foto di viaggio a Salvador</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1264,8 +1288,8 @@
       <image:title>游客在萨尔瓦多拍摄的照片</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Salvador/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1325,8 +1349,8 @@
       <image:title>Relato de viagem em São Luís do Maranhão</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1386,8 +1410,8 @@
       <image:title>Traveller's photo from São Luís do Maranhão</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1447,8 +1471,8 @@
       <image:title>Foto de viaje en São Luís do Maranhão</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1508,8 +1532,8 @@
       <image:title>Photo de voyage à São Luís do Maranhão</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1569,8 +1593,8 @@
       <image:title>Foto di viaggio a São Luís do Maranhão</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1630,8 +1654,8 @@
       <image:title>游客在圣路易斯拍摄的照片</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Sao%20Luis/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -1991,8 +2015,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -2352,8 +2376,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -2713,8 +2737,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -3074,8 +3098,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -3435,8 +3459,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
   <url>
@@ -3796,8 +3820,8 @@
       <image:title>Onde ficar nos Lençóis Maranhenses</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/exksvol.png</image:loc>
-      <image:title>Exksvol</image:title>
+      <image:loc>https://www.tourbyfoot.com/imagem/Lencois/assets/Logo-sem-fundo.png</image:loc>
+      <image:title>TourByFoot</image:title>
     </image:image>
   </url>
 </urlset>
