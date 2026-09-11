@@ -4515,3 +4515,12 @@ header {
         min-height: 190px;
     }
 }
+
+/* Tela grande: logo do credito do desenvolvedor maior. */
+@media (min-width: 901px) {
+    .footer-credit-logo,
+    .index-footer-row .footer-credit-logo,
+    .rio-footer-card-credit .footer-credit-logo {
+        max-width: 90px;
+    }
+}
