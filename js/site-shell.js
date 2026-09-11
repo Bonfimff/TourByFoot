@@ -2481,6 +2481,9 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     } else if (data.celular) {
                         localStorage.setItem('userPhone', data.celular);
                     }
+                    // Pais de origem do cadastro: pre-preenche a nacionalidade no
+                    // formulario de reserva sem o cliente precisar digitar de novo.
+                    localStorage.setItem('userPais', data.pais_origem || '');
                     if (data.token) {
                         localStorage.setItem('authToken', data.token);
                     }
@@ -4819,10 +4822,42 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const reservationLanguage = document.getElementById('reservationLanguage');
         const reservationPhone = document.getElementById('reservationPhone');
         const reservationEmail = document.getElementById('reservationEmail');
+        const reservationNationality = document.getElementById('reservationNationality');
         const reservationCancel = document.getElementById('reservationCancel');
         const reservationSubmitIcon = document.getElementById('reservationSubmitIcon');
         const reservationSubmitLabel = document.getElementById('reservationSubmitLabel');
         let selectedMeetingPoint = '';
+
+        // Lista de países para a sugestão (datalist) do campo Nacionalidade do
+        // formulário de reserva — pedido mesmo em tours de canal WhatsApp,
+        // que usam este mesmo formulário (ver openReservationModal abaixo).
+        const RESERVATION_COUNTRY_LIST = [
+            'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan',
+            'Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi',
+            'Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic',
+            'Democratic Republic of the Congo','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia',
+            'Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana',
+            'Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Ivory Coast',
+            'Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Kosovo','Kuwait','Kyrgyzstan',
+            'Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg',
+            'Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar',
+            'Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway',
+            'Oman','Pakistan','Palau','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal',
+            'Qatar','Romania','Russia','Rwanda',
+            'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria',
+            'Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu',
+            'Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan',
+            'Vanuatu','Vatican City','Venezuela','Vietnam',
+            'Yemen','Zambia','Zimbabwe'
+        ];
+        const reservationCountryList = document.getElementById('reservationCountryList');
+        if (reservationCountryList && !reservationCountryList.childElementCount) {
+            RESERVATION_COUNTRY_LIST.forEach((country) => {
+                const option = document.createElement('option');
+                option.value = country;
+                reservationCountryList.appendChild(option);
+            });
+        }
 
         const closeReservationModal = () => {
             if (!reservationModal) return;
@@ -5142,6 +5177,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const userEmail = localStorage.getItem('userEmail');
             const userName = localStorage.getItem('userName');
             const userPhone = localStorage.getItem('userPhone');
+            const userPais = localStorage.getItem('userPais');
             const currentLang = typeof window.getCurrentLanguage === 'function'
                 ? window.getCurrentLanguage()
                 : (document.documentElement.lang || 'pt').slice(0, 2);
@@ -5163,6 +5199,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             reservationQuantity.value = 1;
             reservationPhone.value = userPhone || '';
             reservationEmail.value = userEmail || '';
+            if (reservationNationality) reservationNationality.value = userPais || '';
             selectedMeetingPoint = (meetingPoint || '').trim();
 
             // Botão "Confirmar Reserva" avisa visualmente que essa reserva vai
@@ -5289,6 +5326,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const language = reservationLanguage.value;
                 const phone = reservationPhone.value.trim();
                 const email = reservationEmail.value.trim();
+                const nationality = reservationNationality ? reservationNationality.value.trim() : '';
                 const currentLang = typeof window.getCurrentLanguage === 'function'
                     ? window.getCurrentLanguage()
                     : (document.documentElement.lang || 'pt').slice(0, 2);
@@ -5315,7 +5353,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const horariosDisponiveis = horariosParaData(matchedTour, date);
                 const selectedTime = reservationTime ? reservationTime.value : '';
 
-                if (!tour || !clientName || !date || !quantity || !language || !phone || !email) {
+                if (!tour || !clientName || !date || !quantity || !language || !phone || !email || !nationality) {
                     showGlobalNotification('Preencha todos os campos obrigatórios para concluir a reserva.', 'error');
                     return;
                 }
@@ -5374,7 +5412,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         `Pessoas: ${quantity}`,
                         `Idioma: ${language}`,
                         `Celular: ${phone}`,
-                        `Email: ${email}`
+                        `Email: ${email}`,
+                        `Nacionalidade: ${nationality}`
                     ].filter(Boolean).join('\n');
                     // Registra no painel antes de sair para o WhatsApp (ver
                     // window.registrarReservaWhatsApp: sai sem await, para o
@@ -5387,7 +5426,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         quantas_pessoas: quantity,
                         nome: clientName,
                         celular: phone,
-                        email
+                        email,
+                        nacionalidade: nationality
                     });
                     window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
                     closeReservationModal();
@@ -5405,7 +5445,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     pessoas: '',
                     nome: clientName,
                     celular: phone,
-                    email
+                    email,
+                    nacionalidade: nationality
                 };
 
                 const sendReservationToApi = async (url) => {

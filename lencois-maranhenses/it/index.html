@@ -726,6 +726,7 @@
                 </div>
                 <form id="reservationForm" novalidate>
                     <input type="hidden" id="reservationTour">
+                    <datalist id="reservationCountryList"></datalist>
                     <div class="res-tour-box">
                         <span class="res-tour-icon" aria-hidden="true"><img src="../../imagem/assets/img-tour-selecionado.png" alt="" / loading="lazy" decoding="async"></span>
                         <div class="res-tour-info">
@@ -782,11 +783,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="res-field">
-                        <label for="reservationEmail" data-i18n="reservation_email_label">Email</label>
-                        <div class="res-input-wrap">
-                            <i class="fas fa-envelope res-input-icon" aria-hidden="true"></i>
-                            <input type="email" id="reservationEmail" data-i18n-placeholder="reservation_email_placeholder" placeholder="seuemail@exemplo.com" required>
+                    <div class="res-grid">
+                        <div class="res-field">
+                            <label for="reservationEmail" data-i18n="reservation_email_label">Email</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-envelope res-input-icon" aria-hidden="true"></i>
+                                <input type="email" id="reservationEmail" data-i18n-placeholder="reservation_email_placeholder" placeholder="seuemail@exemplo.com" required>
+                            </div>
+                        </div>
+                        <div class="res-field">
+                            <label for="reservationNationality" data-i18n="reservation_nationality_label">Nacionalidade</label>
+                            <div class="res-input-wrap">
+                                <i class="fas fa-flag res-input-icon" aria-hidden="true"></i>
+                                <input type="text" id="reservationNationality" list="reservationCountryList" data-i18n-placeholder="reservation_nationality_placeholder" placeholder="Selecione seu país" autocomplete="country" required>
+                            </div>
                         </div>
                     </div>
                     <div class="reservation-modal-actions">
@@ -800,9 +810,9 @@
 
     <script src="../../js/api-auth.js?v=1"></script>
     <script src="../../js/page-translations.js?v=2"></script>
-    <script src="../../js/ui-translations.js?v=15"></script>
+    <script src="../../js/ui-translations.js?v=16"></script>
     <script src="../../js/tour-interacoes.js?v=12"></script>
-    <script src="../../js/site-shell.js?v=93"></script>
+    <script src="../../js/site-shell.js?v=94"></script>
     <script src="../../js/presenca.js?v=1"></script>
     <script src="../../js/atividade-cliente.js?v=2"></script>
     <script src="../../js/Lencoismaranhenses.js?v=16"></script>

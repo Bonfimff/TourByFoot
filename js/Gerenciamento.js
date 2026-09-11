@@ -4037,7 +4037,7 @@ const carregarAgendamentosDoBanco = async () => {
 
   const userEmail = localStorage.getItem('userEmail');
   if (!userEmail) {
-    tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Sessao expirada. Faca login novamente.</td></tr>';
+    tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Sessao expirada. Faca login novamente.</td></tr>';
     return;
   }
 
@@ -4045,19 +4045,19 @@ const carregarAgendamentosDoBanco = async () => {
   currentUserPermissions = currentUserPermissions || currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
 
   if (!currentUserPermissions.manageReservas) {
-    tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Verificando permissão no servidor...</td></tr>';
+    tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Verificando permissão no servidor...</td></tr>';
 
     try {
       const response = await fetchWithApiFallback(`/check_permission?email=${encodeURIComponent(userEmail)}&permission=manageReservas`);
       if (!response.ok) {
         const reasonData = await response.json().catch(() => ({}));
-        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado no servidor: ${escapeHtml(reasonData.reason || reasonData.message || 'sem razão')}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Acesso negado no servidor: ${escapeHtml(reasonData.reason || reasonData.message || 'sem razão')}.</td></tr>`;
         return;
       }
 
       const result = await response.json();
       if (!result.allowed) {
-        tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${escapeHtml(result.reason || 'não autorizado')}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${escapeHtml(result.reason || 'não autorizado')}.</td></tr>`;
         return;
       }
 
@@ -4065,7 +4065,7 @@ const carregarAgendamentosDoBanco = async () => {
       currentUserPermissions.manageReservas = true;
     } catch (error) {
       console.warn('Falha ao verificar permissão no servidor:', error);
-      tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Erro de verificação de permissões. Tente novamente mais tarde.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Erro de verificação de permissões. Tente novamente mais tarde.</td></tr>';
       return;
     }
   }
@@ -4094,7 +4094,7 @@ const carregarAgendamentosDoBanco = async () => {
 
     if (response.status === 403) {
       alert('Erro: Você não tem permissão de Administrador para ver esta página.');
-      tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Sem permissão para visualizar reservas.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Sem permissão para visualizar reservas.</td></tr>';
       return;
     }
 
@@ -4106,7 +4106,7 @@ const carregarAgendamentosDoBanco = async () => {
         detail: errorText
       });
       alert(`Falha ao carregar reservas (${response.status}).`);
-      tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Falha ao carregar reservas do banco de dados.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Falha ao carregar reservas do banco de dados.</td></tr>';
       return;
     }
 
@@ -4136,7 +4136,7 @@ const carregarAgendamentosDoBanco = async () => {
     });
 
     if (!filtered.length) {
-      tableBodyElement.innerHTML = '<tr><td colspan="9" style="padding:0.75rem;">Nenhuma reserva encontrada.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Nenhuma reserva encontrada.</td></tr>';
     }
 
     // Salva reservas para uso na aba Gerenciamento da página
@@ -4155,6 +4155,7 @@ const carregarAgendamentosDoBanco = async () => {
       const idiomaValue = ag.idioma || '-';
       const modalidadeValue = ag.modalidade || 'free';
       const guiaValue = ag.guia || '-';
+      const nacionalidadeValue = ag.nacionalidade || '-';
       const origemValue = ag.origem || 'Tour by food';
 
       // Tudo aqui vem de reserva gravada pelo cliente · inclusive por rota
@@ -4170,6 +4171,7 @@ const carregarAgendamentosDoBanco = async () => {
         <td data-label="Hora">${escapeHtml(ag.hora)}</td>
         <td data-label="Pessoas">${escapeHtml(qtdValue)}</td>
         <td data-label="Status"><span class="status-badge ${escapeHtml(statusClass)}">${escapeHtml(statusValue)}</span></td>
+        <td data-label="Nacionalidade">${escapeHtml(nacionalidadeValue)}</td>
         <td data-label="Origem">${escapeHtml(origemValue)}</td>
       `;
 
@@ -6067,6 +6069,7 @@ const openEditModalFromBackend = (ag) => {
   const modalPhone = document.getElementById('modalPhone');
   const modalEmail = document.getElementById('modalEmail');
   const modalName = document.getElementById('modalName');
+  const modalNationality = document.getElementById('modalNationality');
   const modalGuide = document.getElementById('modalGuide');
   const modalQuantity = document.getElementById('modalQuantity');
   const modalStatus = document.getElementById('modalStatus');
@@ -6118,6 +6121,7 @@ const openEditModalFromBackend = (ag) => {
   if (modalPhone) modalPhone.value = ag.celular || ag.cliente_celular || '';
   if (modalEmail) modalEmail.value = ag.email || ag.cliente_email || '';
   if (modalName) modalName.value = ag.nome || ag.cliente || ag.cliente_nome || '';
+  if (modalNationality) modalNationality.value = ag.nacionalidade || '';
   if (modalGuide) modalGuide.value = ag.guia || '';
   if (modalQuantity) modalQuantity.value = ag.qtd || ag.qtd_pessoas || 1;
   if (modalStatus) modalStatus.value = ag.status || 'Pendente';
@@ -6174,6 +6178,8 @@ const initReservationManagement = () => {
   const modalModality = document.getElementById('modalModality');
   const modalPhone = document.getElementById('modalPhone');
   const modalEmail = document.getElementById('modalEmail');
+  const modalName = document.getElementById('modalName');
+  const modalNationality = document.getElementById('modalNationality');
   const modalGuide = document.getElementById('modalGuide');
   const modalQuantity = document.getElementById('modalQuantity');
   const modalStatus = document.getElementById('modalStatus');
@@ -6355,6 +6361,14 @@ const initReservationManagement = () => {
         <option value="${l}"${l === current ? ' selected' : ''}>${l}</option>
       `).join('');
     }
+
+    const modalNationalityOptions = document.getElementById('modalNationalityOptions');
+    if (modalNationalityOptions) {
+      // Sugestões vêm do que já apareceu em reservas reais (nacionalidade é
+      // texto livre aqui, sem lista fixa — diferente do formulário público).
+      const nationalities = [...new Set(reservations.map(r => r.nationality || r.nacionalidade).filter(Boolean))].sort();
+      modalNationalityOptions.innerHTML = nationalities.map(n => `<option value="${n}"></option>`).join('');
+    }
   };
 
   const openEditModal = (index) => {
@@ -6384,6 +6398,7 @@ const initReservationManagement = () => {
     modalPhone.value = reservation.phone || reservation.celular || '';
     modalEmail.value = reservation.email || '';
     modalName.value = reservation.name || reservation.nome || '';
+    if (modalNationality) modalNationality.value = reservation.nationality || reservation.nacionalidade || '';
     modalGuide.value = reservation.guide || reservation.guia || '';
     modalQuantity.value = reservation.quantity || reservation.qtd || reservation.qtd_pessoas || 1;
     modalStatus.value = reservation.status || 'Pendente';
@@ -6415,6 +6430,7 @@ const initReservationManagement = () => {
     modalPhone.value = '';
     modalEmail.value = '';
     modalName.value = '';
+    if (modalNationality) modalNationality.value = '';
     modalGuide.value = '';
     modalQuantity.value = 1;
     modalStatus.value = 'Pendente';
@@ -6450,6 +6466,7 @@ const initReservationManagement = () => {
       nome: modalName?.value.trim() || 'Admin Manual',
       celular: modalPhone.value.trim() || '',
       email: modalEmail?.value.trim() || '',
+      nacionalidade: modalNationality?.value.trim() || '',
       status: modalStatus?.value || 'Pendente',
       origem: modalOrigem?.value.trim() || '',
       admin_email: currentUserEmail || ''

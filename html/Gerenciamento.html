@@ -177,11 +177,12 @@
                             <th>Hora</th>
                             <th>Pessoas</th>
                             <th>Status</th>
+                            <th>Nacionalidade</th>
                             <th>Origem</th>
                         </tr>
                     </thead>
                     <tbody id="reservationsBody">
-                        <tr><td colspan="8" style="padding:0.75rem;">Carregando reservas...</td></tr>
+                        <tr><td colspan="10" style="padding:0.75rem;">Carregando reservas...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -961,6 +962,11 @@
                       <input type="text" id="modalName" placeholder="Nome do cliente" />
                   </label>
                   <label>
+                      Nacionalidade
+                      <input type="text" id="modalNationality" list="modalNationalityOptions" placeholder="Ex: Brasil" autocomplete="off" />
+                      <datalist id="modalNationalityOptions"></datalist>
+                  </label>
+                  <label>
                       Guia
                       <input type="text" id="modalGuide" list="modalGuideOptions" autocomplete="off" />
                       <datalist id="modalGuideOptions"></datalist>
@@ -1527,10 +1533,10 @@
     </div>
 
     <script src="../js/api-auth.js?v=1"></script>
-    <script src="../js/Translation.js?v=5"></script>
-    <script src="../js/Riodejaneiro.js?v=96"></script>
+    <script src="../js/Translation.js?v=6"></script>
+    <script src="../js/Riodejaneiro.js?v=97"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=115"></script>
+    <script src="../js/Gerenciamento.js?v=116"></script>
 </body>
 </html>
 
