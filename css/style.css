@@ -2416,6 +2416,36 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
         margin-bottom: 1rem;
     }
 
+    /* Card "Polaroid" da referencia: moldura branca envolvendo foto e
+       legenda, com o nome em azul escuro dentro da parte branca. */
+    #inicio .city-card {
+        height: 100%;
+        background: #ffffff;
+        padding: 7px 7px 0;
+        border-radius: 14px;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+    }
+
+    #inicio .city-thumb {
+        border: none;
+        border-radius: 9px;
+        box-shadow: none;
+    }
+
+    #inicio .city-name {
+        flex: 1;
+        min-height: 3.4rem;
+        padding: 0.55rem 0.3rem 0.65rem;
+        color: #14325c;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        text-shadow: none;
+    }
+
+    #inicio .city-name::before {
+        text-shadow: none;
+    }
+
     /* Aro dourado nas capsulas de video (eram brancas translucidas). */
     #inicio .capsule {
         border: 2px solid rgba(206, 168, 82, 0.75);
