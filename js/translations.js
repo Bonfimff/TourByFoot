@@ -23,7 +23,9 @@ window.translations = {
 		search_placeholder: "Pesquisar",
 		login: "LOGIN",
 		maintenance_title: "Site em manutenção",
-		maintenance_body: "Pedimos desculpas pelo transtorno. Estamos com o site temporariamente indisponível e voltaremos em breve. Qualquer dúvida, fale com a nossa equipe:"
+		maintenance_body: "Pedimos desculpas pelo transtorno. Estamos com o site temporariamente indisponível e voltaremos em breve. Qualquer dúvida, fale com a nossa equipe:",
+		footer_copyright_text: "© 2026 TourByFoot.",
+		footer_developed_by_text: "Desenvolvimento:"
 	},
 	en: {
 		hero_title: "Free Walking Tour",
@@ -48,7 +50,9 @@ window.translations = {
 		search_placeholder: "Search",
 		login: "LOGIN",
 		maintenance_title: "Site under maintenance",
-		maintenance_body: "We apologize for the inconvenience. Our site is temporarily unavailable and will be back soon. For any questions, contact our team:"
+		maintenance_body: "We apologize for the inconvenience. Our site is temporarily unavailable and will be back soon. For any questions, contact our team:",
+		footer_copyright_text: "© 2026 TourByFoot.",
+		footer_developed_by_text: "Design & Development:"
 	},
 	fr: {
 		hero_title: "Free Walking Tour",
@@ -73,7 +77,9 @@ window.translations = {
 		search_placeholder: "Rechercher",
 		login: "LOGIN",
 		maintenance_title: "Site en maintenance",
-		maintenance_body: "Nous nous excusons pour la gêne occasionnée. Notre site est temporairement indisponible et sera bientôt de retour. Pour toute question, contactez notre équipe :"
+		maintenance_body: "Nous nous excusons pour la gêne occasionnée. Notre site est temporairement indisponible et sera bientôt de retour. Pour toute question, contactez notre équipe :",
+		footer_copyright_text: "© 2026 TourByFoot.",
+		footer_developed_by_text: "Conception et développement :"
 	},
 	es: {
 		hero_title: "Free Walking Tour",
@@ -98,7 +104,9 @@ window.translations = {
 		search_placeholder: "Buscar",
 		login: "LOGIN",
 		maintenance_title: "Sitio en mantenimiento",
-		maintenance_body: "Pedimos disculpas por las molestias. Nuestro sitio está temporalmente no disponible y volverá pronto. Para cualquier duda, contacta a nuestro equipo:"
+		maintenance_body: "Pedimos disculpas por las molestias. Nuestro sitio está temporalmente no disponible y volverá pronto. Para cualquier duda, contacta a nuestro equipo:",
+		footer_copyright_text: "© 2026 TourByFoot.",
+		footer_developed_by_text: "Diseño y desarrollo:"
 	},
 	it: {
 		hero_title: "Free Walking Tour",
@@ -123,7 +131,9 @@ window.translations = {
 		search_placeholder: "Cerca",
 		login: "LOGIN",
 		maintenance_title: "Sito in manutenzione",
-		maintenance_body: "Ci scusiamo per il disagio. Il nostro sito è temporaneamente non disponibile e tornerà presto online. Per qualsiasi dubbio, contatta il nostro team:"
+		maintenance_body: "Ci scusiamo per il disagio. Il nostro sito è temporaneamente non disponibile e tornerà presto online. Per qualsiasi dubbio, contatta il nostro team:",
+		footer_copyright_text: "© 2026 TourByFoot.",
+		footer_developed_by_text: "Progettazione e sviluppo:"
 	},
     zh: {
         hero_title: "徒步旅行团",
@@ -148,7 +158,9 @@ window.translations = {
         search_placeholder: "搜索",
         login: "登录",
         maintenance_title: "网站维护中",
-        maintenance_body: "给您带来的不便，我们深表歉意。网站暂时无法访问，我们会尽快恢复。如有任何疑问，请联系我们："
+        maintenance_body: "给您带来的不便，我们深表歉意。网站暂时无法访问，我们会尽快恢复。如有任何疑问，请联系我们：",
+        footer_copyright_text: "© 2026 TourByFoot.",
+        footer_developed_by_text: "创建与开发："
     }
 };
 

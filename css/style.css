@@ -2121,20 +2121,24 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.68) 62%, rgba(0, 0, 0, 0.82) 100%);
 }
 
-/* ---------- Rodape creme com as redes sociais ---------- */
-/* A faixa creme e a propria .social-icons (movida no index.html para fora do
-   .hero-text, que e limitado a 760px, para poder sangrar de ponta a ponta).
-   A onda dourada e o ::before dela, encostado no topo (bottom:100%). */
-#inicio .social-icons {
+/* ---------- Rodape creme: redes sociais + credito do desenvolvedor ---------- */
+/* A faixa creme e a propria .index-footer-row (movida no index.html para
+   fora do .hero-text, que e limitado a 760px, para poder sangrar de ponta a
+   ponta). A onda dourada e o ::before dela, encostado no topo (bottom:100%).
+   Copyright, icones e credito ficam lado a lado nessa mesma faixa. */
+#inicio .index-footer-row {
     position: relative;
     margin-top: clamp(70px, 11vw, 130px);
     padding: 1.5rem 1rem 1.8rem;
     background: #f7f2e7;
-    justify-content: center;
-    gap: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-#inicio .social-icons::before {
+#inicio .index-footer-row::before {
     content: "";
     position: absolute;
     left: 0;
@@ -2145,40 +2149,33 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 130' preserveAspectRatio='none'%3E%3Cpath d='M0,70 C260,116 520,14 780,44 C1010,70 1240,112 1440,74 L1440,130 L0,130 Z' fill='%23f7f2e7'/%3E%3Cpath d='M0,56 C260,102 520,0 780,30 C1010,56 1240,98 1440,60' fill='none' stroke='%23cea852' stroke-width='4'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat;
 }
 
+#inicio .index-footer-row .social-icons {
+    margin-top: 0;
+}
+
 /* Sobre o creme, os icones brancos sumiriam: viram verde sobre dourado claro. */
-#inicio .social-icons a {
+#inicio .index-footer-row .social-icons a {
     color: #0d5548;
     background: rgba(206, 168, 82, 0.16);
     border: 1px solid rgba(206, 168, 82, 0.65);
 }
 
-#inicio .social-icons a:hover {
+#inicio .index-footer-row .social-icons a:hover {
     background: #0d5548;
     border-color: #0d5548;
     color: #f7f2e7;
 }
 
-/* Credito do desenvolvedor, colado embaixo da faixa creme das redes
-   sociais, mesma paleta verde/dourada do resto do rodape do index. */
-.index-footer-credit {
-    background: #f7f2e7;
-    padding: 0 1rem 1.6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    text-align: center;
-}
-
-.index-footer-credit .footer-credit-copyright,
-.index-footer-credit .footer-credit-text {
+/* Copyright e credito do desenvolvedor: um de cada lado dos icones, mesma
+   paleta verde/dourada do resto do rodape do index. */
+.index-footer-row .footer-credit-copyright,
+.index-footer-row .footer-credit-text {
     font-size: 1.05rem;
     font-weight: 600;
     color: #0d5548;
 }
 
-.index-footer-credit .footer-credit-link {
+.index-footer-row .footer-credit-link {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
@@ -2186,12 +2183,12 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     text-decoration: none;
 }
 
-.index-footer-credit .footer-credit-link:hover .footer-credit-text,
-.index-footer-credit .footer-credit-link:focus .footer-credit-text {
+.index-footer-row .footer-credit-link:hover .footer-credit-text,
+.index-footer-row .footer-credit-link:focus .footer-credit-text {
     text-decoration: underline;
 }
 
-.index-footer-credit .footer-credit-logo {
+.index-footer-row .footer-credit-logo {
     max-width: 54px;
     height: auto;
     display: inline-block;
@@ -2199,20 +2196,22 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     margin-left: 0.25rem;
 }
 
-/* Tela pequena: a logo do credito fica maior (mais legivel) que no
-   desktop, mesmo tamanho usado nas paginas de cidade. */
+/* Tela pequena: a fileira quebra em duas linhas (copyright/credito somem
+   pros lados dos icones quando nao cabe) e a logo do credito fica maior
+   (mais legivel), mesmo tamanho usado nas paginas de cidade. */
 @media (max-width: 520px) {
-    .index-footer-credit {
-        row-gap: 0.15rem;
+    #inicio .index-footer-row {
+        justify-content: center;
+        row-gap: 0.5rem;
     }
 
-    .index-footer-credit .footer-credit-copyright,
-    .index-footer-credit .footer-credit-text {
+    .index-footer-row .footer-credit-copyright,
+    .index-footer-row .footer-credit-text {
         font-size: 0.75rem;
         white-space: nowrap;
     }
 
-    .index-footer-credit .footer-credit-logo {
+    .index-footer-row .footer-credit-logo {
         max-width: 72px;
         margin-left: 0.2rem;
     }
@@ -2427,21 +2426,21 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
         padding-bottom: 0.6rem;
     }
 
-    /* No desktop os icones ficam numa faixa creme solida, logo abaixo dos
-       cards/capsulas — a fileira precisa estar sempre inteira dentro da
-       parte clara, nunca tocando a borda ondulada. Por isso a onda vira uma
-       tira decorativa SEPARADA acima da faixa (no ::before), em vez de ficar
-       atras dos proprios icones: sobre uma curva, a altura da parte creme
-       varia ponto a ponto e o icone podia acabar espetando pra fora dela. */
-    #inicio .social-icons {
+    /* No desktop a fileira (copyright + icones + credito) fica numa faixa
+       creme solida, logo abaixo dos cards/capsulas — precisa estar sempre
+       inteira dentro da parte clara, nunca tocando a borda ondulada. Por
+       isso a onda vira uma tira decorativa SEPARADA acima da faixa (no
+       ::before), em vez de ficar atras do conteudo: sobre uma curva, a
+       altura da parte creme varia ponto a ponto e o conteudo podia acabar
+       espetando pra fora dela. */
+    #inicio .index-footer-row {
         position: relative;
         background: #f7f2e7;
         margin-top: 0.5rem;
         padding: 0.85rem 1rem 1rem;
-        gap: 1.1rem;
     }
 
-    #inicio .social-icons::before {
+    #inicio .index-footer-row::before {
         content: "";
         position: absolute;
         left: 0;
@@ -2450,20 +2449,6 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
         height: 30px;
         pointer-events: none;
         background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 30' preserveAspectRatio='none'%3E%3Cpath d='M0,16 C260,27 520,3 780,10 C1010,16 1240,26 1440,17 L1440,30 L0,30 Z' fill='%23f7f2e7'/%3E%3Cpath d='M0,13 C260,24 520,0 780,7 C1010,13 1240,23 1440,14' fill='none' stroke='%23cea852' stroke-width='2'/%3E%3C/svg%3E") bottom center / 100% 100% no-repeat;
-    }
-
-    /* Sobre o creme, os icones escuros translucidos (herdados do mobile)
-       sumiriam: viram verde sobre dourado claro, como no rodape creme. */
-    #inicio .social-icons a {
-        color: #0d5548;
-        background: rgba(206, 168, 82, 0.16);
-        border: 1px solid rgba(206, 168, 82, 0.65);
-    }
-
-    #inicio .social-icons a:hover {
-        background: #0d5548;
-        border-color: #0d5548;
-        color: #f7f2e7;
     }
 }
 
