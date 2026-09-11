@@ -2100,6 +2100,9 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // nao existe (paginas ainda sem versao por idioma), recarrega como antes.
         const rota = window.rotaIdioma;
         if (rota && rota.base) {
+            // Escolha explicita: a home em portugues le esta chave para nao
+            // devolver o visitante ao idioma anterior (ver bloco do <head>).
+            try { localStorage.setItem('idiomaSite', normalized); } catch (_e) {}
             const destino = normalized === 'pt' ? rota.base : `${rota.base}${normalized}/`;
             window.location.assign(destino + window.location.search + window.location.hash);
             return;

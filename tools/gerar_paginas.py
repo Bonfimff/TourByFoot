@@ -159,9 +159,53 @@ def bloco_gerado(slug, idioma, idiomas):
     linhas.append('    window.rotaIdioma = { base: %s, atual: %s, idiomas: %s };'
                   % (json.dumps(base_da(slug)), json.dumps(idioma), json.dumps(idiomas)))
     linhas.append('    try { localStorage.setItem("preferredLanguage", %s); } catch (e) {}' % json.dumps(idioma))
+    if not (slug == '' and idioma == 'pt'):
+        # Idioma que o visitante escolheu (pelo seletor ou entrando por esta
+        # URL). A home em portugues le esta chave para levar de volta a versao
+        # certa quando algum link aponta para "/". A propria home em portugues
+        # nao grava: ela e o x-default, nao uma escolha de idioma.
+        linhas.append('    try { localStorage.setItem("%s", %s); } catch (e) {}' % (CHAVE_ESCOLHA, json.dumps(idioma)))
     linhas.append('    </script>')
     linhas.append('    ' + FIM)
     return '\n'.join(linhas)
+
+
+# Chave do idioma escolhido de proposito. E separada de preferredLanguage porque
+# esta ultima e gravada por toda visita a home em portugues · nao da para
+# distinguir "escolheu portugues" de "so passou pela raiz".
+CHAVE_ESCOLHA = 'idiomaSite'
+
+
+def bloco_deteccao(idiomas):
+    """So na home em portugues (a raiz, x-default): leva o visitante para a
+    versao no idioma dele. Primeiro vale a escolha ja feita no site; sem ela,
+    o idioma do navegador. Fica no topo do <head>, antes da checagem de
+    manutencao, para o salto acontecer antes de qualquer outra requisicao.
+    Rastreadores nao sao redirecionados: o Googlebot se apresenta em ingles e,
+    se fosse levado para /en/, a versao em portugues sumiria do indice."""
+    return '\n'.join([
+        INICIO,
+        '    <script>',
+        '    (function () {',
+        '        if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot|lighthouse/i.test(navigator.userAgent || "")) return;',
+        '        var suportados = %s;' % json.dumps(idiomas),
+        '        var alvo = null;',
+        '        try { alvo = localStorage.getItem("%s"); } catch (e) {}' % CHAVE_ESCOLHA,
+        '        if (suportados.indexOf(alvo) === -1) {',
+        '            alvo = null;',
+        '            var lista = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""];',
+        '            for (var i = 0; i < lista.length && !alvo; i++) {',
+        '                var codigo = String(lista[i]).toLowerCase().split("-")[0];',
+        '                if (suportados.indexOf(codigo) !== -1) alvo = codigo;',
+        '            }',
+        '        }',
+        '        if (alvo && alvo !== "pt") {',
+        '            window.location.replace("/" + alvo + "/" + window.location.search + window.location.hash);',
+        '        }',
+        '    })();',
+        '    </script>',
+        '    ' + FIM,
+    ])
 
 
 def inserir_retrato(html, slug, idioma, retratos):
@@ -237,6 +281,9 @@ def montar_pagina(html_pt, slug, idioma, idiomas, textos, locales, langs_html, a
             if outro_slug == '' or outro_slug.startswith('_'):
                 continue
             html = html.replace('href="/%s/"' % outro_slug, 'href="/%s/%s/"' % (outro_slug, idioma))
+        # O "INICIO" do menu das cidades tambem: de /salvador/en/ volta para
+        # /en/, nao para a home em portugues.
+        html = html.replace('href="/"', 'href="/%s/"' % idioma)
 
     # 5. Retrato dos tours, no idioma da pagina. Entra depois da correcao de
     #    profundidade de proposito: as fotos vem por URL absoluta do outro
@@ -245,6 +292,12 @@ def montar_pagina(html_pt, slug, idioma, idiomas, textos, locales, langs_html, a
 
     # 6. Bloco gerado antes do fechamento do <head>.
     html = html.replace('</head>', bloco_gerado(slug, idioma, idiomas) + '\n</head>', 1)
+
+    # 7. Deteccao do idioma do visitante, so na raiz. Logo apos o viewport,
+    #    antes da checagem de manutencao (ver bloco_deteccao).
+    if slug == '' and idioma == 'pt':
+        html = re.sub(r'(<meta name="viewport"[^>]*>\r?\n)',
+                      lambda m: m.group(1) + bloco_deteccao(idiomas) + '\n', html, count=1)
     return html
 
 

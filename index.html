@@ -3,6 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- gerado por tools/gerar_paginas.py · nao editar a mao -->
+    <script>
+    (function () {
+        if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot|lighthouse/i.test(navigator.userAgent || "")) return;
+        var suportados = ["pt", "en", "es", "fr", "it", "zh"];
+        var alvo = null;
+        try { alvo = localStorage.getItem("idiomaSite"); } catch (e) {}
+        if (suportados.indexOf(alvo) === -1) {
+            alvo = null;
+            var lista = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""];
+            for (var i = 0; i < lista.length && !alvo; i++) {
+                var codigo = String(lista[i]).toLowerCase().split("-")[0];
+                if (suportados.indexOf(codigo) !== -1) alvo = codigo;
+            }
+        }
+        if (alvo && alvo !== "pt") {
+            window.location.replace("/" + alvo + "/" + window.location.search + window.location.hash);
+        }
+    })();
+    </script>
+    <!-- fim do bloco gerado -->
     <!-- Checagem BLOQUEANTE de manutenção · precisa ser a primeira coisa no
          <head>, antes de qualquer CSS/imagem, senão o navegador já pode ter
          pintado parte da página real antes do redirect. XHR síncrono
@@ -239,7 +260,7 @@
     <script src="js/api-auth.js?v=1"></script>
     <script src="js/translations.js?v=3"></script>
     <script src="js/ui-translations.js?v=16"></script>
-    <script src="js/script.js?v=8"></script>
+    <script src="js/script.js?v=9"></script>
     <script src="js/auth.js?v=8"></script>
     <script src="js/presenca.js?v=1"></script>
     <script src="js/preload-paineis.js?v=5"></script>

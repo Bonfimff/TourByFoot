@@ -74,6 +74,7 @@
     // versao escolhida em vez de so recarregar (ver selectLanguage no JS).
     window.rotaIdioma = { base: "/rio-de-janeiro/", atual: "es", idiomas: ["pt", "en", "es", "fr", "it", "zh"] };
     try { localStorage.setItem("preferredLanguage", "es"); } catch (e) {}
+    try { localStorage.setItem("idiomaSite", "es"); } catch (e) {}
     </script>
     <!-- fim do bloco gerado -->
 </head>
@@ -86,7 +87,7 @@
                         <span></span><span></span><span></span>
                     </button>
                     <nav>
-                        <a href="/" data-i18n="nav_home">INÍCIO</a>
+                        <a href="/es/" data-i18n="nav_home">INÍCIO</a>
                         <a href="#" data-footer-action="sobre" data-i18n="nav_about">SOBRE</a>
                         <a href="#" data-footer-action="contato" data-i18n="nav_contact">CONTATO</a>
                         <a href="#" data-footer-action="ajuda" data-i18n="nav_help">AJUDA</a>
@@ -447,7 +448,7 @@
     <script src="../../js/api-auth.js?v=1"></script>
     <script src="../../js/Translation.js?v=18"></script>
     <script src="../../js/tour-interacoes.js?v=12"></script>
-    <script src="../../js/Riodejaneiro.js?v=97"></script>
+    <script src="../../js/Riodejaneiro.js?v=98"></script>
     <script src="../../js/presenca.js?v=1"></script>
     <script src="../../js/atividade-cliente.js?v=2"></script>
     <script src="../../js/cidade-visual.js?v=6"></script>

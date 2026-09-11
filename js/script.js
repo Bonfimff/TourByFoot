@@ -105,6 +105,9 @@ console.log('Layout da imagem de referência carregado.');
 			const rota = window.rotaIdioma;
 			if (rota && rota.base) {
 				try { localStorage.setItem('preferredLanguage', escolhido); } catch(err) {}
+				// Escolha explícita: a home em português lê esta chave para não
+				// devolver o visitante ao idioma anterior (ver bloco do <head>).
+				try { localStorage.setItem('idiomaSite', escolhido); } catch(err) {}
 				const destino = escolhido === "pt" ? rota.base : rota.base + escolhido + "/";
 				window.location.assign(destino + window.location.search + window.location.hash);
 				return;
