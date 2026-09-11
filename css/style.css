@@ -658,14 +658,18 @@ img.city-thumb {
 .lang-list li {
     padding: 8px 12px;
     cursor: pointer;
-    color: #5a4e3a;
+    /* Mesmo azul escuro usado nas paginas de cidade (.lang-selector .lang-list
+       li em Riodejaneiro.css/Lencoismaranhenses.css) - o tom marrom antigo
+       destoava e, contra o fundo creme, lia como "apagado" perto dos outros
+       idiomas. */
+    color: #0b3a66;
     font-weight: 600;
     font-size: 0.85rem;
 }
 
 .lang-list li:hover {
     background: #e9dfc7;
-    color: #3d3422;
+    color: #0b3a66;
 }
 
 .lang-selector.open .lang-list {
