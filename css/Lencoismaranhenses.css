@@ -3746,6 +3746,12 @@ header {
   width: auto;
 }
 
+.footer-credit-copyright {
+  font-size: 1.05rem;
+  color: #000;
+  font-weight: 600;
+}
+
 .footer-credit-link {
   display: inline-flex;
   align-items: center;

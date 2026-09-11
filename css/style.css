@@ -2158,6 +2158,47 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     color: #f7f2e7;
 }
 
+/* Credito do desenvolvedor, colado embaixo da faixa creme das redes
+   sociais, mesma paleta verde/dourada do resto do rodape do index. */
+.index-footer-credit {
+    background: #f7f2e7;
+    padding: 0 1rem 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.index-footer-credit .footer-credit-copyright,
+.index-footer-credit .footer-credit-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0d5548;
+}
+
+.index-footer-credit .footer-credit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.index-footer-credit .footer-credit-link:hover .footer-credit-text,
+.index-footer-credit .footer-credit-link:focus .footer-credit-text {
+    text-decoration: underline;
+}
+
+.index-footer-credit .footer-credit-logo {
+    max-width: 70px;
+    height: auto;
+    display: inline-block;
+    transform: translateY(-2px);
+    margin-left: 0.25rem;
+}
+
 /* Pin dourado antes do nome (Font Awesome ja carregado no index.html). */
 #inicio .city-name::before {
     content: "\f3c5";
