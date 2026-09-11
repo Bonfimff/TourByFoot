@@ -214,7 +214,7 @@
             footer_contato: '<p>Entre em contato via WhatsApp, email ou redes sociais nas páginas de destino.</p><p><i class="fa fa-envelope" aria-hidden="true"></i> <a href="mailto:riobyfoottour@gmail.com">riobyfoottour@gmail.com</a></p>',
             footer_ajuda_title: 'AJUDA',
             footer_ajuda: '<p>Se precisar de ajuda, entre em contato pelos canais abaixo (WhatsApp, email ou Instagram) e nossa equipe responderá o mais rápido possível.</p>',
-            footer_developed_by_text: 'Criação e Desenvolvimento:',
+            footer_developed_by_text: 'Desenvolvimento:',
             footer_copyright_text: '© 2026 TourByFoot.',
             footer_developed_by: 'Desenvolvido por <a href="https://exksvol.com/" target="_blank" rel="noopener noreferrer">Exksvol</a>',
 

@@ -4423,23 +4423,23 @@ header {
         display: none;
     }
 
-    /* Credito do rodape precisa caber numa linha so, mesmo em telas
-       estreitas - reduz fonte, espacamento e logo em vez de deixar
-       quebrar (o wrap normal vem de .rio-footer-card-credit). */
+    /* Credito do rodape: em tela estreita pode quebrar em duas linhas
+       ("(c) 2026 TourByFoot." numa, "Desenvolvimento: [logo]" na outra) -
+       cada pedaco (copyright / link) fica inteiro na sua linha. */
     .rio-footer-card-credit {
-        flex-wrap: nowrap;
-        gap: 0.2rem;
+        flex-wrap: wrap;
+        row-gap: 0.15rem;
     }
 
     .rio-footer-card-credit .footer-credit-copyright,
     .rio-footer-card-credit .footer-credit-text {
-        font-size: 0.62rem;
+        font-size: 0.75rem;
         white-space: nowrap;
     }
 
     .rio-footer-card-credit .footer-credit-logo {
-        max-width: 46px;
-        margin-left: 0.15rem;
+        max-width: 58px;
+        margin-left: 0.2rem;
     }
 }
 
