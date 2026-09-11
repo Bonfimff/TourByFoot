@@ -1,0 +1,269 @@
+/* ===================================================== */
+/* CARD DE PREMIACAO (Rio de Janeiro)                     */
+/* ===================================================== */
+/* As paginas do Rio nao carregam style.css, onde mora o card de premiacao
+   usado por Salvador, Sao Luis e Lencois. Este arquivo e uma COPIA daquelas
+   regras (bloco "MODAL PREMIO" e os ajustes de telas <= 900px e <= 600px),
+   para o Rio exibir o card no mesmo estilo. Ao mudar o visual do card,
+   mude nos dois lugares. */
+
+.award-modal {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    display: none;
+    pointer-events: none;
+    /* Sempre atrás do aviso "Informações Importantes" (.rio-notice,
+       z-index:1000) — mesmo que os dois fiquem visíveis ao mesmo tempo por
+       algum motivo, o aviso tem prioridade. */
+    z-index: 900;
+    width: min(420px, calc(100vw - 2rem));
+}
+
+.award-modal.is-open {
+    display: block;
+}
+
+.award-modal__dialog {
+    position: relative;
+    pointer-events: auto;
+    width: 100%;
+    /* Mesmo efeito de vidro fosco do .award-toast (canto do Rio de Janeiro):
+       fundo translucido + blur, em vez de verde solido. */
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(0, 0, 0, 0.9);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    animation: awardToastIn 0.4s ease-out;
+    overflow: hidden;
+}
+
+.award-modal__header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.award-modal__badge-icon {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #b8860b;
+    color: #b8860b;
+    font-size: 1.05rem;
+}
+
+.award-modal__title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.2px;
+}
+
+.award-modal__close {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.08);
+    border: none;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.75);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.award-modal__close:hover {
+    background: rgba(0, 0, 0, 0.14);
+    color: #b8860b;
+}
+
+.hs-modal__body {
+    display: grid;
+    grid-template-columns: 92px 1px 1fr;
+    gap: 1.1rem;
+    align-items: center;
+    padding: 1.1rem 1.2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.hs-modal__leftImage img {
+    width: 92px;
+    height: 92px;
+    border-radius: 14px;
+    object-fit: contain;
+}
+
+.award-modal__divider {
+    align-self: stretch;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.js-hs-description {
+    line-height: 1.5;
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.award-modal__footer {
+    display: grid;
+    grid-template-columns: 1fr 1px auto;
+    gap: 1.1rem;
+    align-items: center;
+    padding: 1rem 1.2rem;
+}
+
+/* Botao solido verde-escuro: sobre o novo fundo de vidro fosco (claro),
+   o antigo botao creme quase sumia por falta de contraste. */
+.award-modal__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #0d5548;
+    color: #f5f2e9;
+    padding: 0.85rem 1.4rem;
+    border-radius: 40px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: 0.25s;
+}
+
+.award-modal__cta:hover {
+    background: #0a4638;
+    transform: translateY(-1px) scale(1.02);
+}
+
+.award-modal__cta i {
+    font-size: 0.85rem;
+}
+
+.award-modal__countdown-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.award-modal__countdown-wrap i {
+    color: #1f8a68;
+    font-size: 1rem;
+}
+
+.award-modal__countdown {
+    font-size: 0.9rem;
+    letter-spacing: 0.2px;
+}
+
+@keyframes awardToastIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@media (max-width: 900px) {
+    .award-modal {
+        right: 0.75rem;
+        bottom: 0.75rem;
+        width: min(420px, calc(100vw - 1.5rem));
+    }
+
+    /* A ordem e o agrupamento (imagem + divisória + texto / botão + divisória
+       + contador, tudo lado a lado) se mantêm iguais em qualquer tamanho de
+       tela — só os tamanhos encolhem, nunca empilha em coluna. */
+    .award-modal__header {
+        padding: 0.85rem 0.9rem;
+        gap: 0.6rem;
+    }
+
+    .award-modal__badge-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .award-modal__title {
+        font-size: 1rem;
+    }
+
+    .award-modal__close {
+        width: 30px;
+        height: 30px;
+        font-size: 1.2rem;
+    }
+
+    .hs-modal__body {
+        grid-template-columns: 64px 1px 1fr;
+        gap: 0.7rem;
+        padding: 0.85rem 0.9rem;
+    }
+
+    .hs-modal__leftImage img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .js-hs-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .award-modal__footer {
+        grid-template-columns: 1fr 1px auto;
+        gap: 0.6rem;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .award-modal__cta {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.78rem;
+        gap: 0.3rem;
+    }
+
+    .award-modal__countdown-wrap {
+        gap: 0.35rem;
+    }
+
+    .award-modal__countdown-wrap i {
+        font-size: 0.85rem;
+    }
+
+    .award-modal__countdown {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .award-modal {
+        right: 0.5rem;
+        bottom: 0.5rem;
+        width: calc(100vw - 1rem);
+    }
+}

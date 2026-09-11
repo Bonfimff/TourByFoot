@@ -1617,33 +1617,20 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     });
 
 
-    let awardToastTimer = null;
-
-    const showAwardToast = (durationMs = 15000) => {
-        const toast = document.getElementById('awardToast');
-        if (!toast) return;
-
-        toast.classList.add('visible');
-        if (awardToastTimer) {
-            clearTimeout(awardToastTimer);
-        }
-
-        awardToastTimer = setTimeout(() => {
-            toast.classList.remove('visible');
-        }, durationMs);
-    };
-
     // Link/ícone e ativo/inativo são editáveis em Gerenciamento > Card de
     // Premiação. O card só aparece DEPOIS do aviso "Informações Importantes"
     // ser fechado (ou de imediato se esse aviso não existir/já estiver
     // escondido) — window.__showAwardCard é chamado pelos handlers do aviso
     // mais abaixo, não por um timer cego.
+    // Mesmo card (#awardModal) e mesmo comportamento das outras cidades
+    // (ver initAwardNotification em site-shell.js): contador de 10s, fecha
+    // no X/Esc e só o botão "Ver no TripAdvisor" abre o link.
     const initAwardToast = async () => {
-        // Link direto pra um tour: nunca monta o toast nem define
+        // Link direto pra um tour: nunca monta o card nem define
         // window.__showAwardCard — qualquer chamada a ela vira no-op sozinha.
         if (window.__tourDirectLinkId) return;
-        const toast = document.getElementById('awardToast');
-        if (!toast) return;
+        const modal = document.getElementById('awardModal');
+        if (!modal) return;
 
         let awardConfig = { ativo: true, link: '', imagem: '', titulo: '', texto: '' };
         try {
@@ -1660,26 +1647,88 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         if (awardConfig.ativo === false) return;
 
         if (awardConfig.imagem) {
-            const img = toast.querySelector('.award-toast__icon img');
+            const img = modal.querySelector('.hs-modal__leftImage img');
             if (img) img.src = awardConfig.imagem;
         }
         if (awardConfig.titulo) {
-            const titleEl = toast.querySelector('.award-toast__title');
+            const titleEl = document.getElementById('awardTitle');
             if (titleEl) titleEl.textContent = awardConfig.titulo;
         }
         if (awardConfig.texto) {
-            const messageEl = toast.querySelector('.award-toast__message');
-            if (messageEl) messageEl.textContent = awardConfig.texto;
+            const descEl = modal.querySelector('.js-hs-description');
+            if (descEl) descEl.textContent = awardConfig.texto;
         }
 
-        toast.addEventListener('click', (event) => {
-            const close = event.target.closest('[data-close-award]');
-            if (close) {
-                toast.classList.remove('visible');
-                if (awardToastTimer) clearTimeout(awardToastTimer);
-                return;
+        const countdownEl = document.getElementById('awardCountdown');
+        const awardLink = awardConfig.link
+            || 'https://www.tripadvisor.com.br/Attraction_Review-g303506-d12219836-Reviews-Rio_by_Foot_Free_Walking_Tour-Rio_de_Janeiro_State_of_Rio_de_Janeiro.html';
+        let countdownTimer = null;
+
+        const getCountdownLabel = (seconds) => {
+            const labels = {
+                pt: 'Fecha em', en: 'Closes in', fr: 'Se ferme dans',
+                es: 'Se cierra en', it: 'Si chiude tra', zh: '将在'
+            };
+            const lang = typeof window.getCurrentLang === 'function' ? window.getCurrentLang() : 'pt';
+            const prefix = labels[lang] || labels.pt;
+            return lang === 'zh' ? `${prefix} ${seconds} 秒` : `${prefix} ${seconds}s`;
+        };
+
+        const stopCountdown = () => {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
             }
-            if (awardConfig.link) window.open(awardConfig.link, '_blank', 'noopener');
+        };
+
+        const closeModal = () => {
+            stopCountdown();
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            try { sessionStorage.setItem('awardModalSeen', '1'); } catch (e) {}
+        };
+
+        const openModal = () => {
+            let secondsLeft = 10;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            if (countdownEl) countdownEl.textContent = getCountdownLabel(secondsLeft);
+
+            stopCountdown();
+            countdownTimer = setInterval(() => {
+                secondsLeft -= 1;
+                if (secondsLeft <= 0) {
+                    closeModal();
+                    return;
+                }
+                if (countdownEl) countdownEl.textContent = getCountdownLabel(secondsLeft);
+            }, 1000);
+        };
+
+        modal.querySelectorAll('[data-close-award]').forEach((el) => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeModal();
+            });
+        });
+
+        const awardCta = document.getElementById('awardCta');
+        if (awardCta) {
+            awardCta.href = awardLink;
+            awardCta.addEventListener('click', () => closeModal());
+        }
+
+        document.addEventListener('app:language-changed', () => {
+            if (!modal.classList.contains('is-open') || !countdownEl) return;
+            const match = countdownEl.textContent.match(/(\d+)/);
+            const seconds = match ? Number(match[1]) : 10;
+            countdownEl.textContent = getCountdownLabel(seconds);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
         });
 
         let alreadySeen = false;
@@ -1717,7 +1766,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             window.__awardCardScrollWired = true;
             showWhenScrolledPastHalf(() => {
                 window.__awardCardShown = true;
-                showAwardToast();
+                openModal();
                 try { sessionStorage.setItem('awardModalSeen', '1'); } catch (e) {}
             });
         };
