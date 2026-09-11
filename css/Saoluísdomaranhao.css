@@ -1,4 +1,4 @@
-/* São Luís do Maranhão — Tema Azulejos Portugueses (claro) */
+/* São Luís do Maranhão · Tema Azulejos Portugueses (claro) */
 /* Re-usa classes rio-* de Riodejaneiro.css */
 
 .main-container.rio-page {
@@ -42,16 +42,16 @@
     background: var(--city-painel-bg, transparent);
 }
 
-/* Remove padrão Copacabana — exclusivo do Rio; base escura padronizada
+/* Remove padrão Copacabana · exclusivo do Rio; base escura padronizada
    (mesmo tom azul-marinho do degradê principal) em vez de clarear.
    A máscara de recorte na onda (definida em Riodejaneiro.css, carregado
-   antes deste arquivo como base) continua valendo — só a cor/imagem muda. */
+   antes deste arquivo como base) continua valendo · só a cor/imagem muda. */
 .rio-hero::after {
     background: linear-gradient(to bottom, transparent 0%, rgba(12, 35, 64, 0.9) 100%);
 }
 
 /* Em telas pequenas o texto fica sobre o casario claro da foto, então o
-   escurecimento precisa ser mais firme da altura do título para baixo —
+   escurecimento precisa ser mais firme da altura do título para baixo ·
    com o degradê herdado do Rio (0.38 no meio) o título dourado sumia.
    A partir de 1024px este degradê é trocado pelo lateral (ver adiante). */
 .rio-hero-overlay {
@@ -76,7 +76,7 @@
        deixando um vão vazio no topo. O espaçamento do header vem do
        padding-top de .rio-hero-content em cada breakpoint.
        padding-top:0 zera o padding-top que esta página herda de
-       Riodejaneiro.css (carregado antes deste arquivo como base) — sem
+       Riodejaneiro.css (carregado antes deste arquivo como base) · sem
        isso o hero somava o padding do template do Rio (até 70px) ao
        padding-top de .rio-hero-content abaixo, dobrando o espaçamento. */
     align-items: flex-start;
@@ -107,11 +107,11 @@
    na tipografia serifada do hero (e não o azul da arte original).
    As tentativas anteriores de recorte cortavam o pin porque as
    proporções tinham sido medidas sobre `Logo.png` (256x270, arte com
-   texto embaixo do pin). O logo real — tanto o do servidor quanto o
-   fallback local — é `LogoV2.png`: 480x520, SÓ o pin, sem texto
+   texto embaixo do pin). O logo real · tanto o do servidor quanto o
+   fallback local · é `LogoV2.png`: 480x520, SÓ o pin, sem texto
    (confirmado por hash: o custom_logo.png do servidor é byte a byte
    igual ao LogoV2.png local). Os valores abaixo são a bounding box de
-   pixels opacos desse arquivo — x:44..462 (419px) e y:6..514 (509px) —
+   pixels opacos desse arquivo · x:44..462 (419px) e y:6..514 (509px) ·
    o que remove a margem transparente sem encostar na arte.
    O recorte é dimensionado só pela altura (--mark-h); a largura da
    caixa deriva dessa proporção. A imagem recortada mantém a classe
@@ -120,8 +120,8 @@
    ----------------------------------------------------------------- */
 /* Abaixo de 1024px segue o padrão do hero de Lençóis: pin centralizado e a
    legenda "Tour by Foot" embaixo dele, também centralizada. A partir de
-   1024px vira lockup deitado (pin à esquerda, texto ao lado) — ver o bloco
-   "HERO SÃO LUÍS — TELAS GRANDES" adiante. */
+   1024px vira lockup deitado (pin à esquerda, texto ao lado) · ver o bloco
+   "HERO SÃO LUÍS · TELAS GRANDES" adiante. */
 .rio-hero-brand {
     --mark-h: clamp(66px, 15vw, 118px);
     width: 100%;
@@ -133,14 +133,14 @@
 }
 
 /* brightness+saturate clareiam o azul-marinho do pin (bem escuro na arte
-   original) para um tom mais suave, como pedido — sem isso ele destoava,
+   original) para um tom mais suave, como pedido · sem isso ele destoava,
    forte demais, ao lado do texto claro do hero. */
 .rio-hero-brand-mark {
     display: block;
     position: relative;
     overflow: hidden;
     flex: none;
-    width: calc(var(--mark-h) * 0.8232);   /* 419 / 509 — largura da arte */
+    width: calc(var(--mark-h) * 0.8232);   /* 419 / 509 · largura da arte */
     height: var(--mark-h);
     filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.75)) brightness(1.35) saturate(0.6);
 }
@@ -165,23 +165,23 @@
     line-height: 1.15;
 }
 
-/* "VISIT SÃO LUÍS" — mesmo tratamento do wordmark dourado da referência
+/* "VISIT SÃO LUÍS" · mesmo tratamento do wordmark dourado da referência
    (Visit Lençóis). Lá o wordmark é arte embutida no PNG, não texto, então não
    há fonte para reaproveitar: a família abaixo foi escolhida medindo os glifos
    da própria arte (V/I/S/T/E/N/O recortados de Logo2.png, normalizados por
-   cap-height e comparados por sobreposição) — Karla foi a de maior coincidência
+   cap-height e comparados por sobreposição) · Karla foi a de maior coincidência
    de forma. Cap-height 67px sobre largura de palavra 656px dá o tracking de
    ~0.085em usado aqui. Karla tem cap/em menor que a Playfair usada antes, daí
    o font-size um pouco maior para manter a mesma altura óptica.
    Sem text-shadow: o glow escurecia o contorno das letras e destoava da
    referência, que tem traço limpo.
    O peso partiu de medição (400=0.1217, 500=0.1458 de razão haste/cap contra
-   o alvo 0.1343 da arte, apontando ~450) mas ficou fino demais na tela —
+   o alvo 0.1343 da arte, apontando ~450) mas ficou fino demais na tela ·
    ajustado a olho para 520.
    O degradê também foi amostrado da arte: varrendo os pixels opacos do
    wordmark, a cor é praticamente constante ao longo da palavra (~#EBC273 em
    qualquer coluna) e varia só na vertical, de #F5D286 no topo da caixa alta
-   a #D8AC5F na base — ou seja, é um linear-gradient vertical, não radial nem
+   a #D8AC5F na base · ou seja, é um linear-gradient vertical, não radial nem
    diagonal. As paradas abaixo remapeiam essa curva para a altura da caixa do
    bloco (a caixa alta ocupa ~22%–80% dela, o resto é entrelinha).
    `color` fica como fallback: se background-clip:text não for suportado, o
@@ -209,7 +209,7 @@
     -webkit-text-fill-color: transparent;
 }
 
-/* "TOUR BY FOOT" — legenda com fios dourados dos dois lados, cópia do
+/* "TOUR BY FOOT" · legenda com fios dourados dos dois lados, cópia do
    padrão .rio-hero-logo-sub usado em Lençóis (mesma fonte/tamanho/lines). */
 .rio-hero-logo-sub {
     display: flex;
@@ -282,7 +282,7 @@
     color: #f7f2e6;
 }
 
-/* Mesma cor sólida de .rio-city-highlight — "Maranhão" não recebe mais o
+/* Mesma cor sólida de .rio-city-highlight · "Maranhão" não recebe mais o
    degradê dourado, como pedido. */
 .rio-hero-title .rio-city-accent {
     display: block;
@@ -292,7 +292,7 @@
     background-clip: border-box;
     -webkit-text-fill-color: #f7f2e6;
     color: #f7f2e6;
-    /* "do Maranhão" é uma unidade só — não pode quebrar em 2 linhas mesmo
+    /* "do Maranhão" é uma unidade só · não pode quebrar em 2 linhas mesmo
        em telas estreitas (o título já reduz de tamanho via clamp). */
     white-space: nowrap;
 }
@@ -342,7 +342,7 @@
 
 .rio-hero-content .btn-book {
     /* z-index acima das duas ondas decorativas (.rio-hero-wave-divider,
-       z-index:4) — sem isso a onda passava por cima do botão em telas onde
+       z-index:4) · sem isso a onda passava por cima do botão em telas onde
        o hero encolhe e as duas se sobrepõem. */
     position: relative;
     z-index: 10;
@@ -372,7 +372,7 @@
     transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Badge circular escuro com a bússola, à esquerda do rótulo — mesmo ícone
+/* Badge circular escuro com a bússola, à esquerda do rótulo · mesmo ícone
    usado em todos os botões "Conhecer Tours" do hero (ver Lençóis). */
 .rio-hero-content .btn-book::before {
     flex: none;
@@ -412,7 +412,7 @@
 }
 
 /* =====================================================
-   HERO SÃO LUÍS — TELAS GRANDES
+   HERO SÃO LUÍS · TELAS GRANDES
    ===================================================== */
 @media (min-width: 1024px) {
     .rio-hero {
@@ -442,7 +442,7 @@
         max-width: none;
         align-items: flex-start;
         /* padding-bottom mais enxuto que o de Lençóis (7rem) porque a
-           descrição daqui é mais longa e quebra em mais linhas — sem esse
+           descrição daqui é mais longa e quebra em mais linhas · sem esse
            ajuste o painel passava de 100vh (medido: 840px vs 800px de
            viewport a 1280x800), quebrando a paridade de altura entre as
            páginas de cidade. */
@@ -451,7 +451,7 @@
     }
 
     /* Volta ao lockup deitado (pin + nome lado a lado, alinhados à
-       esquerda) — o empilhado centralizado é só para telas pequenas. */
+       esquerda) · o empilhado centralizado é só para telas pequenas. */
     .rio-hero-brand {
         --mark-h: clamp(66px, 7.6vw, 118px);
         width: auto;
@@ -460,7 +460,7 @@
         gap: clamp(12px, 1.3vw, 22px);
     }
 
-    /* Fica centralizado mesmo no lockup deitado — igual ao bloco
+    /* Fica centralizado mesmo no lockup deitado · igual ao bloco
        "VISIT LENÇÓIS" / "TOUR BY FOOT" da referência, que se mantém
        auto-centralizado ao lado do ícone independente do layout. */
     .rio-hero-logo-sub {

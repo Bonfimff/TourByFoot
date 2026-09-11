@@ -10,7 +10,7 @@
     background: transparent !important;
     color: #2c3e50;
     /* Base para telas entre os breakpoints de 900px e 1200px, que não
-       redefinem esta variável — sem isso o padding-top do hero (que depende
+       redefinem esta variável · sem isso o padding-top do hero (que depende
        dela) fica inválido nessa faixa de largura e a logo/título deslizam
        para debaixo do header. */
     --rio-header-height: 72px;
@@ -49,7 +49,7 @@
        suavemente. height:100% acima é o fallback para navegadores sem suporte. */
     height: 100dvh;
     z-index: -1;
-    /* Sem imagem por baixo — só a cor sólida (do admin via --city-fundo-cor,
+    /* Sem imagem por baixo · só a cor sólida (do admin via --city-fundo-cor,
        com fallback fixo aqui). --city-fundo-img só existe quando o admin
        escolhe explicitamente modo degradê/imagem para o fundo da cidade. */
     background-color: var(--city-fundo-cor, #02415a);
@@ -63,7 +63,7 @@
    fixas (body::before e .main-container::after, ambas z-index:-2) por baixo
    de tudo. Como a cor de fundo desta página vem do admin com transparência
    (ex.: 88%), essa foto aparecia por baixo da cor sólida. Neutralizada aqui
-   — só a cor sólida fica abaixo do conteúdo. Como este arquivo é carregado
+   · só a cor sólida fica abaixo do conteúdo. Como este arquivo é carregado
    depois do style.css, a mesma especificidade basta para vencer. */
 body::before,
 .main-container::after {
@@ -365,8 +365,8 @@ body {
     /* Abaixo de 1024px sobra de propósito uma ponta visível da seção de
        tours logo abaixo, como dica de que há mais conteúdo por rolar. Por
        isso vh puro (sem piso em px que force cobrir 100% da viewport).
-       A partir de 1024px o painel passa a cobrir a tela toda — ver o bloco
-       "HERO — TELAS GRANDES". */
+       A partir de 1024px o painel passa a cobrir a tela toda · ver o bloco
+       "HERO · TELAS GRANDES". */
     min-height: 72vh;
     display: flex;
     /* flex-start (não center): com o hero bem mais alto que o conteúdo,
@@ -383,19 +383,19 @@ body {
        recortada seguindo a onda sem cortar junto o overlay, a onda decorativa
        e o "Descubra mais". !important neutraliza o background inline que
        cidade-visual.js ainda escreve neste elemento (compat com Salvador/São
-       Luís) — sem isso a foto retangular voltaria a aparecer por baixo do
+       Luís) · sem isso a foto retangular voltaria a aparecer por baixo do
        recorte. */
     background: transparent !important;
     /* Recorte em onda, compartilhado pela foto (::before) e pelo véu escuro
-       (.rio-hero-overlay) — os dois cobrem o hero inteiro e precisam ficar
+       (.rio-hero-overlay) · os dois cobrem o hero inteiro e precisam ficar
        opacos em cima e cortar exatamente na mesma curva embaixo.
 
        Não dá pra usar UMA curva só em % da altura do hero: a onda decorativa
        (.rio-hero-wave-divider) é posicionada em pixels fixos (bottom:58px +
        altura clamp(48px,9vw,90px)), e a altura real do hero varia demais
-       entre telas (não é só 72vh — o conteúdo estica além disso) pra uma
+       entre telas (não é só 72vh · o conteúdo estica além disso) pra uma
        curva em % acompanhar. Por isso a máscara é 2 camadas UNIDAS (a
-       composição padrão do mask-image já é união — não precisa de
+       composição padrão do mask-image já é união · não precisa de
        mask-composite, que é onde a tentativa anterior quebrou em alguns
        navegadores):
          camada 1: um retângulo 100% opaco cobrindo do topo do hero até o
@@ -420,7 +420,7 @@ body {
       var(--city-painel-bg, transparent);
     -webkit-mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
     mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
-    /* +2px: sobrepõe de propósito a borda das duas camadas — sem isso sobra
+    /* +2px: sobrepõe de propósito a borda das duas camadas · sem isso sobra
        uma linha branca fina exatamente na costura entre o retângulo de cima
        e a faixa da onda (artefato de arredondamento na renderização). */
     -webkit-mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
@@ -470,7 +470,7 @@ body {
   right: -1px;
     -webkit-mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
     mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
-    /* +2px: sobrepõe de propósito a borda das duas camadas — sem isso sobra
+    /* +2px: sobrepõe de propósito a borda das duas camadas · sem isso sobra
        uma linha branca fina exatamente na costura entre o retângulo de cima
        e a faixa da onda (artefato de arredondamento na renderização). */
     -webkit-mask-size: 100% calc(100% - var(--hero-wave-band-height) + 2px), 100% var(--hero-wave-band-height);
@@ -639,7 +639,7 @@ body {
 
 .rio-hero-content .btn-book {
     /* z-index acima das duas ondas decorativas (.rio-hero-wave-divider,
-       z-index:4) — sem isso a onda passava por cima do botão em telas onde
+       z-index:4) · sem isso a onda passava por cima do botão em telas onde
        o hero encolhe e as duas se sobrepõem. */
     position: relative;
     z-index: 10;
@@ -794,7 +794,7 @@ body {
     color: #e0b653;
 }
 
-/* A seta pulsa sozinha — o wrapper carrega o translateX(-50%) da centralização. */
+/* A seta pulsa sozinha · o wrapper carrega o translateX(-50%) da centralização. */
 .rio-hero-scroll > .fa {
     animation: rioScrollBounce 2s ease-in-out infinite;
 }
@@ -805,7 +805,7 @@ body {
 }
 
 /* =====================================================
-   HERO — TELAS GRANDES
+   HERO · TELAS GRANDES
    Composição de referência: conteúdo encostado à esquerda,
    marca em lockup deitado e o lado direito da foto aberto.
    ===================================================== */
@@ -1024,11 +1024,11 @@ body {
     display: none;
 }
 
-/* Textura sutil inspirada no calçadão — ondas em baixíssima opacidade.
+/* Textura sutil inspirada no calçadão · ondas em baixíssima opacidade.
    z-index:0 (em vez do z-index:auto padrão) garante que fique DEBAIXO dos
    cards: um pseudo-elemento position:absolute com z-index:auto pinta acima
    do conteúdo em fluxo normal do mesmo contexto de empilhamento, mesmo
-   vindo antes no DOM — por isso o grid abaixo precisa de z-index:1. */
+   vindo antes no DOM · por isso o grid abaixo precisa de z-index:1. */
 .rio-tours::before {
     content: '';
     position: absolute;
@@ -1289,12 +1289,12 @@ body {
     font-size: 0.85rem;
 }
 
-/* Textos longos (Inclui, Roteiro, etc.) ficam limitados a 3 linhas — o
+/* Textos longos (Inclui, Roteiro, etc.) ficam limitados a 3 linhas · o
    corte agora é feito no próprio TEXTO pelo JS (wireTourDetailToggles, busca
    binária), não visualmente por CSS, porque só assim "Ler mais" termina
    colado no fim do texto, na mesma linha (pedido explícito). O "…" e o botão
    já saem prontos do JS dentro de .rio-tour-detail-value / .rio-tour-detail-line
-   — aqui só é preciso deixar tudo fluir normalmente. */
+   · aqui só é preciso deixar tudo fluir normalmente. */
 .rio-tour-detail-line {
     display: block;
     width: 100%;
@@ -1344,7 +1344,7 @@ body {
 }
 
 /* Parágrafo puro (sem lista): o corte agora é feito no próprio texto pelo
-   JS, igual ao texto simples — o max-height daqui atrapalharia a medição
+   JS, igual ao texto simples · o max-height daqui atrapalharia a medição
    (o scrollHeight já viria pré-cortado em 3 linhas mesmo com o texto real
    menor) e é desativado por essa classe (ver wireTourDetailToggles). */
 .rio-tour-detail-richbody.rio-tour-detail-richbody-textcut {
@@ -1418,7 +1418,7 @@ body {
 }
 
 /* "Ver no Mapa" e "Avaliações" (mesma classe rio-link-map) encolhem e
-   truncam com reticências quando faltar espaço na linha — o botão
+   truncam com reticências quando faltar espaço na linha · o botão
    "Reservar Agora" nunca deve ser cortado (ver .rio-btn-reserve abaixo). */
 .rio-link-map {
     color: #1da194;
@@ -1449,7 +1449,7 @@ body {
     order: 1;
 }
 
-/* Ícones flutuantes do card (compartilhar + favoritar) — ficam alinhados à
+/* Ícones flutuantes do card (compartilhar + favoritar) · ficam alinhados à
    direita, na divisão entre a foto e o bloco de informações. A barra é filha
    do .rio-tour-card (não de .rio-tour-images, que tem overflow:hidden pra
    recortar a foto no 16/9 e cortaria os botões): ela cobre exatamente a área
@@ -1509,7 +1509,7 @@ body {
 }
 
 /* Favoritar: pílula (retângulo de bordas bem arredondadas) com o coração e a
-   quantidade de pessoas que favoritaram — mesmo formato do botão de curtir da
+   quantidade de pessoas que favoritaram · mesmo formato do botão de curtir da
    galeria de relatos (.rio-relatos-like). A contagem vem de
    /get_tour_favoritos; favoritar exige login (ver TourInteracoes em
    tour-interacoes.js). */
@@ -1522,7 +1522,7 @@ body {
 }
 
 /* Coração: branco quando ainda não favoritado, vermelho quando já é
-   favorito — o fundo da pílula continua o mesmo círculo escuro desfocado
+   favorito · o fundo da pílula continua o mesmo círculo escuro desfocado
    nos dois estados (não vira sólido vermelho), só o glifo do coração muda,
    pedido explícito. */
 .rio-tour-fav i {
@@ -1549,7 +1549,7 @@ body {
 }
 }
 
-/* Destaque temporário no card ao chegar por um link direto (?tour=<id>) —
+/* Destaque temporário no card ao chegar por um link direto (?tour=<id>) ·
    some sozinho depois de alguns segundos (ver scrollToDirectLinkTourIfNeeded
    em site-shell.js). */
 .rio-tour-card--highlight {
@@ -1757,7 +1757,7 @@ body {
     }
 
     .rio-hero {
-        /* Sem piso fixo — o painel encolhe para caber só o conteúdo, sem
+        /* Sem piso fixo · o painel encolhe para caber só o conteúdo, sem
            deixar espaço vazio entre o botão e a onda decorativa. A folga
            necessária pra onda não colidir com o botão vem do padding-bottom
            de .rio-hero-content, abaixo. */
@@ -1885,7 +1885,7 @@ body {
     }
 
     .rio-hero {
-        /* Sem piso fixo — o painel encolhe para caber só o conteúdo, sem
+        /* Sem piso fixo · o painel encolhe para caber só o conteúdo, sem
            deixar espaço vazio entre o botão e a onda decorativa. A folga
            necessária pra onda não colidir com o botão vem do padding-bottom
            de .rio-hero-content, abaixo. */
@@ -3168,8 +3168,8 @@ header {
 }
 
 @media (min-width: 1200px) {
-  /* Só o espaçamento vertical aqui — o recuo lateral do hero em telas
-     grandes é definido no bloco "HERO — TELAS GRANDES" (padding-left
+  /* Só o espaçamento vertical aqui · o recuo lateral do hero em telas
+     grandes é definido no bloco "HERO · TELAS GRANDES" (padding-left
      proporcional). Usar o atalho `padding` neste ponto sobrescreveria
      aquele recuo, já que esta regra vem depois no arquivo. */
   .rio-hero-content {
@@ -3229,7 +3229,7 @@ header {
 }
 
 .reservation-modal {
-  /* Paleta local do modal — teal, igual ao botão "Confirmar Reserva" que já
+  /* Paleta local do modal · teal, igual ao botão "Confirmar Reserva" que já
      existia (#1da194); o resto do site usa verde (#18b015)/azul (#0b3c6d),
      então isso fica isolado aqui em vez de virar variável global. */
   --res-accent: #1da194;
@@ -3240,7 +3240,7 @@ header {
   --res-text-muted: #6b7280;
 
   /* Tudo dimensionado pra caber inteiro sem rolagem (nem vertical, nem
-     horizontal) em qualquer aparelho — inclusive celular deitado, a tela
+     horizontal) em qualquer aparelho · inclusive celular deitado, a tela
      mais baixa que existe na prática. Por isso os tamanhos abaixo usam
      clamp() amarrado à altura da tela (dvh) em vez de rem fixo: o modal
      encolhe sozinho conforme a tela fica mais baixa, sem precisar de uma
@@ -3320,7 +3320,7 @@ header {
 }
 
 /* Nome+Data e Hora+Quantidade (e agora Idioma+Celular) sempre lado a lado,
-   em QUALQUER tamanho de tela, inclusive celular — pedido explícito: menos
+   em QUALQUER tamanho de tela, inclusive celular · pedido explícito: menos
    linhas empilhadas = menos altura total, o que também ajuda a nunca
    precisar rolar. */
 .res-grid {
@@ -3338,7 +3338,7 @@ header {
 }
 
 /* [hidden] sozinho (regra do navegador) empata em especificidade com
-   .res-field e o navegador prioriza a folha de estilo da página — sem esta
+   .res-field e o navegador prioriza a folha de estilo da página · sem esta
    regra explícita, o campo "Hora" continuava ocupando espaço (e ficava
    visível) mesmo com o atributo hidden, porque .res-field { display:flex }
    vencia. */
@@ -3356,7 +3356,7 @@ header {
   min-width: 0;
 }
 
-/* Ícone à esquerda, dentro do campo — input/select não aceitam filhos, então
+/* Ícone à esquerda, dentro do campo · input/select não aceitam filhos, então
    o ícone é posicionado por cima via wrapper relative + input com
    padding-left reservado pro espaço do ícone. */
 .res-input-wrap {
@@ -3399,7 +3399,7 @@ header {
   border-color: var(--res-accent);
 }
 
-/* Setinha própria pro <select>, na cor do tema — a nativa do navegador não
+/* Setinha própria pro <select>, na cor do tema · a nativa do navegador não
    dá pra recolorir, e aqui ela também precisa deixar espaço à direita
    equivalente ao ícone da esquerda, pra ficar visualmente simétrico. */
 .reservation-modal select {
@@ -3413,7 +3413,7 @@ header {
   background-size: 13px;
 }
 
-/* Caixa de destaque "Tour selecionado" — nome do tour vem sempre do próprio
+/* Caixa de destaque "Tour selecionado" · nome do tour vem sempre do próprio
    tour clicado (openReservationModal), nunca é fixo: cada tour mostra o seu. */
 .res-tour-box {
   display: flex;
@@ -3472,7 +3472,7 @@ header {
   white-space: nowrap;
 }
 
-/* Calendário customizado da data de reserva — o popup nativo de
+/* Calendário customizado da data de reserva · o popup nativo de
    <input type="date"> não é estilizável, então o campo vira um botão que
    abre este mini-calendário próprio, onde os dias em que o tour funciona
    (ver horarios_por_dia) ficam em verde. Estilizado igual aos demais campos
@@ -3642,7 +3642,7 @@ header {
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-/* Sem sombra nestes dois botões, nem em repouso nem no hover — .btn-book (a
+/* Sem sombra nestes dois botões, nem em repouso nem no hover · .btn-book (a
    classe geral do site) traz uma sombra forte que não combina com o modal. */
 .reservation-modal-actions .btn-book,
 .reservation-modal-actions .btn-book:hover,
@@ -3650,7 +3650,7 @@ header {
   box-shadow: none;
 }
 
-/* Cancelar — ação secundária, discreta (fundo transparente) */
+/* Cancelar · ação secundária, discreta (fundo transparente) */
 .reservation-modal-actions button[type="button"] {
   background: transparent;
   border: 1.5px solid rgba(0, 0, 0, 0.2);
@@ -3665,7 +3665,7 @@ header {
   transform: none;
 }
 
-/* Confirmar Reserva — ação primária, preenchida na cor de destaque do site */
+/* Confirmar Reserva · ação primária, preenchida na cor de destaque do site */
 .reservation-modal-actions button[type="submit"] {
   background: #1da194;
   border: 1.5px solid #1da194;
@@ -3687,7 +3687,7 @@ header {
   margin-top: 1.2rem;
 }
 
-/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao —
+/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao ·
    nao introduz cor, fonte nem espacamento novos: so organiza os links em
    linha, quebrando naturalmente no mobile. */
 .rio-footer-destinos {
@@ -4115,7 +4115,7 @@ header {
   padding-right: 0 !important;
 }
 
-/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+/* "Não tem conta? Cadastrar" · verde em todos os modais de entrada. O tom
    #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
    e precisa de contraste suficiente sobre o fundo claro do modal. */
 .login-modal__switch {
@@ -4134,7 +4134,7 @@ header {
   font-weight: 700;
 }
 
-/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+/* Cards do modal "Tours Favoritos" (menu de perfil) · reaproveita o overlay
    e o título de .my-reservations-*, só os itens da lista são próprios.
    Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
 .my-favorites-card {

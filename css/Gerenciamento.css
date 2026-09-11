@@ -419,7 +419,7 @@ body {
 }
 
 /* Estilo de fundo/borda deste ID foi absorvido por .country-legend (tooltip
-   escuro no hover, ver mais abaixo) — essa regra sobrepunha o fundo escuro
+   escuro no hover, ver mais abaixo) · essa regra sobrepunha o fundo escuro
    com um branco translúcido e deixava o texto claro ilegível. */
 
 .status-group {
@@ -861,7 +861,7 @@ body {
 
 /* Tabela responsiva */
 /* Barra de abas (Colaboradores/Clientes/Buscar/Nova Conta) grudada na
-   tabela de Contas — sem padding lateral pra a primeira aba encostar
+   tabela de Contas · sem padding lateral pra a primeira aba encostar
    exatamente na borda esquerda da tabela abaixo, sem sobra de borda. */
 .accounts-tabbar {
   display: flex;
@@ -985,7 +985,7 @@ tr.tours-mais-clicados-extra.hidden {
 }
 
 /* Colunas de texto livre (nome do tour, cidade, idiomas, encontro,
-   identificação, modalidade, status): nunca quebram linha — truncam com
+   identificação, modalidade, status): nunca quebram linha · truncam com
    reticências e o valor completo aparece no title (tooltip nativo) ao
    passar o mouse, em vez de esticar a linha da tabela. */
 .rio-tour-table td.tour-cell-truncate {
@@ -1714,7 +1714,7 @@ tr.tours-mais-clicados-extra.hidden {
 }
 
 /* O modal de tour tem bem mais campos que os demais (conta, financeiro etc,
-   que continuam em min(500px,100%)) — mais largo aqui aproveita telas
+   que continuam em min(500px,100%)) · mais largo aqui aproveita telas
    desktop pra caber pares de campo lado a lado em vez de uma coluna só
    gigante. */
 #tourEditModal .modal-content {
@@ -1823,7 +1823,7 @@ tr.tours-mais-clicados-extra.hidden {
     gap: 1rem;
   }
 
-  /* Pares de campo curto lado a lado (Nome/Cidade, Período/Saída etc.) —
+  /* Pares de campo curto lado a lado (Nome/Cidade, Período/Saída etc.) ·
      em telas estreitas cai para 1 coluna só (ver media query abaixo). */
   .modal-field-grid {
     display: grid;
@@ -1854,7 +1854,7 @@ tr.tours-mais-clicados-extra.hidden {
   }
 
   /* Seletores de horas/min só preenchem o campo de texto ao lado (fonte da
-     verdade, ver formatDuracaoFromSelects/JS) — digitar direto continua
+     verdade, ver formatDuracaoFromSelects/JS) · digitar direto continua
      funcionando pra durações fora do padrão "Xh" / "XhYY". */
   .tour-duracao-picker {
     display: flex;
@@ -1867,7 +1867,7 @@ tr.tours-mais-clicados-extra.hidden {
     min-width: 4.5rem;
   }
 
-  /* Os seletores dividem a largura por igual — antes sobrava um campo de
+  /* Os seletores dividem a largura por igual · antes sobrava um campo de
      texto no fim da linha, que foi removido (agora é um input hidden). */
   .tour-duracao-picker select {
     flex: 1 1 0;
@@ -1903,7 +1903,7 @@ tr.tours-mais-clicados-extra.hidden {
 
   /* As abas de idioma agora são o cabeçalho do próprio card que contém os
      campos traduzíveis (Informações do tour / Ponto de encontro /
-     Descrição) — não mais um fieldset separado flutuando acima dele. */
+     Descrição) · não mais um fieldset separado flutuando acima dele. */
   .tour-lang-card {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 12px;
@@ -1936,7 +1936,7 @@ tr.tours-mais-clicados-extra.hidden {
 
   /* Visual de "aba de pasta": os botões ficam encostados numa linha
      divisória; a aba ativa tem fundo branco e a borda de baixo na mesma cor
-     desse fundo, "cortando" a linha embaixo dela — dá a impressão de estar
+     desse fundo, "cortando" a linha embaixo dela · dá a impressão de estar
      grudada ao conteúdo abaixo, como uma pasta com abas. */
   .tour-lang-tabs {
     display: flex;
@@ -2028,7 +2028,7 @@ tr.tours-mais-clicados-extra.hidden {
 }
 
 /* Empurra Cancelar/Salvar (fluxo principal) pra direita, separando das
-   ações destrutivas/secundárias (Pausar/Excluir) à esquerda — só em telas
+   ações destrutivas/secundárias (Pausar/Excluir) à esquerda · só em telas
    largas o suficiente pra caber tudo numa linha; no mobile os botões
    ocupam a largura toda em grade e o espaçador não faz sentido. */
 .modal-actions-spacer {
@@ -2251,7 +2251,7 @@ tr.tours-mais-clicados-extra.hidden {
   }
 
   /* Na visao em cards (rotulo + valor lado a lado) o truncamento do desktop
-     nao cabe bem — volta a quebrar linha normalmente aqui. */
+     nao cabe bem · volta a quebrar linha normalmente aqui. */
   .rio-tour-table td.tour-cell-truncate {
     max-width: none;
     white-space: normal;
@@ -2429,7 +2429,7 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Modais login/cadastro/recuperação de senha — mesmo componente usado nas
+/* Modais login/cadastro/recuperação de senha · mesmo componente usado nas
    páginas públicas (ver createLoginModal/createRegisterModal em
    Riodejaneiro.js, já carregado nesta página). Escondidos por padrão; usados
    tanto pelo menu de perfil quanto pelo gate de sessão no topo de
@@ -2722,7 +2722,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay):not(.m
   box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
 }
 
-/* Barra "arraste para confirmar" — usada antes de colocar uma página em
+/* Barra "arraste para confirmar" · usada antes de colocar uma página em
    manutenção (ação com impacto real pros visitantes, não pode ser um clique
    acidental). O preenchimento e a alça acompanham o dedo/mouse; só dispara a
    confirmação se soltar perto do fim (ver initMaintenanceModeToggle). */
@@ -3373,7 +3373,7 @@ section,
 }
 
 /* Modal "Meus Dados" (window.openUserDataModal, definido em Riodejaneiro.js e
-   reaproveitado nesta página) — sem essas regras o modal até abre (classe
+   reaproveitado nesta página) · sem essas regras o modal até abre (classe
    .open é aplicada) mas fica sem posicionamento/estilo nenhum, invisível. */
 .user-data-overlay {
   display: none;
@@ -3784,7 +3784,7 @@ section,
 
 /* Seletor com 2 classes (.maintenance-target-list .maintenance-target-label)
    de propósito: precisa vencer .cidade-contato-card label (classe+tag) na
-   especificidade — sem isso o flex:1 1 220px genérico esticava cada rótulo
+   especificidade · sem isso o flex:1 1 220px genérico esticava cada rótulo
    por uma fatia igual da altura do container, criando o vão gigante entre
    checkboxes visto no admin. */
 .maintenance-target-list .maintenance-target-label {
@@ -3919,7 +3919,7 @@ section,
    Antes: <input type="color"> (sem canal alfa) + <input type="range"> lado
    a lado, cada um mostrando só metade da informação. Agora: um único
    "swatch" mostra a cor já com a transparência aplicada (fundo xadrez por
-   trás) e o código exibido/editável no popover é sempre #RRGGBBAA — a
+   trás) e o código exibido/editável no popover é sempre #RRGGBBAA · a
    transparência faz parte do próprio código, não de um campo à parte. */
 .color-alpha-field {
   display: flex;
@@ -4164,7 +4164,7 @@ section,
   min-height: 1.1em;
 }
 
-/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+/* "Não tem conta? Cadastrar" · verde em todos os modais de entrada. O tom
    #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
    e precisa de contraste suficiente sobre o fundo claro do modal. */
 .login-modal__switch {
@@ -4183,7 +4183,7 @@ section,
   font-weight: 700;
 }
 
-/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+/* Cards do modal "Tours Favoritos" (menu de perfil) · reaproveita o overlay
    e o título de .my-reservations-*, só os itens da lista são próprios.
    Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
 .my-favorites-card {
@@ -4230,7 +4230,7 @@ section,
   text-decoration: underline;
 }
 
-/* Ícone de compartilhar ao lado do ID, no modal de editar tour — substitui o
+/* Ícone de compartilhar ao lado do ID, no modal de editar tour · substitui o
    campo "URL de redirecionamento direto" + botão "Copiar link", que ocupavam
    uma faixa inteira do formulário. O link em si continua existindo, num
    input hidden (#tourModalDirectUrl); este botão copia/compartilha ele. */
@@ -4273,7 +4273,7 @@ section,
    largura. */
 .contas-charts-grid {
   display: grid;
-  /* Pizza (país) 25%, colunas (top 5 tours) 75% — pedido explícito, já que o
+  /* Pizza (país) 25%, colunas (top 5 tours) 75% · pedido explícito, já que o
      gráfico de barras tem mais itens/legendas pra mostrar. */
   grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
   gap: 1rem;
@@ -4312,7 +4312,7 @@ section,
   flex: 0 0 auto;
   border-radius: 50%;
   /* Cinza neutro até updateCountryPie() rodar (ou quando não há cliente
-     nenhum) — um conic-gradient com todos os stops em "0deg 0deg" colapsa e
+     nenhum) · um conic-gradient com todos os stops em "0deg 0deg" colapsa e
      o navegador pinta um círculo sólido na última cor da lista, parecendo
      dado de verdade sem ser. */
   background: #e5e7eb;
@@ -4415,7 +4415,7 @@ section,
 }
 
 /* Nome do tour: tooltip no hover da coluna. Antes ficava embaixo da barra
-   cortado com "…" — com os dois gráficos lado a lado não sobra largura pra
+   cortado com "…" · com os dois gráficos lado a lado não sobra largura pra
    nome nenhum. */
 .tours-bar-label {
   position: absolute;

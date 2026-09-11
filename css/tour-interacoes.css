@@ -1,6 +1,6 @@
-/* Comentários/avaliações de tour — compartilhado entre cidades. */
+/* Comentários/avaliações de tour · compartilhado entre cidades. */
 /* Curtidas na galeria de relatos usam as classes .rio-relatos-* já existentes
-   (ver Riodejaneiro.css / Lencoismaranhenses.css) — nada a estilizar aqui. */
+   (ver Riodejaneiro.css / Lencoismaranhenses.css) · nada a estilizar aqui. */
 
 .tour-comments-toggle {
     cursor: pointer;
@@ -346,7 +346,7 @@
 }
 
 /* Clicar na foto de um card de tour amplia na lightbox (ver o listener de
-   .rio-tour-slide em tour-interacoes.js) — o cursor sinaliza isso. As
+   .rio-tour-slide em tour-interacoes.js) · o cursor sinaliza isso. As
    bolinhas do slideshow continuam com o cursor de clique normal. */
 .rio-tour-slider .rio-tour-slide {
     cursor: zoom-in;

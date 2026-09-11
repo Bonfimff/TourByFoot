@@ -335,7 +335,7 @@ body {
 .rio-hero {
     position: relative;
     /* Em telas "formato PC" (paisagem), o painel não deve cobrir a tela
-       inteira — precisa sobrar uma ponta visível da seção de tours logo
+       inteira · precisa sobrar uma ponta visível da seção de tours logo
        abaixo, como dica de que há mais conteúdo por rolar. Por isso aqui é
        vh puro (sem piso em px que force cobrir 100% da viewport). */
     min-height: 72vh;
@@ -349,7 +349,7 @@ body {
        cortava a sombra dele. A margem deixa a sombra pintar um pouco além
        da caixa sem liberar o resto do conteúdo (a foto continua recortada).
        Em navegadores sem suporte a overflow-clip-margin, clip se comporta
-       como hidden — volta ao que era antes, sem quebrar nada. */
+       como hidden · volta ao que era antes, sem quebrar nada. */
     overflow: clip;
     overflow-clip-margin: 36px;
     /* z-index acima de .rio-tours (z-index:1, e depois no DOM): sem isso a
@@ -360,7 +360,7 @@ body {
        recortada seguindo a onda sem cortar junto o overlay, a onda decorativa
        e o "Descubra mais". !important neutraliza o background inline que
        cidade-visual.js e/ou o HTML de cada cidade ainda escrevem neste
-       elemento — sem isso a foto retangular voltaria a aparecer por baixo
+       elemento · sem isso a foto retangular voltaria a aparecer por baixo
        do recorte. Compartilhado por Riodejaneiro/Salvador/São Luís, que
        carregam este arquivo como base (ver comentário de --hero-wave-*
        logo abaixo para o porquê da técnica de 2 camadas). */
@@ -382,8 +382,8 @@ body {
     z-index: 0;
     /* Sem imagem de fallback: a foto do painel vem exclusivamente do banco
        (cidade-visual.js define --city-painel-bg). Antes havia um .jpeg local
-       aqui, que aparecia por um instante — ou permanentemente, se o admin
-       tivesse trocado a imagem — mostrando arte que não é a cadastrada. */
+       aqui, que aparecia por um instante · ou permanentemente, se o admin
+       tivesse trocado a imagem · mostrando arte que não é a cadastrada. */
     background: var(--city-painel-bg, transparent);
     -webkit-mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
     mask-image: linear-gradient(#fff, #fff), var(--hero-wave-band-svg);
@@ -395,7 +395,7 @@ body {
     mask-repeat: no-repeat, no-repeat;
 }
 
-/* gradiente de transição em tom de areia com textura delicada — sempre
+/* gradiente de transição em tom de areia com textura delicada · sempre
    ficou restrito à faixa perto do fundo, então só precisa da máscara da
    faixa da onda (sem o retângulo superior que a foto/overlay usam). */
 .rio-hero::after {
@@ -505,7 +505,7 @@ body {
 
 .rio-hero-content .btn-book {
     /* z-index acima das duas ondas decorativas (.rio-hero-wave-divider,
-       z-index:4) — sem isso a onda passava por cima do botão em telas onde
+       z-index:4) · sem isso a onda passava por cima do botão em telas onde
        o hero encolhe e as duas se sobrepõem. */
     position: relative;
     z-index: 10;
@@ -527,7 +527,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* sobrescreve o box-shadow padrão de .btn-book (style.css) — no hero,
+    /* sobrescreve o box-shadow padrão de .btn-book (style.css) · no hero,
        sobre a foto, a sombra ficava pesada demais no botão translúcido */
     box-shadow: none;
 }
@@ -689,7 +689,7 @@ body {
     position: relative;
 }
 
-/* Textura sutil inspirada no calçadão — ondas em baixíssima opacidade */
+/* Textura sutil inspirada no calçadão · ondas em baixíssima opacidade */
 .rio-tours::before {
     content: '';
     position: absolute;
@@ -947,12 +947,12 @@ body {
     font-size: 0.85rem;
 }
 
-/* Textos longos (Inclui, Roteiro, etc.) ficam limitados a 3 linhas — o
+/* Textos longos (Inclui, Roteiro, etc.) ficam limitados a 3 linhas · o
    corte agora é feito no próprio TEXTO pelo JS (wireTourDetailToggles, busca
    binária), não visualmente por CSS, porque só assim "Ler mais" termina
    colado no fim do texto, na mesma linha (pedido explícito). O "…" e o botão
    já saem prontos do JS dentro de .rio-tour-detail-value / .rio-tour-detail-line
-   — aqui só é preciso deixar tudo fluir normalmente. */
+   · aqui só é preciso deixar tudo fluir normalmente. */
 .rio-tour-detail-line {
     display: block;
     width: 100%;
@@ -1002,7 +1002,7 @@ body {
 }
 
 /* Parágrafo puro (sem lista): o corte agora é feito no próprio texto pelo
-   JS, igual ao texto simples — o max-height daqui atrapalharia a medição
+   JS, igual ao texto simples · o max-height daqui atrapalharia a medição
    (o scrollHeight já viria pré-cortado em 3 linhas mesmo com o texto real
    menor) e é desativado por essa classe (ver wireTourDetailToggles). */
 .rio-tour-detail-richbody.rio-tour-detail-richbody-textcut {
@@ -1076,7 +1076,7 @@ body {
 }
 
 /* "Ver no Mapa" e "Avaliações" (mesma classe rio-link-map) encolhem e
-   truncam com reticências quando faltar espaço na linha — o botão
+   truncam com reticências quando faltar espaço na linha · o botão
    "Reservar Agora" nunca deve ser cortado (ver .rio-btn-reserve abaixo). */
 .rio-link-map {
     color: #1da194;
@@ -1107,7 +1107,7 @@ body {
     order: 1;
 }
 
-/* Ícones flutuantes do card (compartilhar + favoritar) — ficam alinhados à
+/* Ícones flutuantes do card (compartilhar + favoritar) · ficam alinhados à
    direita, na divisão entre a foto e o bloco de informações. A barra é filha
    do .rio-tour-card (não de .rio-tour-images, que tem overflow:hidden pra
    recortar a foto no 16/9 e cortaria os botões): ela cobre exatamente a área
@@ -1168,7 +1168,7 @@ body {
 }
 
 /* Favoritar: pílula (retângulo de bordas bem arredondadas) com o coração e a
-   quantidade de pessoas que favoritaram — mesmo formato do botão de curtir da
+   quantidade de pessoas que favoritaram · mesmo formato do botão de curtir da
    galeria de relatos (.rio-relatos-like). A contagem vem de
    /get_tour_favoritos; favoritar exige login (ver TourInteracoes em
    tour-interacoes.js). */
@@ -1181,7 +1181,7 @@ body {
 }
 
 /* Coração: branco quando ainda não favoritado, vermelho quando já é
-   favorito — o fundo da pílula continua o mesmo círculo escuro desfocado
+   favorito · o fundo da pílula continua o mesmo círculo escuro desfocado
    nos dois estados (não vira sólido vermelho), só o glifo do coração muda,
    pedido explícito. */
 .rio-tour-fav i {
@@ -1208,7 +1208,7 @@ body {
 }
 }
 
-/* Destaque temporário no card ao chegar por um link direto (?tour=<id>) —
+/* Destaque temporário no card ao chegar por um link direto (?tour=<id>) ·
    some sozinho depois de alguns segundos (ver scrollToDirectLinkTourIfNeeded
    em Riodejaneiro.js/site-shell.js). */
 .rio-tour-card--highlight {
@@ -1410,7 +1410,7 @@ body {
     }
 
     .rio-hero {
-        /* Sem piso fixo aqui — o painel deve encolher para caber só o
+        /* Sem piso fixo aqui · o painel deve encolher para caber só o
            conteúdo (logo, título, texto, botão), sem sobrar espaço vazio
            antes da onda. A folga para a onda decorativa não colidir com o
            botão vem do padding-bottom de .rio-hero-content, abaixo. */
@@ -1533,7 +1533,7 @@ body {
     }
 
     .rio-hero {
-        /* Sem piso fixo — o painel encolhe para caber só o conteúdo, sem
+        /* Sem piso fixo · o painel encolhe para caber só o conteúdo, sem
            deixar espaço vazio entre o botão e a onda decorativa. A folga
            necessária pra onda não colidir com o botão vem do padding-bottom
            de .rio-hero-content, abaixo. */
@@ -2761,7 +2761,7 @@ header {
     color: #0f2a57 !important;
   }
 
-  /* Iguala a altura do painel a Lençóis/São Luís — todos os heros de
+  /* Iguala a altura do painel a Lençóis/São Luís · todos os heros de
      cidade devem cobrir a tela inteira a partir do mesmo breakpoint. */
   .rio-hero {
     min-height: 100vh;
@@ -2830,7 +2830,7 @@ header {
 
 @media (min-width: 1200px) {
   /* min-height do painel vem do bloco @media (min-width:1024px) acima
-     (100vh, igual a Lençóis/São Luís) — nada a sobrescrever aqui. */
+     (100vh, igual a Lençóis/São Luís) · nada a sobrescrever aqui. */
 
   .rio-hero-content {
     padding: 1.2rem 3.5rem 3.5rem;
@@ -2897,7 +2897,7 @@ header {
 }
 
 .reservation-modal {
-  /* Paleta local do modal — teal, igual ao botão "Confirmar Reserva" que já
+  /* Paleta local do modal · teal, igual ao botão "Confirmar Reserva" que já
      existia (#1da194); o resto do site usa verde (#18b015)/azul (#0b3c6d),
      então isso fica isolado aqui em vez de virar variável global. */
   --res-accent: #1da194;
@@ -2908,7 +2908,7 @@ header {
   --res-text-muted: #6b7280;
 
   /* Tudo dimensionado pra caber inteiro sem rolagem (nem vertical, nem
-     horizontal) em qualquer aparelho — inclusive celular deitado, a tela
+     horizontal) em qualquer aparelho · inclusive celular deitado, a tela
      mais baixa que existe na prática. Por isso os tamanhos abaixo usam
      clamp() amarrado à altura da tela (dvh) em vez de rem fixo: o modal
      encolhe sozinho conforme a tela fica mais baixa, sem precisar de uma
@@ -2988,7 +2988,7 @@ header {
 }
 
 /* Nome+Data e Hora+Quantidade (e agora Idioma+Celular) sempre lado a lado,
-   em QUALQUER tamanho de tela, inclusive celular — pedido explícito: menos
+   em QUALQUER tamanho de tela, inclusive celular · pedido explícito: menos
    linhas empilhadas = menos altura total, o que também ajuda a nunca
    precisar rolar. */
 .res-grid {
@@ -3006,7 +3006,7 @@ header {
 }
 
 /* [hidden] sozinho (regra do navegador) empata em especificidade com
-   .res-field e o navegador prioriza a folha de estilo da página — sem esta
+   .res-field e o navegador prioriza a folha de estilo da página · sem esta
    regra explícita, o campo "Hora" continuava ocupando espaço (e ficava
    visível) mesmo com o atributo hidden, porque .res-field { display:flex }
    vencia. */
@@ -3024,7 +3024,7 @@ header {
   min-width: 0;
 }
 
-/* Ícone à esquerda, dentro do campo — input/select não aceitam filhos, então
+/* Ícone à esquerda, dentro do campo · input/select não aceitam filhos, então
    o ícone é posicionado por cima via wrapper relative + input com
    padding-left reservado pro espaço do ícone. */
 .res-input-wrap {
@@ -3067,7 +3067,7 @@ header {
   border-color: var(--res-accent);
 }
 
-/* Setinha própria pro <select>, na cor do tema — a nativa do navegador não
+/* Setinha própria pro <select>, na cor do tema · a nativa do navegador não
    dá pra recolorir, e aqui ela também precisa deixar espaço à direita
    equivalente ao ícone da esquerda, pra ficar visualmente simétrico. */
 .reservation-modal select {
@@ -3081,7 +3081,7 @@ header {
   background-size: 13px;
 }
 
-/* Caixa de destaque "Tour selecionado" — nome do tour vem sempre do próprio
+/* Caixa de destaque "Tour selecionado" · nome do tour vem sempre do próprio
    tour clicado (openReservationModal), nunca é fixo: cada tour mostra o seu. */
 .res-tour-box {
   display: flex;
@@ -3140,7 +3140,7 @@ header {
   white-space: nowrap;
 }
 
-/* Calendário customizado da data de reserva — o popup nativo de
+/* Calendário customizado da data de reserva · o popup nativo de
    <input type="date"> não é estilizável, então o campo vira um botão que
    abre este mini-calendário próprio, onde os dias em que o tour funciona
    (ver horarios_por_dia) ficam em verde. Estilizado igual aos demais campos
@@ -3310,7 +3310,7 @@ header {
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-/* Sem sombra nestes dois botões, nem em repouso nem no hover — .btn-book (a
+/* Sem sombra nestes dois botões, nem em repouso nem no hover · .btn-book (a
    classe geral do site) traz uma sombra forte que não combina com o modal. */
 .reservation-modal-actions .btn-book,
 .reservation-modal-actions .btn-book:hover,
@@ -3318,7 +3318,7 @@ header {
   box-shadow: none;
 }
 
-/* Cancelar — ação secundária, discreta (fundo transparente) */
+/* Cancelar · ação secundária, discreta (fundo transparente) */
 .reservation-modal-actions button[type="button"] {
   background: transparent;
   border: 1.5px solid rgba(0, 0, 0, 0.2);
@@ -3333,7 +3333,7 @@ header {
   transform: none;
 }
 
-/* Confirmar Reserva — ação primária, preenchida na cor de destaque do site */
+/* Confirmar Reserva · ação primária, preenchida na cor de destaque do site */
 .reservation-modal-actions button[type="submit"] {
   background: #1da194;
   border: 1.5px solid #1da194;
@@ -3355,7 +3355,7 @@ header {
   margin-top: 1.2rem;
 }
 
-/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao —
+/* Links entre destinos no rodape. Herda tipografia e cor do proprio cartao ·
    nao introduz cor, fonte nem espacamento novos: so organiza os links em
    linha, quebrando naturalmente no mobile. */
 .rio-footer-destinos {
@@ -3793,7 +3793,7 @@ header {
   }
 }
 
-/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+/* "Não tem conta? Cadastrar" · verde em todos os modais de entrada. O tom
    #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
    e precisa de contraste suficiente sobre o fundo claro do modal. */
 .login-modal__switch {
@@ -3812,7 +3812,7 @@ header {
   font-weight: 700;
 }
 
-/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+/* Cards do modal "Tours Favoritos" (menu de perfil) · reaproveita o overlay
    e o título de .my-reservations-*, só os itens da lista são próprios.
    Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
 .my-favorites-card {

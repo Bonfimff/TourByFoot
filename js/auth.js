@@ -1,4 +1,4 @@
-// Login / Cadastro / Recuperação de senha — versão para a página index.
+// Login / Cadastro / Recuperação de senha · versão para a página index.
 // Portado das páginas de cidade (Riodejaneiro.js: createLoginModal/initLoginModal/
 // createRegisterModal/initRegisterModal), simplificado porque a index não tem
 // menu de perfil, abas de reserva nem outras telas pós-login: sucesso no login
@@ -101,7 +101,7 @@
     };
     window.updateProfileMenuUI = window.updateProfileMenuUI || updateProfileMenuUI;
 
-    // Modal "Minhas Reservas" — versão simplificada da que existe nas páginas
+    // Modal "Minhas Reservas" · versão simplificada da que existe nas páginas
     // de cidade (Riodejaneiro.js/site-shell.js): mostra a lista e permite
     // cancelar, mas não editar (o formulário de edição depende da tela de
     // reserva de uma cidade específica, que a index não tem).
@@ -198,8 +198,8 @@
 
             return `
             <div class="my-reservations-item" data-reservation-id="${escapeHtml(String(r.id || ''))}">
-                <strong class="my-reservations-tour">${escapeHtml(r.tour || '—')}</strong>
-                <span class="my-reservations-date">${strings.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '—')}</span>
+                <strong class="my-reservations-tour">${escapeHtml(r.tour || '·')}</strong>
+                <span class="my-reservations-date">${strings.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '·')}</span>
                 ${r.hora ? `<span class="my-reservations-detail">${strings.reservation_list_time_label || 'Hora'}: ${escapeHtml(r.hora)}</span>` : ''}
                 ${r.idioma ? `<span class="my-reservations-detail">${strings.reservation_list_language_label || 'Idioma'}: ${escapeHtml(r.idioma)}</span>` : ''}
                 ${r.qtd ? `<span class="my-reservations-detail">${strings.reservation_list_people_label || 'Pessoas'}: ${escapeHtml(String(r.qtd))}</span>` : ''}
@@ -650,7 +650,7 @@
 
         // Chamado pelo link do e-mail de recuperação (?auth=reset&email=&code=):
         // abre direto na tela de redefinir senha, com e-mail e código já
-        // preenchidos e verificados — só falta o usuário digitar a nova senha.
+        // preenchidos e verificados · só falta o usuário digitar a nova senha.
         return {
             openForReset: async (emailFromLink, codeFromLink) => {
                 overlay.classList.add('open');
@@ -727,7 +727,7 @@
                         <div class="login-modal__field">
                             <label for="registerGender">${strings.register_gender || 'Gênero'}</label>
                             <select id="registerGender" required>
-                                <option value="" selected disabled>—</option>
+                                <option value="" selected disabled>·</option>
                                 <option value="male">${strings.register_gender_male || 'Masculino'}</option>
                                 <option value="female">${strings.register_gender_female || 'Feminino'}</option>
                                 <option value="nonbinary">${strings.register_gender_nonbinary || 'Não-binário'}</option>
@@ -760,7 +760,7 @@
                             <button type="button" class="register-request-liberation-button" style="background:none; border:none; color:#1f6feb; text-decoration:underline; cursor:pointer; font-size:0.85rem; padding:0;">${strings.register_request_liberation || 'Não recebeu o e-mail? Solicitar liberação com o suporte'}</button>
                             <span class="register-liberacao-status" style="display:block; font-size:0.8rem; margin-top:0.25rem; color:#374151;"></span>
                         </div>
-                        <div class="register-liberado-hint" style="display:none; font-size:0.85rem; color:#1a7f37; background:#e6f4ea; border:1px solid #a6d8b5; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.register_liberado_hint || 'E-mail liberado pelo suporte — não é necessário confirmar por código. Só falta criar sua senha.'}</div>
+                        <div class="register-liberado-hint" style="display:none; font-size:0.85rem; color:#1a7f37; background:#e6f4ea; border:1px solid #a6d8b5; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.register_liberado_hint || 'E-mail liberado pelo suporte · não é necessário confirmar por código. Só falta criar sua senha.'}</div>
                         <div class="login-modal__field login-modal__field--password">
                             <label for="registerPassword">${strings.register_password || 'Senha'}</label>
                             <div class="login-modal__password-wrapper">
@@ -811,7 +811,7 @@
         let pendingRegisterEmail = '';
         let isCodeVerified = false;
         // true quando o suporte já liberou este e-mail manualmente (ver
-        // /solicitar_liberacao_cadastro) — nesse caso não existe código real
+        // /solicitar_liberacao_cadastro) · nesse caso não existe código real
         // pra digitar, o campo/reenvio ficam escondidos e isCodeVerified é
         // forçado a true direto, sem chamar /verify_confirmation_code.
         let isLiberadoFlow = false;
@@ -1255,7 +1255,7 @@
         // Chamado pelo link do e-mail de confirmação (?auth=confirm&email=&code=):
         // abre direto no passo do código, já preenchido e verificado. Nome/
         // senha do passo 1 não vêm por aqui (nunca saem do navegador antes do
-        // cadastro terminar) — só ajudam quem já preencheu o passo 1 nessa
+        // cadastro terminar) · só ajudam quem já preencheu o passo 1 nessa
         // mesma aba e só precisava buscar o código no e-mail.
         return {
             openForConfirm: async (emailFromLink, codeFromLink) => {
@@ -1373,7 +1373,7 @@
 
     // Lê ?auth=confirm|reset&email=&code= (vem do botão do e-mail de código)
     // e já abre o modal certo com tudo preenchido. Os parâmetros somem da
-    // barra de endereço logo em seguida — o código não deve ficar visível
+    // barra de endereço logo em seguida · o código não deve ficar visível
     // no histórico do navegador depois de usado.
     const handleAuthDeepLink = () => {
         const params = new URLSearchParams(window.location.search);
@@ -1397,7 +1397,7 @@
     };
 
     // Os modais de entrada/cadastro/recuperação são montados uma única vez, com
-    // o idioma vigente naquele momento — trocar de idioma depois não mexeria em
+    // o idioma vigente naquele momento · trocar de idioma depois não mexeria em
     // nada dentro deles (título, rótulos, botões continuariam no idioma antigo).
     // Aqui eles são descartados e remontados no idioma novo; se algum estiver
     // aberto na hora, reabre no mesmo lugar para o usuário não perder o passo.
@@ -1408,7 +1408,7 @@
         document.querySelector('.login-modal-overlay')?.remove();
         document.querySelector('.register-modal-overlay')?.remove();
 
-        // Só o DOM dos modais é recriado — os gatilhos ("Entrar"/"Cadastrar"
+        // Só o DOM dos modais é recriado · os gatilhos ("Entrar"/"Cadastrar"
         // do menu de perfil) continuam com os listeners originais, que
         // procuram o overlay a cada clique e por isso já acham o novo.
         // Rebindar aqui empilharia um listener extra a cada troca de idioma.

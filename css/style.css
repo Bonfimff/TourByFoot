@@ -587,7 +587,7 @@ main {
 /* Imagens de cada cidade */
 /* As miniaturas de cidade viraram <img> reais (antes eram background-image em
    <span>) para terem ALT e aparecerem na busca por imagens. object-fit:cover
-   reproduz exatamente o recorte que background-size:cover fazia — o resultado
+   reproduz exatamente o recorte que background-size:cover fazia · o resultado
    renderizado e identico ao anterior. As classes .city-thumb-* continuam
    existindo como fallback visual caso a imagem falhe ao carregar. */
 img.city-thumb {
@@ -597,7 +597,7 @@ img.city-thumb {
 }
 
 /* Dentro de #inicio o thumb e posicionado com "position:absolute; inset:0;
-   width:auto; height:auto" — regra escrita para o <span> com background-image,
+   width:auto; height:auto" · regra escrita para o <span> com background-image,
    onde inset:0 ja definia o tamanho. Um <img> e elemento substituido: com
    width/height auto ele ignora o inset e desenha no tamanho intrinseco da foto
    (564px dentro de um card de 167px), sendo cortado pelo overflow do cartao.
@@ -769,7 +769,7 @@ img.city-thumb {
     display: none;
     pointer-events: none;
     /* Sempre atrás do aviso "Informações Importantes" (.rio-notice,
-       z-index:1000) — mesmo que os dois fiquem visíveis ao mesmo tempo por
+       z-index:1000) · mesmo que os dois fiquem visíveis ao mesmo tempo por
        algum motivo, o aviso tem prioridade. */
     z-index: 900;
     width: min(420px, calc(100vw - 2rem));
@@ -943,7 +943,7 @@ img.city-thumb {
 }
 
 /* Em telas grandes sobra espaço ao redor do card (ele fica isolado no canto
-   da página) — deixamos ele um pouco maior e com mais presença/acabamento
+   da página) · deixamos ele um pouco maior e com mais presença/acabamento
    em vez de usar o mesmo tamanho compacto do mobile. */
 /* Hero title animation */
 @keyframes heroIntro {
@@ -1055,7 +1055,7 @@ img.city-thumb {
     }
 
     /* Cápsulas de vídeo são puramente decorativas e, abaixo de 1200px,
-       não cabem ao lado do texto — sobrariam empurradas para depois de
+       não cabem ao lado do texto · sobrariam empurradas para depois de
        todo o conteúdo real (cidades, ícones), ocupando espaço valioso
        de rolagem à toa. Removidas para priorizar o conteúdo em telas
        menores e evitar carregar 3 vídeos à toa em conexões móveis. */
@@ -1072,14 +1072,14 @@ img.city-thumb {
 /* ---------- TABLET < 900px ----------------------------- */
 @media (max-width: 900px) {
     /* Abaixo de 900px as cápsulas de vídeo somem e o conteúdo vira só o
-       bloco .hero-text — aqui ele precisa caber inteiro na tela (título +
+       bloco .hero-text · aqui ele precisa caber inteiro na tela (título +
        subtítulo + botão + grade de cidades + ícones sociais) sem depender
        de rolagem para ver a quarta cidade. Trocamos min-height por height
        fixo (100dvh) com overflow-y:auto como rede de segurança (idiomas
        muito longos, fonte do usuário aumentada etc. ainda conseguem
        rolar), mas os espaçamentos abaixo usam clamp() com unidades dvh
        para encolher automaticamente e evitar a rolagem no caso comum. */
-    /* :not(.rio-page) — essa regra é só para a home (grade de cidades). Nas
+    /* :not(.rio-page) · essa regra é só para a home (grade de cidades). Nas
        páginas de cidade (Salvador/São Luís/Lençóis, que também carregam este
        arquivo) ela prendia .main-container numa altura fixa com scroll
        interno, e como o .rio-hero dessas páginas já assume um
@@ -1099,7 +1099,7 @@ img.city-thumb {
     /* "flex:1" (herdado da regra base) dá ao main uma altura DEFINIDA em
        pixels (preenche o espaço restante depois do header e do painel
        Sobre/Contato/Ajuda, quando visível). "height:100%" aqui faz o
-       .hero-text ocupar exatamente essa altura — "align-items:stretch" no
+       .hero-text ocupar exatamente essa altura · "align-items:stretch" no
        main teoricamente faria o mesmo, mas stretch não repassa uma altura
        definida através de um flex row (main) aninhado num flex column
        (.main-container) em todos os casos; height:100% resolve isso de
@@ -1115,7 +1115,7 @@ img.city-thumb {
 
     /* Quando o painel Sobre/Contato/Ajuda está aberto (infoSections visível,
        sem a classe is-empty), o .hero-text volta ao tamanho natural em vez
-       de ser espremido na altura do main — senão a grade de cidades era
+       de ser espremido na altura do main · senão a grade de cidades era
        cortada por uma rolagem interna (ver captura de tela do usuário) só
        para caber ao lado do painel. Deixamos a página inteira rolar
        normalmente nesse caso: os 4 cards aparecem completos e o painel vem
@@ -1309,7 +1309,7 @@ img.city-thumb {
 
     /* A ordem e o agrupamento (imagem + divisória + texto / botão + divisória
        + contador, tudo lado a lado) se mantêm iguais em qualquer tamanho de
-       tela — só os tamanhos encolhem, nunca empilha em coluna. */
+       tela · só os tamanhos encolhem, nunca empilha em coluna. */
     .award-modal__header {
         padding: 0.85rem 0.9rem;
         gap: 0.6rem;
@@ -1767,7 +1767,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     animation: login-button-spinner 0.8s linear infinite;
 }
 
-/* "Não tem conta? Cadastrar" — verde em todos os modais de entrada. O tom
+/* "Não tem conta? Cadastrar" · verde em todos os modais de entrada. O tom
    #1a7f37 (e não o verde vivo dos botões) é proposital: o texto é pequeno
    (0.85rem) e precisa de contraste suficiente sobre o fundo claro do modal. */
 .login-modal__switch {
@@ -1951,7 +1951,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
 }
 
 /* ===================================================== */
-/* TELA DE INICIO — layout de referencia                 */
+/* TELA DE INICIO · layout de referencia                 */
 /* ===================================================== */
 /* Tudo escopado em #inicio (o .main-container da home). As paginas de
    cidade carregam este mesmo arquivo e nao podem ser afetadas. */
@@ -1989,7 +1989,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     padding-bottom: 0.9rem;
 }
 
-/* Pilula de idioma: formato arredondado nos dois tamanhos. As cores mudam —
+/* Pilula de idioma: formato arredondado nos dois tamanhos. As cores mudam ·
    creme no desktop, escura no mobile (media query no fim do bloco), como nas
    duas imagens de referencia. */
 #inicio .lang-btn {
@@ -2013,7 +2013,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
 /* ---------- Titulo ---------- */
 /* nowrap: "Free Walking Tour" fica sempre numa linha so. O corpo e o
    espacamento sao dados em vw para a linha inteira acompanhar a largura da
-   tela sem estourar — o titulo e curto em todos os idiomas ("Free Walking
+   tela sem estourar · o titulo e curto em todos os idiomas ("Free Walking
    Tour" em 5 deles, "徒步旅行团" em chines), entao nao ha risco de overflow. */
 #inicio .hero-title {
     font-family: "Playfair Display", Georgia, serif;
@@ -2084,7 +2084,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
 
 /* ---------- Cards de cidade ---------- */
 /* Na referencia a foto ocupa o card inteiro e o nome fica sobreposto no
-   rodape, sobre um degrade escuro — antes a foto era um retangulo menor
+   rodape, sobre um degrade escuro · antes a foto era um retangulo menor
    dentro de uma caixa dourada, com o nome abaixo dela. */
 #inicio .city-card {
     position: relative;
@@ -2249,7 +2249,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     }
 
     /* Hamburguer na esquerda, pilula de idioma centralizada e conta na
-       direita — o idioma fica no meio como na referencia. */
+       direita · o idioma fica no meio como na referencia. */
     #inicio > header {
         justify-content: space-between;
         flex-wrap: wrap;
@@ -2393,7 +2393,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     }
 
     /* Titulo grande ocupando a coluna da esquerda. Continua em uma linha so
-       (pedido anterior) — na referencia ele quebra em duas, mas o corpo aqui
+       (pedido anterior) · na referencia ele quebra em duas, mas o corpo aqui
        foi calculado para preencher a mesma largura sem quebrar. */
     #inicio .hero-title {
         font-size: clamp(2.6rem, 4.4vw, 3.5rem);
@@ -2473,7 +2473,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     }
 
     /* No desktop a fileira (copyright + icones + credito) fica numa faixa
-       creme solida, logo abaixo dos cards/capsulas — precisa estar sempre
+       creme solida, logo abaixo dos cards/capsulas · precisa estar sempre
        inteira dentro da parte clara, nunca tocando a borda ondulada. Por
        isso a onda vira uma tira decorativa SEPARADA acima da faixa (no
        ::before), em vez de ficar atras do conteudo: sobre uma curva, a
@@ -2498,7 +2498,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     }
 }
 
-/* Cards do modal "Tours Favoritos" (menu de perfil) — reaproveita o overlay
+/* Cards do modal "Tours Favoritos" (menu de perfil) · reaproveita o overlay
    e o título de .my-reservations-*, só os itens da lista são próprios.
    Ver openMyFavoritesModal em site-shell.js/Riodejaneiro.js. */
 .my-favorites-card {

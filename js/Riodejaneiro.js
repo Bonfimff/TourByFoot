@@ -1,13 +1,13 @@
 // Retrato dos tours (ver tools/snapshot_tours.py). O bloco existe no HTML para
 // o rastreador de busca, que nao roda JavaScript: sem ele o Google nao ve nem o
 // nome nem as fotos dos tours, que chegam da API. Some assim que os cards de
-// verdade estao na tela, e volta se a busca falhar — o visitante nunca fica sem
+// verdade estao na tela, e volta se a busca falhar · o visitante nunca fica sem
 // tour.
 //
 // Vive em window, e nao dentro de um IIFE, porque este arquivo tem dois escopos
 // separados e quem monta os cards nao esta no mesmo que este trecho.
 // Reserva por WhatsApp: alem de abrir a conversa com o guia, registra a reserva
-// como Pendente no painel. Antes disso, nada ficava gravado — se a conversa se
+// como Pendente no painel. Antes disso, nada ficava gravado · se a conversa se
 // perdesse, a reserva se perdia junto.
 //
 // Nao usa await de proposito. O window.open que abre o WhatsApp precisa
@@ -43,7 +43,7 @@ window.retratoDeTours = {
     // Rede de segurança por tempo, e não por caminho de erro: a busca dos tours
     // pode falhar em vários pontos deste arquivo, e depender de acertar todos
     // deixaria a seção vazia justamente no dia em que a API cair. Aqui a
-    // pergunta é só uma — passou o tempo e não existe card na tela? Então o
+    // pergunta é só uma · passou o tempo e não existe card na tela? Então o
     // retrato volta. Um descartar() bem-sucedido cancela isto antes de disparar.
     armarRede(segundos) {
         clearTimeout(this._prazo);
@@ -59,7 +59,7 @@ window.retratoDeTours.armarRede(8);
 // version 1.0
 // Link direto pra um tour (?tour=<id>, gerado em Gerenciamento > Editar
 // Tour > "Copiar link"): quando presente, o aviso "Informações Importantes"
-// e o card de premiação não aparecem — o cliente veio direto ver aquele
+// e o card de premiação não aparecem · o cliente veio direto ver aquele
 // tour, não a cidade inteira. Lido uma vez aqui, em vez de em cada IIFE
 // (o arquivo tem duas sem escopo compartilhado), porque tanto
 // applyCidadeAviso/initAwardToast quanto a rolagem até o card precisam dele.
@@ -74,7 +74,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
     // Gerenciamento.html carrega este arquivo só pelas funções globais que
     // exporta (openMyReservationsModal, openUserDataModal, redirectTo...,
-    // initLoginModal/initRegisterModal) — mas ele tem sua própria
+    // initLoginModal/initRegisterModal) · mas ele tem sua própria
     // implementação completa de hamburger/menu mobile/dropdown de perfil
     // (Gerenciamento.js). Rodar as duas juntas duplicava listeners no mesmo
     // #hamburger/.profile-menu com dois "mobileMenuState" independentes,
@@ -138,7 +138,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // Caminho absoluto, e nao relativo: as páginas de cidade agora vivem em
         // /salvador/ e as versões de idioma em /salvador/en/, então 'index.html'
         // relativo apontaria para dentro da própria pasta. E a home tem uma
-        // versão por idioma — de /salvador/en/ o retorno é /en/, não /.
+        // versão por idioma · de /salvador/en/ o retorno é /en/, não /.
         const idioma = (window.rotaIdioma && window.rotaIdioma.atual) || 'pt';
         window.location.href = idioma === 'pt' ? '/' : '/' + idioma + '/';
     };
@@ -242,7 +242,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         }
 
         // Situação de páginas (principal / gerenciamento). Só redireciona quem
-        // JÁ tem sessão e não tem permissão — visitante anônimo (sem
+        // JÁ tem sessão e não tem permissão · visitante anônimo (sem
         // localStorage.userRole) fica na página para o gate de login do
         // Gerenciamento.js (mais abaixo, já com o modal de login pronto)
         // mostrar o overlay em vez de expulsar direto pra "/".
@@ -278,7 +278,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
             const defaults = DEFAULT_ROLE_PERMISSIONS[canonicalRole] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
             // O cache em localStorage (gravado no login) pode ser mais antigo
-            // que permissões granulares adicionadas depois — mesclar com os
+            // que permissões granulares adicionadas depois · mesclar com os
             // defaults como base evita perder uma chave nova ausente no cache.
             rolePermissionsMap = {
                 ...rolePermissionsMap,
@@ -320,7 +320,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
     // Modo de manutenção: a checagem que decide isso é o script bloqueante
     // no <head> da página (redireciona pra /manutencao.html
-    // antes de qualquer conteúdo renderizar — sem flash da página real).
+    // antes de qualquer conteúdo renderizar · sem flash da página real).
 
     // 2. Método padronizado para adicionar reserva
     const adicionarReservaNoServidor = async (dadosReserva) => {
@@ -438,12 +438,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
 
     // Casa cada card do Rio ao SEU tour por identidade estável (pasta de
-    // imagens, com nome como fallback) — nunca por posição no array. A API
+    // imagens, com nome como fallback) · nunca por posição no array. A API
     // devolve tours de todas as cidades numa lista só, cuja ordem pode não
     // bater com a ordem dos cards no HTML; casar por índice bruto faz a
     // legenda de um card aparecer sobre o slideshow de outro tour. Usado em
     // TODO lugar que escreve o nome/detalhes de um card a partir do banco
-    // (carregarToursDoBanco E applyPageLanguage — a troca de idioma reaplica
+    // (carregarToursDoBanco E applyPageLanguage · a troca de idioma reaplica
     // os dados do banco por cima do texto estático, então precisa da mesma
     // lógica de casamento, senão reintroduz o bug na troca de idioma).
     const tourNameKey = (value) => String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
@@ -470,16 +470,16 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // Link de compartilhar: não é a URL direta da página (?tour=<id>), e sim
     // uma rota do backend (/compartilhar/tour/<id>) que gera as meta tags
     // Open Graph certas pra ESTE tour (nome + primeira foto) e redireciona
-    // pra a página real na hora — o HTML estático da página não tem como
+    // pra a página real na hora · o HTML estático da página não tem como
     // saber qual tour é até o JS rodar, e o crawler do WhatsApp/Facebook não
     // roda JS. Ver compartilhar_tour() em app.py.
     const buildTourShareUrl = (tourId) => `${API_BASE_URL}/compartilhar/tour/${tourId}`;
 
-    // Ícone de compartilhar em cada card — some se já existir (cards são
+    // Ícone de compartilhar em cada card · some se já existir (cards são
     // re-processados a cada troca de idioma) pra não duplicar.
     const ensureShareButton = (card, tour) => {
         if (!tour || tour.id == null) return;
-        // Fica sobre a foto (canto superior direito), não na barra de ações —
+        // Fica sobre a foto (canto superior direito), não na barra de ações ·
         // ver .rio-link-share em Riodejaneiro.css (position:absolute).
         const imagesDiv = card.querySelector('.rio-tour-images');
         if (!imagesDiv || card.querySelector('.rio-link-share')) return;
@@ -498,7 +498,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     return;
                 }
             } catch (error) {
-                return; // usuário cancelou o share nativo — não é erro, não avisa nada.
+                return; // usuário cancelou o share nativo · não é erro, não avisa nada.
             }
             try {
                 await navigator.clipboard.writeText(url);
@@ -514,7 +514,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
 
     // Barra flutuante dos ícones do card (compartilhar + favoritar): vai no
-    // card, e não em .rio-tour-images — essa div recorta a foto no 16/9
+    // card, e não em .rio-tour-images · essa div recorta a foto no 16/9
     // (overflow:hidden) e cortaria os botões, que precisam vazar metade pra
     // dentro do bloco de informações. Ver .rio-tour-float-actions em
     // Riodejaneiro.css.
@@ -652,7 +652,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         } catch (error) {
             console.error('Erro ao conectar com a API:', error);
             // Sem cards para montar, o retrato dos tours volta a aparecer: é o
-            // mesmo conteúdo, só sem interação — melhor do que a seção vazia.
+            // mesmo conteúdo, só sem interação · melhor do que a seção vazia.
             window.retratoDeTours.restaurar();
             throw error;
         }
@@ -717,7 +717,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
 
     // Campos editáveis em Gerenciamento > Gerenciamento da página > Tours da
-    // Página. Cada um só aparece no card se preenchido — em branco ou "N/U"
+    // Página. Cada um só aparece no card se preenchido · em branco ou "N/U"
     // (não usar) omite a legenda inteira, sem texto de preenchimento padrão.
     const TOUR_DETAIL_ICONS = {
         periodo: 'fa-calendar', idiomas: 'fa-language', duracao: 'fa-clock', diasSemana: 'fa-calendar-week', horarios: 'fa-calendar-check', saida: 'fa-route',
@@ -733,12 +733,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         zh: { periodo: '时期', idiomas: '语言', duracao: '时长', diasSemana: '星期几', saida: '出发地', encontro: '集合', pontoEmbarque: '上车点', pontoDesembarque: '下车点', grupo: '团体', identificacao: '识别', inclui: '包含', roteiro: '行程', horarios: '可预订时间', valor: '价格', estado: '状态' }
     };
     // "Dias da semana" é um valor DERIVADO (quais dias têm horário
-    // cadastrado), não texto livre — em vez de depender do admin preencher a
+    // cadastrado), não texto livre · em vez de depender do admin preencher a
     // tradução manualmente em 6 idiomas (como duracao/inclui/roteiro), o
     // texto é remontado aqui a partir de tour.horarios_por_dia, no idioma
     // atual, sempre automático. Mesma lógica de agrupamento (dias seguidos
     // viram intervalo "Segunda a Sexta") de formatDiasSemanaFromHorarios em
-    // Gerenciamento.js — só os rótulos/conectores mudam por idioma.
+    // Gerenciamento.js · só os rótulos/conectores mudam por idioma.
     const DIAS_SEMANA_ORDEM = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
     const DIAS_SEMANA_I18N = {
         pt: { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado', all: 'Todos os dias', range: ' a ', within: ' e ', join: ', ', last: ' e ' },
@@ -755,7 +755,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             porDia = tour?.horarios_por_dia ? JSON.parse(tour.horarios_por_dia) : null;
         } catch { porDia = null; }
         // Sem horarios_por_dia (tour antigo, nunca migrado): não há como
-        // derivar por idioma — cai no texto salvo (em português) como último recurso.
+        // derivar por idioma · cai no texto salvo (em português) como último recurso.
         if (!porDia || typeof porDia !== 'object') {
             return tour?.dias_semana || tour?.diasSemana || '';
         }
@@ -787,7 +787,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
     // "Duração" é texto livre digitado pelo admin, mas na prática usa um
     // vocabulário curto e previsível ("3 a 5 dias", "todos os dias", "2
-    // horas"...) — em vez de exigir que o admin digite a tradução manual
+    // horas"...) · em vez de exigir que o admin digite a tradução manual
     // pros 5 idiomas (aba de tradução do tour), troca-se automaticamente
     // essas palavras/frases conhecidas pelo equivalente no idioma atual.
     // Números e horários ("2h15", "8:00 - 14:00") não têm nenhuma palavra
@@ -846,7 +846,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
     // Textos do botão "Ler mais/Ler menos" usado quando um campo do tour
     // (ex.: Inclui, Roteiro) é longo o bastante pra estourar o clamp de 3
-    // linhas do card — ver .rio-tour-detail-line no CSS.
+    // linhas do card · ver .rio-tour-detail-line no CSS.
     const TOUR_READ_MORE_LABELS = {
         pt: { more: 'Ler mais', less: 'Ler menos' },
         en: { more: 'Read more', less: 'Read less' },
@@ -856,7 +856,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         zh: { more: '阅读更多', less: '收起' }
     };
     // Rótulos fixos de UI que aparecem em todo card de tour, independente do
-    // conteúdo vindo do banco — não usam mais o array pageTranslations[lang].cards
+    // conteúdo vindo do banco · não usam mais o array pageTranslations[lang].cards
     // (que era indexado por posição do card e quebrava assim que a lista de
     // tours deixou de bater com a ordem fixa dos cards estáticos antigos).
     const TOUR_ACTION_LABELS = {
@@ -870,7 +870,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     window.TOUR_ACTION_LABELS = TOUR_ACTION_LABELS;
     // Corta o TEXTO em si (não só visualmente) para caber em 3 linhas com
     // "…" e o botão "Ler mais" terminando NA mesma linha, coladinho no fim
-    // do texto — pedido explícito pra bater com a referência enviada.
+    // do texto · pedido explícito pra bater com a referência enviada.
     // -webkit-line-clamp/max-height só escondiam o excesso visualmente,
     // então o botão nunca conseguia ficar "no fim da 3ª linha": ou ficava
     // sobreposto (position:absolute) ou empurrado pra linha de baixo (fluxo
@@ -881,7 +881,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     const wireTourDetailToggles = (container) => {
         if (!container) return;
         // Medir logo após o innerHTML ser trocado pega o card ainda sem layout
-        // assentado (altura 0 ou desatualizada) — o botão nunca aparecia mesmo
+        // assentado (altura 0 ou desatualizada) · o botão nunca aparecia mesmo
         // com texto claramente cortado. Adiar pro próximo frame garante que o
         // navegador já terminou de desenhar antes de medir.
         requestAnimationFrame(() => {
@@ -890,7 +890,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const toggle = lineEl.querySelector('.rio-tour-detail-toggle');
                 if (!valueEl || !toggle) return;
 
-                // O texto original só é guardado uma vez — chamadas seguintes
+                // O texto original só é guardado uma vez · chamadas seguintes
                 // (troca de idioma, etc.) sempre recriam o HTML do zero, mas
                 // por segurança evita truncar um texto que já foi truncado.
                 if (valueEl.dataset.fullText === undefined) {
@@ -945,7 +945,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
             // Inclui/Roteiro viram HTML (parágrafos/listas), então o corte
             // caractere a caractere do texto puro acima não serve direto.
-            // Mas quando o campo é só parágrafo(s) — sem lista com marcador —
+            // Mas quando o campo é só parágrafo(s) · sem lista com marcador ·
             // dá pra fazer o mesmo corte "…" + botão colado no fim da 3ª
             // linha andando pela árvore de nós de texto (em vez de fatiar a
             // string HTML crua, que quebraria tags no meio). Listas com
@@ -978,7 +978,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 // Só parágrafo(s): mede sem o clamp de CSS (senão o
                 // scrollHeight já viria cortado em 3 linhas mesmo quando o
                 // texto real tem só 2, e a busca binária nunca acharia o
-                // ponto certo) — a classe abaixo desativa o max-height do
+                // ponto certo) · a classe abaixo desativa o max-height do
                 // CSS e deixa CLAMP_LINES aqui ser a única fonte de verdade.
                 bodyEl.classList.add('rio-tour-detail-richbody-textcut');
                 if (bodyEl.dataset.fullHtml === undefined) {
@@ -996,7 +996,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 // Precisa ficar visível ANTES da busca binária (não só no
                 // final): o botão só ocupa espaço na linha quando não está
                 // "display:none", e a busca precisa medir a altura JÁ COM
-                // esse espaço contado — senão o texto cabe "sem o botão"
+                // esse espaço contado · senão o texto cabe "sem o botão"
                 // durante toda a busca e o botão, ao aparecer só no fim,
                 // empurra a última linha pra uma 4ª linha por fora do clamp.
                 toggle.classList.add('rio-detail-visible');
@@ -1012,7 +1012,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
                 // Reconstrói o HTML completo, corta o n-ésimo caractere
                 // visível (percorrendo os text nodes em ordem) e remove tudo
-                // que vem depois — devolve o elemento onde o corte aconteceu,
+                // que vem depois · devolve o elemento onde o corte aconteceu,
                 // pra "…" e o botão entrarem bem ali, mesmo dentro de <p>
                 // aninhado, igual o pedido de ficar "colado" no fim do texto.
                 const buildTruncated = (n) => {
@@ -1033,13 +1033,13 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         textNode.textContent = textNode.textContent.slice(0, remaining).trimEnd();
                         cutNode = textNode;
                         // Sobe da textNode até bodyEl removendo os irmãos-depois em CADA
-                        // nível (não só no primeiro) — ex.: quando o corte cai no 1º
+                        // nível (não só no primeiro) · ex.: quando o corte cai no 1º
                         // parágrafo de vários (Inclui com "Não Inclui:" embaixo, um <p>
                         // por linha), tem que remover TODOS os <p> seguintes, não só os
                         // irmãos dentro do próprio <p> cortado (que normalmente não tem
                         // nenhum, já que cada parágrafo é só um textNode). A remoção
                         // precisa rodar mesmo quando "el" já virou bodyEl nesta mesma
-                        // volta — por isso é feita ANTES de checar se deve parar.
+                        // volta · por isso é feita ANTES de checar se deve parar.
                         let el = textNode.parentNode;
                         let sibling = textNode.nextSibling;
                         while (el) {
@@ -1117,7 +1117,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         return fallback;
     };
     // "Idiomas" não é um campo livre editável por idioma (vem dos checkboxes
-    // de idioma falado do tour) — só os NOMES dos idiomas mudam de um idioma
+    // de idioma falado do tour) · só os NOMES dos idiomas mudam de um idioma
     // pro outro, então é uma troca de palavra fixa, não uma tradução manual.
     const LANGUAGE_NAME_TRANSLATIONS = {
         en: { 'Português': 'Portuguese', 'Inglês': 'English', 'Espanhol': 'Spanish', 'Francês': 'French', 'Italiano': 'Italian', 'Chinês': 'Chinese' },
@@ -1143,7 +1143,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         .replace(/>/g, '&gt;');
     // "**texto**" e "*texto*" (asterisco duplo ou simples envolvendo o
     // trecho) viram negrito; só o "* " no INÍCIO da linha (com espaço logo
-    // depois) é tratado como marcador de lista — ver bulletMatch abaixo.
+    // depois) é tratado como marcador de lista · ver bulletMatch abaixo.
     const applyRichInlineBold = (str) => str
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<strong>$1</strong>');
@@ -1214,7 +1214,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 html += `<li><span class="rio-tour-detail-line"><i class="fa ${TOUR_DETAIL_ICONS[key]}"></i> <strong>${labels[key]}:</strong> <span class="rio-tour-detail-value">${value}</span><button type="button" class="rio-tour-detail-toggle" data-more="${readMoreLabel.more}" data-less="${readMoreLabel.less}">${readMoreLabel.more}</button></span></li>`;
             }
             // "Valor" vai logo depois de "Horários disponíveis" em vez de sempre
-            // no final da lista — pedido explícito, já que ambos os campos
+            // no final da lista · pedido explícito, já que ambos os campos
             // costumam ser lidos juntos ("quando" e "quanto").
             if (key === 'horarios') {
                 horariosRendered = true;
@@ -1230,7 +1230,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         return html;
     };
 
-    // O botão "Ver no Mapa" só faz sentido — e só fica habilitado — quando o
+    // O botão "Ver no Mapa" só faz sentido · e só fica habilitado · quando o
     // tour tem um "Link do local de encontro" preenchido no admin.
     const applyMapLinkState = (mapLink, url) => {
         if (!mapLink) return;
@@ -1267,7 +1267,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
     // Tour criado em Gerenciamento > "+ Adicionar Tour" sem card correspondente
     // no HTML estático da página: monta um card do zero e insere na grid certa
-    // (grid[0] = tours gratuitos, grid[1] = pagos — mesma convenção das duas
+    // (grid[0] = tours gratuitos, grid[1] = pagos · mesma convenção das duas
     // divs .rio-tours-grid já existentes em #tours).
     const createRioTourCardElement = (tour, lang) => {
         const actionLabels = TOUR_ACTION_LABELS[lang] || TOUR_ACTION_LABELS.pt;
@@ -1555,7 +1555,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             if (actions[0]) actions[0].innerHTML = cardData.map;
             if (actions[1]) {
                 // Este card não bateu com nenhum tour do banco (fallback de
-                // texto estático abaixo) — sem dbTour.canal_reserva não dá
+                // texto estático abaixo) · sem dbTour.canal_reserva não dá
                 // pra saber se é reserva via WhatsApp, então preserva o
                 // ícone que já estivesse no botão em vez de apagá-lo ao
                 // trocar de idioma.
@@ -1620,14 +1620,14 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // Link/ícone e ativo/inativo são editáveis em Gerenciamento > Card de
     // Premiação. O card só aparece DEPOIS do aviso "Informações Importantes"
     // ser fechado (ou de imediato se esse aviso não existir/já estiver
-    // escondido) — window.__showAwardCard é chamado pelos handlers do aviso
+    // escondido) · window.__showAwardCard é chamado pelos handlers do aviso
     // mais abaixo, não por um timer cego.
     // Mesmo card (#awardModal) e mesmo comportamento das outras cidades
     // (ver initAwardNotification em site-shell.js): contador de 10s, fecha
     // no X/Esc e só o botão "Ver no TripAdvisor" abre o link.
     const initAwardToast = async () => {
         // Link direto pra um tour: nunca monta o card nem define
-        // window.__showAwardCard — qualquer chamada a ela vira no-op sozinha.
+        // window.__showAwardCard · qualquer chamada a ela vira no-op sozinha.
         if (window.__tourDirectLinkId) return;
         const modal = document.getElementById('awardModal');
         if (!modal) return;
@@ -2094,7 +2094,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
         // Numa pagina que existe em varias URLs por idioma, trocar de idioma e
         // NAVEGAR, nao recarregar: recarregar deixaria a URL dizendo /en/ com o
-        // conteudo em outro idioma — exatamente o que o hreflang promete que nao
+        // conteudo em outro idioma · exatamente o que o hreflang promete que nao
         // acontece, e o que faria o Google indexar o idioma errado.
         // window.rotaIdioma e definido no <head> de cada pagina gerada; onde ele
         // nao existe (paginas ainda sem versao por idioma), recarrega como antes.
@@ -2115,7 +2115,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // informações etc.) do mesmo jeito que já acontece na aba que trocou.
     // Importante: por essa altura o localStorage já mudou (é por isso que o
     // evento disparou), então comparar com getCurrentLang() de novo compararia
-    // o valor novo com ele mesmo — por isso o idioma já aplicado nesta aba é
+    // o valor novo com ele mesmo · por isso o idioma já aplicado nesta aba é
     // capturado uma única vez aqui, no carregamento.
     const langAppliedOnLoad = getCurrentLang();
     window.addEventListener('storage', (event) => {
@@ -2864,7 +2864,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         <div class="login-modal__field">
                             <label for="registerGender" data-i18n="register_gender">${strings.register_gender}</label>
                             <select id="registerGender" required>
-                                <option value="" selected disabled>—</option>
+                                <option value="" selected disabled>·</option>
                                 <option value="male" data-i18n="register_gender_male">${strings.register_gender_male}</option>
                                 <option value="female" data-i18n="register_gender_female">${strings.register_gender_female}</option>
                                 <option value="nonbinary" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary}</option>
@@ -2963,7 +2963,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         let isCodeVerified = false;
         let lastVerifiedCode = '';
         // true quando o suporte já liberou este e-mail manualmente (ver
-        // /solicitar_liberacao_cadastro) — nesse caso não existe código real
+        // /solicitar_liberacao_cadastro) · nesse caso não existe código real
         // pra digitar, o campo/reenvio ficam escondidos e isCodeVerified é
         // forçado a true direto, sem chamar /verify_confirmation_code.
         let isLiberadoFlow = false;
@@ -3945,7 +3945,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             }
         }
         // Nenhum endereço respondeu: sem cards para montar, o retrato volta a
-        // aparecer. É o mesmo conteúdo, só sem interação — melhor do que a
+        // aparecer. É o mesmo conteúdo, só sem interação · melhor do que a
         // seção de tours vazia.
         window.retratoDeTours.restaurar();
         return null;
@@ -4038,7 +4038,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         .replace(/'/g, '&#39;');
 
     // Foto de perfil padrão do usuário: usa o Gravatar associado ao email
-    // (mesmo serviço usado por WordPress/GitHub — hash SHA-256 do email, sem
+    // (mesmo serviço usado por WordPress/GitHub · hash SHA-256 do email, sem
     // precisar de nenhuma API/consentimento do provedor de email). Se o
     // usuário nunca configurou um Gravatar, cai num avatar gerado
     // (identicon) em vez de imagem quebrada.
@@ -4192,7 +4192,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
     // Monta a URL de uma cidade a partir do slug. Absoluta a partir da raiz
     // porque a pagina atual pode estar em /<cidade>/ ou em /<cidade>/<idioma>/
-    // — um caminho relativo estaria certo numa profundidade e errado na outra.
+    // · um caminho relativo estaria certo numa profundidade e errado na outra.
     // Preserva o idioma da pagina atual (window.rotaIdioma e definido no
     // <head> de cada pagina gerada); sem ele, cai no portugues, que e a raiz.
     const urlDaCidade = (slug) => {
@@ -4446,8 +4446,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const showActions = !(isCancelled || isFinalized);
             return `
             <div class="my-reservations-item" data-reservation-id="${escapeHtml(String(r.id || ''))}">
-                <strong class="my-reservations-tour">${escapeHtml(r.tour || '—')}</strong>
-                <span class="my-reservations-date">${ui.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '—')}</span>
+                <strong class="my-reservations-tour">${escapeHtml(r.tour || '·')}</strong>
+                <span class="my-reservations-date">${ui.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '·')}</span>
                 ${r.hora ? `<span class="my-reservations-detail">${ui.reservation_list_time_label || 'Hora'}: ${escapeHtml(r.hora)}</span>` : ''}
                 ${r.idioma ? `<span class="my-reservations-detail">${ui.reservation_list_language_label || 'Idioma'}: ${escapeHtml(r.idioma)}</span>` : ''}
                 ${r.qtd ? `<span class="my-reservations-detail">${ui.reservation_list_people_label || 'Pessoas'}: ${escapeHtml(String(r.qtd))}</span>` : ''}
@@ -4827,7 +4827,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         <label><span data-i18n="user_data_country">${strings.user_data_country || 'País'}</span><input name="pais_origem" /></label>
                         <label><span data-i18n="user_data_gender">${strings.user_data_gender || 'Gênero'}</span>
                             <select name="genero">
-                                <option value="">—</option>
+                                <option value="">·</option>
                                 <option value="male" data-i18n="register_gender_male">${strings.register_gender_male || 'Masculino'}</option>
                                 <option value="female" data-i18n="register_gender_female">${strings.register_gender_female || 'Feminino'}</option>
                                 <option value="nonbinary" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary || 'Não binário'}</option>
@@ -5068,7 +5068,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const reservationModal = document.getElementById('reservationModal');
         const reservationForm = document.getElementById('reservationForm');
         const reservationTour = document.getElementById('reservationTour');
-        // Elemento só de exibição (caixa "Tour selecionado") — reservationTour
+        // Elemento só de exibição (caixa "Tour selecionado") · reservationTour
         // continua sendo o campo de verdade lido no submit, mas agora fica
         // hidden; quem mostra o nome do tour pro usuário é este aqui.
         const reservationTourDisplay = document.getElementById('reservationTourDisplay');
@@ -5113,7 +5113,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 reservationTime.appendChild(option);
             });
 
-            // O campo de horário fica SEMPRE visível — some antes deixava um
+            // O campo de horário fica SEMPRE visível · some antes deixava um
             // buraco no formulário e fazia o layout pular quando a data era
             // escolhida. Sem horários ele mostra só o placeholder e deixa de
             // ser obrigatório, pra não travar tours que não têm horário.
@@ -5121,7 +5121,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             if (horarios.length) {
                 reservationTime.setAttribute('required', 'required');
                 // Antes, com um único horário disponível, ele já vinha
-                // pré-selecionado — o cliente nunca via nem escolhia de
+                // pré-selecionado · o cliente nunca via nem escolhia de
                 // fato. Agora o campo sempre nasce em branco (placeholder),
                 // mesmo com uma opção só; é o próprio cliente quem escolhe.
             } else {
@@ -5154,12 +5154,12 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         };
 
         // Depois de escolher a data, leva o cliente direto pro campo de
-        // horário — focus() sempre funciona; showPicker() (Chrome/Edge
+        // horário · focus() sempre funciona; showPicker() (Chrome/Edge
         // recentes) já abre o dropdown sozinho, mas é opcional: navegadores
         // sem suporte simplesmente ignoram e o campo fica focado, pronto
         // pra abrir com Enter/seta ou um clique.
         const focarCampoHorario = () => {
-            // Só faz sentido focar quando há horário pra escolher — o campo
+            // Só faz sentido focar quando há horário pra escolher · o campo
             // agora fica sempre visível, então "não escondido" deixou de ser
             // sinal de que existem opções.
             if (!reservationTime || reservationTime.options.length <= 1) return;
@@ -5177,7 +5177,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // O campo de horário fica sempre visível, então dá pra tentar usá-lo
         // antes de escolher a data. Como os horários dependem do dia da semana
         // (tours com horarios_por_dia), abrir a lista sem data mostraria uma
-        // lista vazia ou errada — melhor avisar e mandar pro calendário.
+        // lista vazia ou errada · melhor avisar e mandar pro calendário.
         // mousedown/keydown são interceptados ANTES do dropdown abrir; change
         // fica como rede de segurança pra formas de seleção fora desses dois.
         const exigirDataAntesDoHorario = (event) => {
@@ -5214,11 +5214,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // Calendário customizado: o popup nativo de <input type="date"> não é
         // estilizável, então o campo vira um botão que abre um mini-calendário
         // próprio pintando de verde os dias em que o tour funciona. O input
-        // nativo continua no DOM (oculto) como fonte da verdade — o resto do
+        // nativo continua no DOM (oculto) como fonte da verdade · o resto do
         // fluxo (payload, updateReservationTimeForSelectedDate) não muda.
         //
         // Nome do mês e abreviação dos dias da semana vêm do Intl do próprio
-        // navegador (não de um array fixo em português) — assim cobrem os 6
+        // navegador (não de um array fixo em português) · assim cobrem os 6
         // idiomas do site automaticamente, sem precisar manter uma lista de
         // traduções por mês. O resto dos textos do calendário (placeholder,
         // legenda, aria-label dos botões de navegação) usa uiTranslations
@@ -5232,7 +5232,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
             const locale = CALENDAR_LOCALE_POR_IDIOMA[lang] || 'pt-BR';
             const nome = new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(year, month, 1));
-            // Intl devolve em minúsculo em pt/es/it/fr ("setembro") — o inglês já
+            // Intl devolve em minúsculo em pt/es/it/fr ("setembro") · o inglês já
             // vem maiúsculo, então isso só afeta os idiomas que precisam.
             return nome.charAt(0).toUpperCase() + nome.slice(1);
         };
@@ -5240,7 +5240,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const lang = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
             const locale = CALENDAR_LOCALE_POR_IDIOMA[lang] || 'pt-BR';
             const formatter = new Intl.DateTimeFormat(locale, { weekday: 'narrow' });
-            // 1º de janeiro de 2017 foi um domingo — base conhecida pra gerar
+            // 1º de janeiro de 2017 foi um domingo · base conhecida pra gerar
             // dom..sáb (ou equivalente no idioma) sem depender do dia de hoje.
             return Array.from({ length: 7 }, (_, i) => formatter.format(new Date(2017, 0, 1 + i)));
         };
@@ -5330,7 +5330,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             calendarPopover.style.position = 'fixed';
             document.body.appendChild(calendarPopover);
             // Preenche o conteúdo ANTES de posicionar, pra medir o tamanho real
-            // (largura fixa de 260px, altura varia com o mês) — precisa disso
+            // (largura fixa de 260px, altura varia com o mês) · precisa disso
             // pra decidir se cabe do jeito padrão (colado embaixo do campo, à
             // esquerda dele) ou se precisa encolher/inverter de lado.
             renderCalendarPopover();
@@ -5351,7 +5351,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             let top = rect.bottom + 6;
             if (top + popH > window.innerHeight - margin) {
                 // Não cabe embaixo do campo (ex.: campo perto do rodapé da
-                // tela) — abre pra cima dele em vez de cortar embaixo.
+                // tela) · abre pra cima dele em vez de cortar embaixo.
                 top = rect.top - popH - 6;
                 if (top < margin) top = margin; // último recurso: cola no topo
             }
@@ -5378,7 +5378,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         initCustomReservationCalendar();
 
         // O botão do calendário é criado uma única vez (guard em
-        // dataset.customCalendarInit lá em cima) — sem isso, quem troca de
+        // dataset.customCalendarInit lá em cima) · sem isso, quem troca de
         // idioma DEPOIS de o modal já ter sido aberto uma vez ficava preso no
         // idioma de quando o botão nasceu, mesmo com o resto do modal
         // reagindo normalmente ao "app:language-changed".
@@ -5391,7 +5391,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const matchTourByName = (tourName) => getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tourName));
 
         // Tours com canal_reserva="whatsapp" continuam usando o mesmo formulário
-        // do site (preenche data, idioma, pessoas etc. normalmente) — só o envio
+        // do site (preenche data, idioma, pessoas etc. normalmente) · só o envio
         // final é diferente: em vez de salvar no banco, "Concluir Reserva" abre o
         // WhatsApp com todos os dados preenchidos (ver reservationForm.submit).
         const openReservationModal = (tourName, languageText, meetingPoint) => {
@@ -5410,7 +5410,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const isWhatsAppTour = (matchedTour?.canal_reserva || 'web').toLowerCase() === 'whatsapp';
 
             // Reserva por WhatsApp não passa pelo banco de dados do site (é só uma
-            // mensagem pronta pro guia), então não exige login — igual já era antes.
+            // mensagem pronta pro guia), então não exige login · igual já era antes.
             if (!isWhatsAppTour && (!userRole || !userEmail)) {
                 showGlobalNotification(ui.reservation_login_required || 'É necessário realizar login para fazer uma reserva.', 'error');
                 return;
@@ -5472,7 +5472,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // Extraída como função nomeada (em vez de só um forEach inline) porque
         // cards de tour criados dinamicamente (ver "+ Adicionar Tour" no admin,
         // window.__bindRioReserveButton em carregarToursDoBanco) precisam do
-        // mesmo binding — o forEach abaixo só alcança os botões que já existem
+        // mesmo binding · o forEach abaixo só alcança os botões que já existem
         // no HTML estático no momento em que a página carrega.
         const bindReserveButton = (button) => {
             if (!button || button.dataset.reserveBound === 'true') return;
@@ -5534,7 +5534,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const clientName = reservationName.value.trim();
                 const date = reservationDate.value;
                 // Math.max(1, ...) porque o formulário agora usa novalidate (o campo de
-                // data fica escondido — substituído pelo calendário customizado — e o
+                // data fica escondido · substituído pelo calendário customizado · e o
                 // navegador tentava focar esse required invisível e travava o envio sem
                 // avisar ninguém); sem a checagem nativa min="1" desativada junto, um
                 // valor negativo digitado à mão passaria direto.
@@ -5559,7 +5559,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 // Modalidade vem do cadastro do tour (Privado/Free); nunca fica visível/editável
                 // no formulário do cliente. O backend também valida isso de forma independente.
                 // Reusa o mesmo tour já resolvido quando o modal foi aberto (activeReservationTour)
-                // em vez de procurar de novo — evita qualquer divergência entre o que decidiu
+                // em vez de procurar de novo · evita qualquer divergência entre o que decidiu
                 // mostrar o botão do WhatsApp e o que decide pra onde a reserva vai.
                 const matchedTour = (activeReservationTour && normalizeTourKey(activeReservationTour.name || activeReservationTour.nome_tour) === normalizeTourKey(tour))
                     ? activeReservationTour
@@ -5821,7 +5821,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         }
 
         // Se o aviso não existir ou já estiver escondido (caso mais comum no
-        // Rio — ver comentário acima), dispara o card de premiação direto;
+        // Rio · ver comentário acima), dispara o card de premiação direto;
         // senão, os handlers de Prosseguir/Não mostrar novamente acima cuidam
         // disso quando o usuário fechar o aviso. Pequeno atraso extra porque
         // window.__showAwardCard só existe depois do fetch assíncrono em
@@ -5836,7 +5836,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         }
 
         // Link direto pra um tour (?tour=<id>): rola até o card assim que ele
-        // existir no DOM — os cards só ganham data-tour-id depois que
+        // existir no DOM · os cards só ganham data-tour-id depois que
         // carregarToursDoBanco() casa cada um com seu registro do banco (ver
         // matchRioTourForCard/createRioTourCardElement), por isso isso só
         // roda DEPOIS daquela chamada, não no load da página.
@@ -6006,7 +6006,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     window.applyCidadeAviso = (cidade, aviso) => applyCidadeAviso(aviso);
 
     // Preenchido por js/preload-paineis.js quando o cliente passa pela home
-    // antes de entrar no Rio — aplica na hora, sem esperar a API, e só
+    // antes de entrar no Rio · aplica na hora, sem esperar a API, e só
     // revalida em segundo plano (o fetch abaixo roda igual, sempre).
     const AVISO_CACHE_KEY = 'cidadeAvisoCache';
     const getCachedAvisoLista = () => {

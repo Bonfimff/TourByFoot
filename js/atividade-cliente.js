@@ -1,13 +1,13 @@
-// Rastreia cliques em tour nas páginas de cidade — alimenta "Ações dos
+// Rastreia cliques em tour nas páginas de cidade · alimenta "Ações dos
 // Clientes" e o ranking de "Tours mais clicados" em Gerenciamento > Contas.
 //
 // Usa DELEGAÇÃO DE EVENTO (um único listener em document, em vez de ligar em
 // cada card) de propósito: os cards de tour são criados de duas formas
 // diferentes (HTML estático da página e cards montados em JS a partir do
-// banco — ver createRioTourCardElement em Riodejaneiro.js/site-shell.js), e
+// banco · ver createRioTourCardElement em Riodejaneiro.js/site-shell.js), e
 // delegação pega os dois sem precisar tocar em nenhum dos dois caminhos de
 // criação. Roda por fora da lógica de reserva (não faz preventDefault, não
-// depende de nada do fluxo real) — se essa contagem falhar, a reserva em si
+// depende de nada do fluxo real) · se essa contagem falhar, a reserva em si
 // nunca é afetada.
 (() => {
     const CIDADE_POR_CAMINHO = [
@@ -34,7 +34,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tipoAcao, tourNome, cidade: cidadeAtual(), email })
         }).catch(() => {
-            // Estatística — falha aqui não pode incomodar quem navega.
+            // Estatística · falha aqui não pode incomodar quem navega.
         });
     };
 
@@ -49,12 +49,12 @@
         } else if (event.target.closest('.rio-link-share')) {
             registrar('tour_compartilhar', tourNome);
         } else if (event.target.closest('.rio-tour-fav')) {
-            // Favoritar é registrado pelo servidor, em /toggle_tour_favorito —
+            // Favoritar é registrado pelo servidor, em /toggle_tour_favorito ·
             // lá dá pra distinguir favoritar de desfavoritar, o que daqui não
             // dá. Só não pode cair no "viu detalhes" abaixo.
         } else if (!event.target.closest('.rio-link-map')) {
             // Qualquer clique no corpo do card (fora do link do mapa) conta como
-            // "viu detalhes" — a própria página já é o "detalhe" do tour, não
+            // "viu detalhes" · a própria página já é o "detalhe" do tour, não
             // existe um modal separado de "saiba mais" neste site.
             registrar('tour_visualizar', tourNome);
         }
@@ -63,7 +63,7 @@
     // Chegada por link direto (?tour=<id>, o link gerado pelo botão de
     // compartilhar). O card correspondente só ganha data-tour-id depois que os
     // tours voltam do banco (ver fetchToursFromBackend), então o nome do tour
-    // não existe no DOM na hora do load — daí observar as mudanças em vez de
+    // não existe no DOM na hora do load · daí observar as mudanças em vez de
     // ler uma vez só. Registra no máximo uma vez por carregamento de página.
     const registrarAcessoPorLink = () => {
         const tourId = new URLSearchParams(window.location.search).get('tour');

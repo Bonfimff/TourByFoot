@@ -1,10 +1,10 @@
 // Sinal de vida de contas logadas nas páginas PÚBLICAS do site (Início e as
-// 4 cidades) — a mesma ideia que já existe em Gerenciamento.js, mas as
+// 4 cidades) · a mesma ideia que já existe em Gerenciamento.js, mas as
 // páginas públicas não tinham NADA disso, então clientes nunca apareciam
 // como online nem tinham "última página" na tabela de Contas.
 //
 // Compartilhado (em vez de duplicado dentro de auth.js/Riodejaneiro.js/
-// site-shell.js) porque é pouca lógica e igual em todas as páginas — só a
+// site-shell.js) porque é pouca lógica e igual em todas as páginas · só a
 // URL/rótulo da própria página muda.
 (() => {
     const PAGINA_POR_CAMINHO = [
@@ -33,7 +33,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, pagina: paginaAtual() })
         }).catch(() => {
-            // Detalhe visual — falha aqui não pode incomodar quem navega.
+            // Detalhe visual · falha aqui não pode incomodar quem navega.
         });
     };
 

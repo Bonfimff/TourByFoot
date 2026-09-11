@@ -47,7 +47,7 @@ console.log('Layout da imagem de referência carregado.');
 		currentLang = translations[lang] ? lang : "pt";
 		window.__appLang = currentLang;
 		// Mesma chave usada pelas páginas de cidade e pelo Gerenciamento
-		// (site-shell.js/Riodejaneiro.js) — precisa ser a mesma em todo o site
+		// (site-shell.js/Riodejaneiro.js) · precisa ser a mesma em todo o site
 		// para o idioma escolhido numa aba valer nas outras (ver listener de
 		// "storage" mais abaixo).
 		try { localStorage.setItem('preferredLanguage', currentLang); } catch(e) {}
@@ -100,7 +100,7 @@ console.log('Layout da imagem de referência carregado.');
 			wrapper.classList.remove("open");
 			const escolhido = item.dataset.lang;
 			// Cada idioma tem endereço próprio, então trocar de idioma é NAVEGAR
-			// até ele — trocar o texto no lugar deixaria a URL mentindo sobre o
+			// até ele · trocar o texto no lugar deixaria a URL mentindo sobre o
 			// que a página mostra. A busca e a âncora vão junto.
 			const rota = window.rotaIdioma;
 			if (rota && rota.base) {
@@ -190,7 +190,7 @@ console.log('Layout da imagem de referência carregado.');
 			});
 		});
 
-		// O card inteiro não é mais clicável — só o botão "Ver no TripAdvisor"
+		// O card inteiro não é mais clicável · só o botão "Ver no TripAdvisor"
 		// abre o link (em nova aba, sem tirar o visitante do site), evitando
 		// que um clique acidental em qualquer parte do card redirecione.
 		if (awardCta) {
@@ -322,7 +322,7 @@ console.log('Layout da imagem de referência carregado.');
 	};
 
 	const loadPaginaSecao = async () => {
-		// api.exksvol.com não existe (NXDOMAIN) — era só um request garantidamente
+		// api.exksvol.com não existe (NXDOMAIN) · era só um request garantidamente
 		// falho a cada carregamento. O fallback real é o backend local.
 		const endpoints = [
 			"https://api-tour.exksvol.com/get_pagina_secao?pagina=Principal",
@@ -422,5 +422,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Modo de manutenção: a checagem que realmente decide isso agora é o script
 // bloqueante no <head> (ver index.html), que redireciona pra manutencao.html
-// antes de qualquer conteúdo renderizar — evita o flash da página real que
+// antes de qualquer conteúdo renderizar · evita o flash da página real que
 // essa versão baseada em fetch assíncrono/pós-load tinha.

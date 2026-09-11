@@ -1,6 +1,6 @@
 // Aplica a identidade visual (logo, painel e fundo) configurada por cidade em
 // Gerenciamento > Gerenciamento de página > Identidade Visual. Cada elemento
-// pode usar imagem enviada pelo admin, cor sólida ou degradê — se nada foi
+// pode usar imagem enviada pelo admin, cor sólida ou degradê · se nada foi
 // configurado, o CSS de cada cidade já tem seu visual padrão como fallback
 // (ver var(--city-painel-bg, ...) / var(--city-fundo-*, ...) no CSS).
 (() => {
@@ -46,7 +46,7 @@
     // Date.now() novo a cada chamada: js/preload-paineis.js (carregado na
     // página inicial) pré-carrega essa mesma imagem para evitar demora ao
     // entrar na página da cidade, mas só existe ganho se as duas páginas
-    // pedirem exatamente a mesma URL — com timestamp sempre diferente a
+    // pedirem exatamente a mesma URL · com timestamp sempre diferente a
     // cada load, o preload buscava uma URL que a página da cidade nunca
     // reutilizava, e o cache do navegador nunca batia. sessionStorage faz
     // as duas páginas (mesma aba) concordarem no mesmo valor; ele muda de
@@ -121,7 +121,7 @@
     window.applyCidadeVisual = (_cidade, visual) => applyCidadeVisual(visual);
 
     // Preenchido por js/preload-paineis.js quando o cliente passa pela home
-    // antes de entrar na cidade — aplica na hora, sem esperar a API, e só
+    // antes de entrar na cidade · aplica na hora, sem esperar a API, e só
     // revalida em segundo plano (o fetch abaixo roda igual, sempre).
     const VISUAL_CACHE_KEY = 'cidadeVisualCache';
     const getCachedVisualLista = () => {

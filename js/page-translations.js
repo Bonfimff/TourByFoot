@@ -1,6 +1,6 @@
 // Textos do herói e do aviso de cada página de cidade, mais a rotina que
 // completa os idiomas que faltam. Vivia em translations.js, junto do catálogo
-// da home — mas quem usa cada um é um público diferente: a home lê
+// da home · mas quem usa cada um é um público diferente: a home lê
 // window.translations e nunca window.pageTranslations, e as páginas de cidade
 // o contrário. Separados, cada página carrega só o que usa.
 
@@ -106,7 +106,7 @@ tour_name: 'Pelourinho',
 details: [
 '<i class="fa fa-calendar"></i> <strong>Dias:</strong> Segunda a Domingo às 09:30 · Segunda a Sábado às 15:00',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Português, Inglês e Espanhol',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Em frente ao Cine Metha — Glauber Rocha (Praça Castro Alves)',
+'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Em frente ao Cine Metha · Glauber Rocha (Praça Castro Alves)',
 '<i class="fa fa-shirt"></i> <strong>Identificação:</strong> Guias com camisetas verdes'
 ],
 map: '<i class="fa fa-map"></i> Ver no Mapa',
@@ -137,7 +137,7 @@ tour_name: 'Pelourinho',
 details: [
 '<i class="fa fa-calendar"></i> <strong>Days:</strong> Monday to Sunday at 9:30 AM · Monday to Saturday at 3:00 PM',
 '<i class="fa fa-language"></i> <strong>Languages:</strong> Portuguese, English and Spanish',
-'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> In front of Cine Metha — Glauber Rocha (Castro Alves Square)',
+'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> In front of Cine Metha · Glauber Rocha (Castro Alves Square)',
 '<i class="fa fa-shirt"></i> <strong>Identification:</strong> Guides wearing green t-shirts'
 ],
 map: '<i class="fa fa-map"></i> View on Map',
@@ -168,7 +168,7 @@ tour_name: 'Pelourinho',
 details: [
 '<i class="fa fa-calendar"></i> <strong>Días:</strong> Lunes a Domingo a las 09:30 · Lunes a Sábado a las 15:00',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Portugués, Inglés y Español',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Frente al Cine Metha — Glauber Rocha (Plaza Castro Alves)',
+'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Frente al Cine Metha · Glauber Rocha (Plaza Castro Alves)',
 '<i class="fa fa-shirt"></i> <strong>Identificación:</strong> Guías con camisetas verdes'
 ],
 map: '<i class="fa fa-map"></i> Ver en el Mapa',
@@ -199,7 +199,7 @@ tour_name: 'Pelourinho',
 details: [
 '<i class="fa fa-calendar"></i> <strong>Jours:</strong> Lundi à Dimanche à 09h30 · Lundi à Samedi à 15h00',
 '<i class="fa fa-language"></i> <strong>Langues:</strong> Portugais, Anglais et Espagnol',
-'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Devant le Cine Metha — Glauber Rocha (Place Castro Alves)',
+'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Devant le Cine Metha · Glauber Rocha (Place Castro Alves)',
 '<i class="fa fa-shirt"></i> <strong>Identification:</strong> Guides en t-shirt vert'
 ],
 map: '<i class="fa fa-map"></i> Voir sur la Carte',
@@ -230,7 +230,7 @@ tour_name: 'Pelourinho',
 details: [
 '<i class="fa fa-calendar"></i> <strong>Giorni:</strong> Lunedì a Domenica alle 09:30 · Lunedì a Sabato alle 15:00',
 '<i class="fa fa-language"></i> <strong>Lingue:</strong> Portoghese, Inglese e Spagnolo',
-'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Davanti al Cine Metha — Glauber Rocha (Piazza Castro Alves)',
+'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Davanti al Cine Metha · Glauber Rocha (Piazza Castro Alves)',
 '<i class="fa fa-shirt"></i> <strong>Identificazione:</strong> Guide con magliette verdi'
 ],
 map: '<i class="fa fa-map"></i> Vedi sulla Mappa',
@@ -261,7 +261,7 @@ tour_name: '佩罗林纽',
 details: [
 '<i class="fa fa-calendar"></i> <strong>时间:</strong> 周一至周日 09:30 · 周一至周六 15:00',
 '<i class="fa fa-language"></i> <strong>语言:</strong> 葡萄牙语、英语和西班牙语',
-'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cine Metha 影院前 — Glauber Rocha（卡斯特罗·阿尔维斯广场）',
+'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cine Metha 影院前 · Glauber Rocha（卡斯特罗·阿尔维斯广场）',
 '<i class="fa fa-shirt"></i> <strong>识别标志:</strong> 身穿绿色T恤的导游'
 ],
 map: '<i class="fa fa-map"></i> 查看地图',
@@ -905,7 +905,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>Duração:</strong> 2h15',
 '<i class="fa fa-calendar"></i> <strong>Dias:</strong> Todos os dias (Jul–Set) às 10:00 e 15:30 (PT) · Qua e Sáb às 10:00 (ES)',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Português e Espanhol',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro',
+'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro',
 '<i class="fa fa-shirt"></i> <strong>Identificação:</strong> Guias com camisetas verdes'
 ],
 card2_details: [
@@ -913,7 +913,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>Dias:</strong> Todos os dias às 10:00, 13:00 e 15:00',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Português, Inglês e Espanhol',
 '<i class="fa fa-tag"></i> <strong>Valor:</strong> R$ 250,00 (1–3 pessoas) · R$ 80,00/pessoa (4+)',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro'
+'<i class="fa fa-map-marker-alt"></i> <strong>Encontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro'
 ],
 card1_map: '<i class="fa fa-map"></i> Ver no Mapa',
 card1_reserve: 'Reservar Agora',
@@ -948,7 +948,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>Duration:</strong> 2h15',
 '<i class="fa fa-calendar"></i> <strong>Days:</strong> Every day (Jul–Sep) at 10:00 AM and 3:30 PM (PT) · Wed and Sat at 10:00 AM (ES)',
 '<i class="fa fa-language"></i> <strong>Languages:</strong> Portuguese and Spanish',
-'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Downtown',
+'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Downtown',
 '<i class="fa fa-shirt"></i> <strong>Identification:</strong> Guides wearing green t-shirts'
 ],
 card2_details: [
@@ -956,7 +956,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>Days:</strong> Every day at 10:00 AM, 1:00 PM and 3:00 PM',
 '<i class="fa fa-language"></i> <strong>Languages:</strong> Portuguese, English and Spanish',
 '<i class="fa fa-tag"></i> <strong>Price:</strong> R$ 250.00 (1–3 people) · R$ 80.00/person (4+)',
-'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Downtown'
+'<i class="fa fa-map-marker-alt"></i> <strong>Meeting point:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Downtown'
 ],
 card1_map: '<i class="fa fa-map"></i> View on Map',
 card1_reserve: 'Book Now',
@@ -991,7 +991,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>Duración:</strong> 2h15',
 '<i class="fa fa-calendar"></i> <strong>Días:</strong> Todos los días (Jul–Sep) a las 10:00 y 15:30 (PT) · Mié y Sáb a las 10:00 (ES)',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Portugués y Español',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro',
+'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro',
 '<i class="fa fa-shirt"></i> <strong>Identificación:</strong> Guías con camisetas verdes'
 ],
 card2_details: [
@@ -999,7 +999,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>Días:</strong> Todos los días a las 10:00, 13:00 y 15:00',
 '<i class="fa fa-language"></i> <strong>Idiomas:</strong> Portugués, Inglés y Español',
 '<i class="fa fa-tag"></i> <strong>Precio:</strong> R$ 250,00 (1–3 personas) · R$ 80,00/persona (4+)',
-'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro'
+'<i class="fa fa-map-marker-alt"></i> <strong>Encuentro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro'
 ],
 card1_map: '<i class="fa fa-map"></i> Ver en el Mapa',
 card1_reserve: 'Reservar Ahora',
@@ -1034,7 +1034,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>Durée:</strong> 2h15',
 '<i class="fa fa-calendar"></i> <strong>Jours:</strong> Tous les jours (Juil–Sep) à 10h00 et 15h30 (PT) · Mer et Sam à 10h00 (ES)',
 '<i class="fa fa-language"></i> <strong>Langues:</strong> Portugais et Espagnol',
-'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centre',
+'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centre',
 '<i class="fa fa-shirt"></i> <strong>Identification:</strong> Guides en t-shirt vert'
 ],
 card2_details: [
@@ -1042,7 +1042,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>Jours:</strong> Tous les jours à 10h00, 13h00 et 15h00',
 '<i class="fa fa-language"></i> <strong>Langues:</strong> Portugais, Anglais et Espagnol',
 '<i class="fa fa-tag"></i> <strong>Prix:</strong> R$ 250,00 (1–3 personnes) · R$ 80,00/personne (4+)',
-'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centre'
+'<i class="fa fa-map-marker-alt"></i> <strong>Rendez-vous:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centre'
 ],
 card1_map: '<i class="fa fa-map"></i> Voir sur la Carte',
 card1_reserve: 'Réserver Maintenant',
@@ -1077,7 +1077,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>Durata:</strong> 2h15',
 '<i class="fa fa-calendar"></i> <strong>Giorni:</strong> Tutti i giorni (Lug–Set) alle 10:00 e 15:30 (PT) · Mer e Sab alle 10:00 (ES)',
 '<i class="fa fa-language"></i> <strong>Lingue:</strong> Portoghese e Spagnolo',
-'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro',
+'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro',
 '<i class="fa fa-shirt"></i> <strong>Identificazione:</strong> Guide con magliette verdi'
 ],
 card2_details: [
@@ -1085,7 +1085,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>Giorni:</strong> Tutti i giorni alle 10:00, 13:00 e 15:00',
 '<i class="fa fa-language"></i> <strong>Lingue:</strong> Portoghese, Inglese e Spagnolo',
 '<i class="fa fa-tag"></i> <strong>Prezzo:</strong> R$ 250,00 (1–3 persone) · R$ 80,00/persona (4+)',
-'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire — Centro'
+'<i class="fa fa-map-marker-alt"></i> <strong>Punto d\'incontro:</strong> Cais da Praia Grande, Av. Sen. Vitorino Freire · Centro'
 ],
 card1_map: '<i class="fa fa-map"></i> Vedi sulla Mappa',
 card1_reserve: 'Prenota Ora',
@@ -1120,7 +1120,7 @@ card1_details: [
 '<i class="fa fa-clock"></i> <strong>时长:</strong> 2小时15分钟',
 '<i class="fa fa-calendar"></i> <strong>时间:</strong> 每天（7月–9月）10:00 和 15:30（葡语）· 周三和周六 10:00（西语）',
 '<i class="fa fa-language"></i> <strong>语言:</strong> 葡萄牙语和西班牙语',
-'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cais da Praia Grande，Av. Sen. Vitorino Freire — 市中心',
+'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cais da Praia Grande，Av. Sen. Vitorino Freire · 市中心',
 '<i class="fa fa-shirt"></i> <strong>识别标志:</strong> 身穿绿色T恤的导游'
 ],
 card2_details: [
@@ -1128,7 +1128,7 @@ card2_details: [
 '<i class="fa fa-calendar"></i> <strong>时间:</strong> 每天 10:00、13:00 和 15:00',
 '<i class="fa fa-language"></i> <strong>语言:</strong> 葡萄牙语、英语和西班牙语',
 '<i class="fa fa-tag"></i> <strong>价格:</strong> R$ 250,00（1-3人）· 每人 R$ 80,00（4人以上）',
-'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cais da Praia Grande，Av. Sen. Vitorino Freire — 市中心'
+'<i class="fa fa-map-marker-alt"></i> <strong>集合地点:</strong> Cais da Praia Grande，Av. Sen. Vitorino Freire · 市中心'
 ],
 card1_map: '<i class="fa fa-map"></i> 查看地图',
 card1_reserve: '立即预订',

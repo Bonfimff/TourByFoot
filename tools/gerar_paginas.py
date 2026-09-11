@@ -6,7 +6,7 @@ POR QUE ISTO EXISTE
 -------------------
 O hreflang do Google e um mapa de URLs: so da para dizer "esta pagina existe em
 ingles" apontando para OUTRA URL. Uma URL unica com troca de idioma por
-JavaScript e, para o Google, um site em portugues — os outros cinco idiomas nao
+JavaScript e, para o Google, um site em portugues · os outros cinco idiomas nao
 existem. Entao cada idioma precisa de um endereco proprio.
 
 Isso daria 4 cidades x 6 idiomas = 24 arquivos HTML quase identicos. Manter isso
@@ -19,7 +19,7 @@ COMO USAR
 
 A fonte da verdade e SEMPRE a pagina em portugues: <cidade>/index.html.
 Edite so ela. Depois rode este script: ele reescreve as versoes em outros
-idiomas e as pontes. As paginas geradas NAO devem ser editadas a mao — qualquer
+idiomas e as pontes. As paginas geradas NAO devem ser editadas a mao · qualquer
 alteracao nelas se perde na proxima execucao.
 
 Os textos de SEO (title e description de cada idioma) ficam em
@@ -47,16 +47,16 @@ ARQ_TOURS = os.path.join(RAIZ, 'tools', 'tours_snapshot.json')
 TOUR_INICIO = '<!-- inicio do retrato de tours -->'
 TOUR_FIM = '<!-- fim do retrato de tours -->'
 
-# Host que serve as fotos dos tours. E outro dominio — o site publico esta no
-# GitHub Pages e as fotos no VPS —, entao precisa ser reconhecido explicitamente
+# Host que serve as fotos dos tours. E outro dominio · o site publico esta no
+# GitHub Pages e as fotos no VPS ·, entao precisa ser reconhecido explicitamente
 # para as fotos entrarem no sitemap de imagens em vez de serem descartadas como
 # imagem de terceiro.
 HOST_FOTOS = 'https://api-tour.exksvol.com/'
 
 # Marcadores que delimitam o que este script controla dentro do HTML. Tudo entre
-# eles e reescrito a cada execucao — por isso o script pode rodar quantas vezes
+# eles e reescrito a cada execucao · por isso o script pode rodar quantas vezes
 # quiser sem duplicar blocos.
-INICIO = '<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->'
+INICIO = '<!-- gerado por tools/gerar_paginas.py · nao editar a mao -->'
 FIM = '<!-- fim do bloco gerado -->'
 
 # URLs do site antigo que o Google indexou ha mais de dez anos e que hoje
@@ -152,7 +152,7 @@ def bloco_gerado(slug, idioma, idiomas):
 
     linhas.append('    <script>')
     linhas.append('    // A URL manda no idioma. Quem abrir %sen/ ve ingles, mesmo com' % base_da(slug))
-    linhas.append('    // outro idioma salvo no navegador — senao a pagina mostraria um idioma')
+    linhas.append('    // outro idioma salvo no navegador · senao a pagina mostraria um idioma')
     linhas.append('    // enquanto a URL e o hreflang prometem outro, e o Google indexaria o')
     linhas.append('    // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a')
     linhas.append('    // versao escolhida em vez de so recarregar (ver selectLanguage no JS).')

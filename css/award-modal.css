@@ -14,7 +14,7 @@
     display: none;
     pointer-events: none;
     /* Sempre atrás do aviso "Informações Importantes" (.rio-notice,
-       z-index:1000) — mesmo que os dois fiquem visíveis ao mesmo tempo por
+       z-index:1000) · mesmo que os dois fiquem visíveis ao mesmo tempo por
        algum motivo, o aviso tem prioridade. */
     z-index: 900;
     width: min(420px, calc(100vw - 2rem));
@@ -197,7 +197,7 @@
 
     /* A ordem e o agrupamento (imagem + divisória + texto / botão + divisória
        + contador, tudo lado a lado) se mantêm iguais em qualquer tamanho de
-       tela — só os tamanhos encolhem, nunca empilha em coluna. */
+       tela · só os tamanhos encolhem, nunca empilha em coluna. */
     .award-modal__header {
         padding: 0.85rem 0.9rem;
         gap: 0.6rem;

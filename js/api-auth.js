@@ -1,4 +1,4 @@
-// api-auth.js — anexa a credencial de sessão em toda chamada à API.
+// api-auth.js · anexa a credencial de sessão em toda chamada à API.
 //
 // Por que um interceptor e não uma mudança em cada chamada: existem ~85
 // chamadas a fetch() espalhadas por 10 arquivos, e só o Gerenciamento.js tem um
@@ -10,7 +10,7 @@
 (function () {
     'use strict';
 
-    // Hosts que são a API. Só para eles o token é anexado — mandar a credencial
+    // Hosts que são a API. Só para eles o token é anexado · mandar a credencial
     // para um domínio de terceiros (um CDN, um mapa) seria vazá-la.
     const HOSTS_API = new Set([
         'api-tour.exksvol.com',
@@ -25,7 +25,7 @@
         try {
             // URL relativa resolve contra a página atual; se a página não está
             // num host de API, o host resolvido não estará na lista e o token
-            // não é anexado — que é o comportamento correto.
+            // não é anexado · que é o comportamento correto.
             const alvo = new URL(url, window.location.href);
             return HOSTS_API.has(alvo.host);
         } catch (e) {
@@ -83,7 +83,7 @@
         // deixar a interface achando que continua logada.
         if (resposta.status === 401 && token) {
             limparSessao();
-            // O /login responde 401 para senha errada — ali o 401 é esperado e
+            // O /login responde 401 para senha errada · ali o 401 é esperado e
             // a página não deve recarregar por baixo do formulário.
             if (!/\/login$/.test(new URL(url, window.location.href).pathname)) {
                 window.dispatchEvent(new CustomEvent('sessao-expirada'));
@@ -96,6 +96,6 @@
     // Uma página que reagir a isto pode avisar o usuário; sem ouvinte, o efeito
     // é só a sessão local ter sido limpa.
     window.addEventListener('sessao-expirada', () => {
-        console.warn('Sessão expirada ou inválida — faça login novamente.');
+        console.warn('Sessão expirada ou inválida · faça login novamente.');
     });
 })();

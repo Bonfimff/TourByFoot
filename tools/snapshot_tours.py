@@ -5,7 +5,7 @@ Retrato dos tours para o rastreador de busca.
 POR QUE ISTO EXISTE
 -------------------
 Os tours entram na pagina por JavaScript, a partir da API. O rastreador le o
-HTML puro, e nele a grade de tours e um comentario vazio — entao o nome, o
+HTML puro, e nele a grade de tours e um comentario vazio · entao o nome, o
 roteiro e as 117 fotos dos tours simplesmente nao existem para a Busca. Nem
 para a Busca de Imagens: uma foto so e indexavel se estiver no HTML entregue.
 
@@ -15,7 +15,7 @@ ou nunca acontecer. Depender dela e apostar, nao publicar.
 Este script busca os tours na API e grava o HTML equivalente em
 tools/tours_snapshot.json, um bloco por cidade e por idioma. Quem insere esse
 bloco nas paginas e o tools/gerar_paginas.py, que ja e o unico lugar que monta
-pagina — assim o retrato entra nas seis versoes de idioma, cada uma na lingua
+pagina · assim o retrato entra nas seis versoes de idioma, cada uma na lingua
 certa, usando as traducoes que a propria API devolve.
 
 O bloco fica visivel no HTML de proposito: conteudo escondido por CSS o Google
@@ -132,7 +132,7 @@ def bloco_da_cidade(tours, idioma):
         # O bloco fica no fim do <body>, antes dos <script> da pagina: sem isto
         # ele chegaria a pintar por um instante antes de o JS montar os cards.
         # Este script roda durante a leitura do HTML, entao o visitante nunca ve
-        # — e o rastreador, que le o HTML sem executar JavaScript, ve tudo. Quem
+        # · e o rastreador, que le o HTML sem executar JavaScript, ve tudo. Quem
         # apaga de vez, ou traz de volta se a API falhar, e o site-shell.js.
         '    <script>(function(){var e=document.currentScript.previousElementSibling;'
         'if(e&&e.hasAttribute("data-snapshot"))e.style.display="none";})();</script>',

@@ -1,7 +1,7 @@
 # Retrato dos tours no HTML.
 #
 # Os tours entram na pagina por JavaScript, a partir da API. O rastreador do
-# Google le o HTML puro, onde a grade de tours e um comentario vazio — entao o
+# Google le o HTML puro, onde a grade de tours e um comentario vazio · entao o
 # nome, o roteiro e as fotos dos tours nao existem para a Busca nem para a
 # Busca de Imagens. Esta rotina busca os tours e escreve o equivalente em HTML,
 # nos seis idiomas, sem ninguem precisar tocar em nada.

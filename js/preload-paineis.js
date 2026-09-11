@@ -2,13 +2,13 @@
 // precisar assim que o cliente clicar numa delas: a identidade visual
 // (logo/painel, ver Gerenciamento > Identidade Visual) e o aviso "Informações
 // Importantes" de cada cidade. As imagens vão pro cache HTTP do navegador
-// (new Image()) e os dois JSONs vão pro localStorage — js/cidade-visual.js e
+// (new Image()) e os dois JSONs vão pro localStorage · js/cidade-visual.js e
 // js/site-shell.js/Riodejaneiro.js leem esse cache primeiro e aplicam na
 // hora, só revalidando com o servidor depois em segundo plano, em vez de
 // esperar a resposta da API pra mostrar qualquer coisa.
 (() => {
     const apiBase = window.API_BASE_URL || 'https://api-tour.exksvol.com';
-    // api.exksvol.com não existe (NXDOMAIN) — era só um request garantidamente
+    // api.exksvol.com não existe (NXDOMAIN) · era só um request garantidamente
     // falho a cada carregamento. O fallback real é o backend local.
     const VISUAL_ENDPOINTS = [
         `${apiBase}/get_cidade_visual`,
@@ -58,7 +58,7 @@
         try {
             localStorage.setItem(key, JSON.stringify({ ts: Date.now(), dados }));
         } catch (_e) {
-            // localStorage indisponível (modo privado, cota cheia etc.) — sem
+            // localStorage indisponível (modo privado, cota cheia etc.) · sem
             // problema, as páginas de cada cidade caem de volta pra buscar
             // na hora, exatamente como já faziam antes desse preload existir.
         }

@@ -1,5 +1,5 @@
 /* =====================================================
-   HERO EM LOCKUP — design compartilhado (Rio / Salvador)
+   HERO EM LOCKUP · design compartilhado (Rio / Salvador)
    =====================================================
    Mesmo desenho já aplicado em Lençóis e São Luís: pin recortado + wordmark
    "VISIT <cidade>" em dourado com degradê + legenda "TOUR BY FOOT" entre fios,
@@ -15,12 +15,12 @@
    As proporções do recorte do pin mudam por cidade (cada PNG tem a arte numa
    posição diferente dentro do canvas), então vêm de custom properties
    definidas mais abaixo, por cidade. Os valores são a bounding box de pixels
-   opacos medida no arquivo real — o mesmo que o servidor entrega, verificado
+   opacos medida no arquivo real · o mesmo que o servidor entrega, verificado
    por hash.
    ----------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------
-   RECORTE DO PIN — valores por cidade
+   RECORTE DO PIN · valores por cidade
    --pin-box-w : largura da arte  ÷ altura da arte   (tamanho da janela)
    --pin-img-w : largura da imagem ÷ altura da arte  (escala da imagem)
    --pin-left  : -x da arte       ÷ altura da arte   (deslocamento)
@@ -68,10 +68,10 @@
     gap: 0.55rem;
     /* Vence por especificidade (duas classes) as regras antigas de
        Riodejaneiro.css (uma classe, margin-top/padding diferentes por
-       breakpoint) pensadas para o logo centralizado — aqui o espaçamento do
+       breakpoint) pensadas para o logo centralizado · aqui o espaçamento do
        header é só este padding-top, igual ao padrão de Lençóis/São Luís. */
     margin-top: 0;
-    /* Mesma folga extra do bloco 1024px+ acima — ver comentário lá. */
+    /* Mesma folga extra do bloco 1024px+ acima · ver comentário lá. */
     padding: calc(var(--rio-header-height, 72px) + 22px) 1.25rem 0;
 }
 
@@ -123,7 +123,7 @@
     line-height: 1.15;
 }
 
-/* "VISIT <cidade>" — Karla 600 com degradê dourado vertical amostrado da arte
+/* "VISIT <cidade>" · Karla 600 com degradê dourado vertical amostrado da arte
    original de Lençóis (#f5d286 no topo → #d8ac5f na base; a cor é constante na
    horizontal, então é linear-gradient vertical). `color` fica de fallback caso
    background-clip:text não seja suportado. */
@@ -150,7 +150,7 @@
     -webkit-text-fill-color: transparent;
 }
 
-/* "TOUR BY FOOT" — legenda com fios dourados dos dois lados. */
+/* "TOUR BY FOOT" · legenda com fios dourados dos dois lados. */
 .rio-page--lockup .rio-hero-logo-sub {
     display: flex;
     align-items: center;
@@ -300,7 +300,7 @@
     transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Badge circular escuro com a bússola, à esquerda do rótulo — mesmo ícone
+/* Badge circular escuro com a bússola, à esquerda do rótulo · mesmo ícone
    usado em todos os botões "Conhecer Tours" do hero (ver Lençóis). */
 .rio-page--lockup .rio-hero-content .btn-book::before {
     flex: none;
@@ -343,7 +343,7 @@
 }
 
 /* =====================================================
-   TELAS GRANDES — lockup deitado e conteúdo à esquerda
+   TELAS GRANDES · lockup deitado e conteúdo à esquerda
    ===================================================== */
 @media (min-width: 1024px) {
     .rio-page--lockup .rio-hero {
@@ -371,7 +371,7 @@
         max-width: none;
         align-items: flex-start;
         /* +28px (não +12px): Rio/Salvador não têm --rio-header-height real
-           definido por breakpoint (ao contrário de Lençóis/São Luís) — o
+           definido por breakpoint (ao contrário de Lençóis/São Luís) · o
            header deles cresce até ~82px em telas largas enquanto o fallback
            assume 72px fixo. Com +12px isso deixava só ~1.6px de vão real,
            quase colando no header; +28px cobre essa diferença com folga. */

@@ -30,7 +30,7 @@
         if (heroLocation) heroLocation.textContent = t.hero_location;
 
         // innerHTML (e não textContent) porque hero_desc traz <span class="rio-hero-accent">
-        // nos trechos destacados em dourado — com textContent essa marcação se perderia
+        // nos trechos destacados em dourado · com textContent essa marcação se perderia
         // na primeira troca de idioma.
         const heroDesc = document.querySelector('.rio-hero-desc');
         if (heroDesc) heroDesc.innerHTML = t.hero_desc;
@@ -133,7 +133,7 @@
     };
 
     // Esconde seções dinâmicas (#expedicoes-compartilhadas, #expedicoes-privativas)
-    // enquanto o grid delas não tiver nenhum card — evitam-se, assim, os espaços
+    // enquanto o grid delas não tiver nenhum card · evitam-se, assim, os espaços
     // em branco quando não há tours daquela modalidade cadastrados para a cidade.
     // Usa MutationObserver porque os cards chegam via fetch assíncrono ao banco
     // (site-shell.js), então a checagem precisa reagir ao momento em que entram.

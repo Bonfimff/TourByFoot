@@ -79,7 +79,7 @@ const PRESENCA_HEARTBEAT_MS = 45000;
 const PRESENCA_ONLINE_LIMITE_SEGUNDOS = 120;
 
 const formatarTempoDesde = (segundos) => {
-  if (segundos == null) return '—';
+  if (segundos == null) return '·';
   if (segundos < 60) return 'agora';
   const minutos = Math.floor(segundos / 60);
   if (minutos < 60) return `${minutos}m`;
@@ -96,7 +96,7 @@ const estaOnline = (account) => {
 
 // Discreto de propósito: só quem está online ganha um sinal visual (a
 // bolinha verde ao lado do nome). Para os demais não há marca nenhuma na
-// tabela — o "visto há 32m/21h/1d" fica no tooltip do nome, para não poluir
+// tabela · o "visto há 32m/21h/1d" fica no tooltip do nome, para não poluir
 // a listagem com informação que raramente é o que se está procurando.
 const montarBolinhaPresenca = (account) => (
   estaOnline(account)
@@ -204,7 +204,7 @@ const applyAccountsSearchFilter = () => {
 
 // 'colaboradores'/'clientes' filtram a MESMA tabela de contas; 'auditoria' e
 // 'atividade_clientes' são conteúdo totalmente diferente (colunas próprias),
-// então viram troca de painel — só um fica visível por vez, como abas de uma
+// então viram troca de painel · só um fica visível por vez, como abas de uma
 // pasta (accounts-tabbar), em vez de ficarem sempre visíveis abaixo da tabela.
 const setAccountsFilterTab = (tab) => {
   accountsFilterTab = tab;
@@ -470,7 +470,7 @@ const loadImportantInfoFeed = async () => {
     const items = response.ok ? (await response.json().catch(() => ({ items: [] }))).items : [];
     const recentItems = (Array.isArray(items) ? items : []).filter(isImportantInfoWithinWindow);
 
-    // Avaliações pendentes ficam sempre visíveis (sem janela de 72h) — mesmo
+    // Avaliações pendentes ficam sempre visíveis (sem janela de 72h) · mesmo
     // uma avaliação antiga sem moderação continua relevante para o admin.
     const pendingReviews = await loadPendingReviews(currentUserEmail);
     renderImportantInfoFeed([...pendingReviews, ...recentItems]);
@@ -517,7 +517,7 @@ const getEffectivePermissionsForRole = (roleName) => {
   const fresh = currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
   // O cache em localStorage (gravado no login) pode ser mais antigo que
   // permissões granulares adicionadas depois (ex: manageFinanceiro,
-  // managePageContent, manageComentarios) — mesclar com "fresh" como base
+  // managePageContent, manageComentarios) · mesclar com "fresh" como base
   // evita que uma chave nova ausente no cache seja lida como false/undefined.
   return stored ? { ...fresh, ...stored } : fresh;
 };
@@ -635,7 +635,7 @@ const applyAccessControls = (perms) => {
   // Auditoria e Ações dos Clientes: duas abas a mais na "pasta" de Contas
   // (accounts-tabbar), mesma permissão pras duas (a princípio, só super_admin).
   // A visibilidade do CONTEÚDO de cada uma é responsabilidade de
-  // setAccountsFilterTab (só a aba ativa fica visível) — aqui só se decide se
+  // setAccountsFilterTab (só a aba ativa fica visível) · aqui só se decide se
   // o BOTÃO da aba aparece ou não.
   const auditoriaBtn = document.getElementById('accountsFilterAuditoria');
   if (auditoriaBtn) auditoriaBtn.style.display = perms.viewAuditoria ? '' : 'none';
@@ -693,11 +693,11 @@ const setPageTours = (tours) => {
   }
 };
 
-// As reservas (agendamentos) não guardam a cidade diretamente — só o nome do
+// As reservas (agendamentos) não guardam a cidade diretamente · só o nome do
 // tour. Como cada tour da página já tem sua cidade cadastrada, cruzamos pelo
 // nome (normalizado) para descobrir a cidade de cada reserva na hora de filtrar.
 // Busca os tours do backend (fonte mais confiável) e cai para o cache local
-// em localStorage só se a requisição falhar — a aba Reservas pode ser aberta
+// em localStorage só se a requisição falhar · a aba Reservas pode ser aberta
 // sem que a aba Gerenciamento da Página tenha sido visitada antes.
 const buildTourCidadeMap = (tours) => {
   const map = {};
@@ -828,7 +828,7 @@ let currentTourHorariosPorDia = {};
 // os outros são opcionais e vão pra coluna `traducoes` (JSON) no banco.
 // "duracao" NÃO entra aqui de propósito: é um dado numérico (ex: "2h15") que
 // não muda com o idioma, então tem um valor só, compartilhado por todas as
-// abas — ver .tour-lang-only-pt / updateTourLangFieldVisibility.
+// abas · ver .tour-lang-only-pt / updateTourLangFieldVisibility.
 const TOUR_LANG_FIELD_IDS = {
   periodo: 'tourModalPeriodo',
   saida: 'tourModalSaida',
@@ -861,7 +861,7 @@ const writeTourLangFieldsToInputs = (valores) => {
 };
 
 // Duração continua sendo um campo de texto livre por idioma (mesmo dado que
-// TOUR_LANG_FIELD_IDS/readTourLangFieldsFromInputs leem/escrevem) — os
+// TOUR_LANG_FIELD_IDS/readTourLangFieldsFromInputs leem/escrevem) · os
 // seletores de horas/minutos abaixo só existem pra facilitar o preenchimento
 // no formato usual ("2h15", "3h"); digitar direto no campo continua
 // funcionando pra casos fora do padrão (ex: "Dia inteiro").
@@ -894,7 +894,7 @@ const parseDuracaoToSelects = (valor) => {
   if (!horasSelect || !minutosSelect) return;
 
   const texto = String(valor || '').trim();
-  // "2 dias 4h30", "3 dias", "1 dia 45min" — a parte de dias é opcional e o
+  // "2 dias 4h30", "3 dias", "1 dia 45min" · a parte de dias é opcional e o
   // resto (horas/minutos) segue o formato antigo, então o texto legado sem
   // dias continua sendo lido normalmente.
   const matchDias = texto.match(/^(\d{1,3})\s*dias?(?:\s+(.*))?$/i);
@@ -911,11 +911,11 @@ const parseDuracaoToSelects = (valor) => {
     horasSelect.value = '0';
     minutosSelect.value = matchMin[1];
   } else if (matchDias && !resto) {
-    // Só dias, sem hora ("3 dias") — os seletores de hora/min ficam zerados.
+    // Só dias, sem hora ("3 dias") · os seletores de hora/min ficam zerados.
     horasSelect.value = '';
     minutosSelect.value = '';
   } else {
-    // Valor fora do padrão (texto livre legado, ex: "Dia inteiro") — não dá
+    // Valor fora do padrão (texto livre legado, ex: "Dia inteiro") · não dá
     // pra representar nos seletores, então eles voltam pro estado neutro em
     // vez de mostrar um horário que não bate com o texto real.
     horasSelect.value = '';
@@ -960,7 +960,7 @@ const syncCurrentTourEditLang = () => {
 };
 
 // Campos como Duração e Link do local de encontro não fazem parte da
-// tradução (têm um valor só, não um por idioma) — só ficam visíveis na aba
+// tradução (têm um valor só, não um por idioma) · só ficam visíveis na aba
 // Português; nas demais abas, mostrar um campo que "não muda" só teria o
 // efeito de o admin achar que precisa preencher de novo em cada idioma.
 const updateTourLangFieldVisibility = (lang) => {
@@ -983,7 +983,7 @@ const switchTourEditLang = (lang) => {
 
 // Preenche currentTourHorariosPorDia a partir do JSON salvo (ou, para tours
 // antigos sem configuração por dia, aplica a lista plana "horarios" a todos
-// os dias — assim editar um tour legado não perde os horários já cadastrados).
+// os dias · assim editar um tour legado não perde os horários já cadastrados).
 const setTourHorariosPorDia = (horariosPorDiaJson, horariosFlat) => {
   let parsed = {};
   if (horariosPorDiaJson) {
@@ -1011,7 +1011,7 @@ const setTourHorariosPorDia = (horariosPorDiaJson, horariosFlat) => {
 };
 
 // Ordem de exibição (semana começando na segunda) usada só para compor o
-// texto de "Dias da semana" a partir dos dias que têm horário cadastrado —
+// texto de "Dias da semana" a partir dos dias que têm horário cadastrado ·
 // DIAS_SEMANA (dom primeiro) continua sendo a ordem de exibição da grade.
 const DIAS_SEMANA_ORDEM_TEXTO = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
 const DIAS_SEMANA_LABEL_POR_KEY = DIAS_SEMANA.reduce((acc, { key, label }) => {
@@ -1020,7 +1020,7 @@ const DIAS_SEMANA_LABEL_POR_KEY = DIAS_SEMANA.reduce((acc, { key, label }) => {
 }, {});
 
 // Deriva o texto de "Dias da semana" a partir de quais dias têm pelo menos
-// um horário cadastrado em currentTourHorariosPorDia — em vez de deixar o
+// um horário cadastrado em currentTourHorariosPorDia · em vez de deixar o
 // admin preencher isso à mão (e correr o risco de ficar dessincronizado dos
 // horários reais), comprime dias seguidos em intervalo ("Segunda a Sexta")
 // e lista os demais separadamente.
@@ -1072,7 +1072,7 @@ const renderTourHorariosPorDia = () => {
             <button type="button" class="tour-horario-remove" data-dia="${key}" data-horario="${escapeHtml(horario)}" aria-label="Remover horário ${escapeHtml(horario)} de ${label}">&times;</button>
           </span>
         `).join('')
-      : '<span class="tour-horarios-empty">Sem horários — indisponível neste dia</span>';
+      : '<span class="tour-horarios-empty">Sem horários · indisponível neste dia</span>';
 
     return `
       <div class="tour-horario-dia-row" data-dia="${key}">
@@ -1129,7 +1129,7 @@ const parseTourLanguages = (value) => {
 const setTourModalLanguages = (value) => {
   // Usa correspondência por substring (case/acento-insensível ao "e" de ligação)
   // em vez de comparar a lista dividida por vírgula, porque tours reais salvam
-  // idiomas em formatos como "Português, Inglês e Espanhol" — um split por vírgula
+  // idiomas em formatos como "Português, Inglês e Espanhol" · um split por vírgula
   // deixaria "Inglês e Espanhol" como um item só, nunca batendo com "Espanhol".
   const raw = String(value || '');
   document.getElementById('tourModalLanguagePt').checked = /portugu[eê]s/i.test(raw);
@@ -1146,7 +1146,7 @@ const getTourModalLanguages = () => {
 };
 
 // Descobre, direto no navegador, as fotos já publicadas na página pública do
-// tour. Essas imagens vivem em imagem/<cidade>/<pasta>/img{N}.<ext> — o mesmo
+// tour. Essas imagens vivem em imagem/<cidade>/<pasta>/img{N}.<ext> · o mesmo
 // diretório estático servido pelo site, sem depender do backend para "ver" o
 // que já existe: o carregamento é feito aqui via tentativa sequencial de
 // img1, img2, ... (testando as extensões permitidas em cada número) até a
@@ -1219,7 +1219,7 @@ const renderTourGallery = (imagens) => {
   }
 
   // O backend sempre renomeia os arquivos para img1.ext, img2.ext... (ver
-  // _renumber_tour_folder_images em app.py) — o NOME é reaproveitado mesmo
+  // _renumber_tour_folder_images em app.py) · o NOME é reaproveitado mesmo
   // quando o CONTEÚDO muda de posição. Sem cache-busting o navegador
   // reexibe a miniatura antiga que tinha em cache pra aquele nome, dando a
   // impressão de que mover/excluir/enviar não fez efeito (ou afetou a
@@ -1245,7 +1245,7 @@ const renderTourGallery = (imagens) => {
 
 // ─── Upload/exclusão/reordenação de fotos do tour (via backend) ─────────────
 // O clique em Enviar manda o arquivo para o Flask, que grava DIRETO na pasta
-// real imagem/<cidade>/<pasta>/ como img1.ext, img2.ext... — sem nenhum popup
+// real imagem/<cidade>/<pasta>/ como img1.ext, img2.ext... · sem nenhum popup
 // de seleção de pasta. Excluir e reordenar também são operações de arquivo no
 // servidor. A galeria é atualizada com a lista de imagens que o backend
 // devolve após cada operação.
@@ -1673,7 +1673,7 @@ const renderFinanceiro = (dados) => {
         <td data-label="Descrição" class="finance-cell-desc">${escapeHtml(l.descricao)}</td>
         <td data-label="Origem">${l.origem === 'auto_tour' ? '<span class="finance-badge-auto">Auto</span>' : 'Manual'}</td>
         <td data-label="Cidade">${escapeHtml(formatFinanceCidade(l.cidade))}</td>
-        <td data-label="Valor Bruto" class="finance-cell-valor">${l.valor_bruto != null ? formatBRL(l.valor_bruto) : '—'}</td>
+        <td data-label="Valor Bruto" class="finance-cell-valor">${l.valor_bruto != null ? formatBRL(l.valor_bruto) : '·'}</td>
         <td data-label="Valor Líquido" class="finance-cell-valor">${formatBRL(l.valor)}</td>
         <td data-label="Ações">${renderAcoes(l)}</td>
       </tr>
@@ -1898,11 +1898,11 @@ const editarLancamentoFinanceiro = async (id) => {
   const novaDescricao = prompt('Descrição:', lancamento.descricao);
   if (novaDescricao === null) return;
 
-  // Bruto só existe pra entradas — retirada/despesa continuam com um valor só.
+  // Bruto só existe pra entradas · retirada/despesa continuam com um valor só.
   let novoValorBruto;
   if (lancamento.tipo === 'entrada') {
     const novoValorBrutoRaw = prompt(
-      'Valor Bruto (R$) — deixe em branco pra não informar:',
+      'Valor Bruto (R$) · deixe em branco pra não informar:',
       lancamento.valor_bruto != null ? String(lancamento.valor_bruto).replace('.', ',') : ''
     );
     if (novoValorBrutoRaw === null) return;
@@ -2046,7 +2046,7 @@ const shiftFinanceMonth = (delta) => {
   carregarFinanceiro();
 };
 
-// Ponto e vírgula é o separador de campo do CSV — não vírgula, porque o
+// Ponto e vírgula é o separador de campo do CSV · não vírgula, porque o
 // Excel em português usa vírgula como separador decimal (ex: "R$ 1.234,56")
 // e por padrão só quebra corretamente em colunas com ";". Qualquer valor que
 // contenha ";", aspas ou quebra de linha precisa ir entre aspas.
@@ -2070,7 +2070,7 @@ const downloadFinanceiroCsv = () => {
   ];
 
   // Cada tipo de lançamento vira sua própria tabela (título + cabeçalho +
-  // linhas próprios), em vez de uma tabela única com todos misturados —
+  // linhas próprios), em vez de uma tabela única com todos misturados ·
   // fica mais fácil de ler/filtrar ao abrir no Excel/Sheets.
   const origemEntrada = (l) => (l.origem === 'auto_tour' ? 'Automática (tour)' : 'Manual');
   const origemDespesa = (l) => (l.origem === 'fixa' ? 'Despesa fixa' : (l.parcela_total ? `Parcela ${l.parcela_num}/${l.parcela_total}` : 'Única'));
@@ -2171,7 +2171,7 @@ const initFinanceControls = () => {
 };
 
 // URL pública (GitHub Pages) que leva direto a um tour específico, sem
-// mostrar o aviso importante nem o card de premiação da cidade — ver
+// mostrar o aviso importante nem o card de premiação da cidade · ver
 // tratamento do parâmetro ?tour= em Riodejaneiro.js/site-shell.js. Gerada só
 // a partir do id do tour + página da cidade; não é salva em lugar nenhum.
 const TOUR_DIRECT_URL_BASE = 'https://bonfimff.github.io/Web-Teste';
@@ -2195,7 +2195,7 @@ const atualizarTourModalDirectUrl = () => {
   const url = montarTourDirectUrl(currentlyEditingTourId, cidade);
   input.value = url;
   // O botão de compartilhar só faz sentido quando já existe link (tour salvo
-  // + cidade escolhida) — antes disso fica desabilitado, no lugar da mensagem
+  // + cidade escolhida) · antes disso fica desabilitado, no lugar da mensagem
   // que o placeholder do campo antigo mostrava.
   const shareBtn = document.getElementById('tourModalCopyDirectUrl');
   if (shareBtn) {
@@ -2237,7 +2237,7 @@ const openTourEditModal = (tourData) => {
   syncDuracaoSelectsFromField();
   // tourModalDiasSemana não é preenchido aqui: setTourHorariosPorDia(), logo
   // abaixo, recalcula o valor a partir dos horários por dia (ver
-  // updateDiasSemanaField) — a fonte da verdade agora é a grade de horários.
+  // updateDiasSemanaField) · a fonte da verdade agora é a grade de horários.
   document.getElementById('tourModalInclui').value = tourData.inclui || '';
   document.getElementById('tourModalRoteiro').value = tourData.roteiro || '';
   document.getElementById('tourModalPontoEmbarque').value = tourData.pontoEmbarque || tourData.ponto_embarque || '';
@@ -2279,7 +2279,7 @@ const closeTourEditModal = () => {
   isCreatingNewTour = false;
 };
 
-// Abre o mesmo modal de edição, mas em branco — usado pelo botão
+// Abre o mesmo modal de edição, mas em branco · usado pelo botão
 // "+ Adicionar Tour". Ao salvar, cria o tour no banco (POST) em vez de
 // atualizar um existente (PUT); ver saveTourEditModal.
 const openTourCreateModal = () => {
@@ -2288,7 +2288,7 @@ const openTourCreateModal = () => {
 
 // Baixar/Importar JSON por tour: ao contrário da barra de Tours (que edita
 // todos de uma vez direto no banco via /bulk_update_tours_pagina), aqui o
-// JSON só preenche os campos do formulário já aberto — o admin ainda
+// JSON só preenche os campos do formulário já aberto · o admin ainda
 // precisa clicar em "Salvar" pra gravar, dando chance de revisar antes.
 const showTourModalJsonStatus = (success, message) => {
   const statusEl = document.getElementById('tourModalJsonStatus');
@@ -2352,7 +2352,7 @@ const downloadSingleTourJson = () => {
   URL.revokeObjectURL(url);
 };
 
-// Só preenche os campos do tour já aberto no modal — nunca troca qual tour
+// Só preenche os campos do tour já aberto no modal · nunca troca qual tour
 // está sendo editado (currentlyEditingTourId/isCreatingNewTour continuam
 // como estavam), então o "id" que porventura venha no arquivo é ignorado.
 const applyTourJsonToModal = (tourData) => {
@@ -2393,7 +2393,7 @@ const applyTourJsonToModal = (tourData) => {
   setTourHorariosPorDia(horariosJson, tourData.horarios || '');
 
   // pasta_imagens/cidade acabaram de mudar por atribuição direta (sem
-  // disparar 'change') — dispara manualmente pra recarregar a prévia da
+  // disparar 'change') · dispara manualmente pra recarregar a prévia da
   // galeria com base na pasta importada.
   document.getElementById('tourModalCidade').dispatchEvent(new Event('change'));
 };
@@ -2419,7 +2419,7 @@ const importSingleTourJsonFile = async (file) => {
   }
 
   // Aceita tanto um objeto único (formato do "Baixar JSON deste tour") quanto
-  // uma lista (ex: um arquivo baixado da barra de Tours) — nesse caso usa o
+  // uma lista (ex: um arquivo baixado da barra de Tours) · nesse caso usa o
   // primeiro item, já que aqui só um tour é editado por vez.
   const tourData = Array.isArray(parsed) ? parsed[0] : parsed;
   if (!tourData || typeof tourData !== 'object') {
@@ -2524,7 +2524,7 @@ const saveTourEditModal = async () => {
   // os idiomas e por isso ficou de fora de TOUR_LANG_FIELD_IDS (ver o
   // comentário lá). Como ptFields só carrega os campos daquele mapa,
   // ptFields.duracao era sempre undefined e a duração ia embora como ''
-  // em todo salvamento — nenhum tour do banco tinha duração gravada.
+  // em todo salvamento · nenhum tour do banco tinha duração gravada.
   const duracao = document.getElementById('tourModalDuracao').value.trim();
   const diasSemana = document.getElementById('tourModalDiasSemana').value.trim();
   const inclui = ptFields.inclui || '';
@@ -2598,7 +2598,7 @@ const saveTourEditModal = async () => {
     }
 
     if (isCreatingNewTour) {
-      // Refaz a busca no backend em vez de montar o objeto localmente — o
+      // Refaz a busca no backend em vez de montar o objeto localmente · o
       // servidor decide o id e a ordem do tour novo, então a lista local
       // (getPageTours/setPageTours) ficaria desatualizada até o próximo fetch.
       closeTourEditModal();
@@ -2664,7 +2664,7 @@ const reorderTours = async (novaOrdemIds, previousTours) => {
     if (!response.ok || !result.success) {
       alert(`Falha ao reordenar tours: ${result.message || response.statusText}`);
       // A tabela já tinha sido atualizada de forma otimista antes da resposta
-      // do servidor chegar — sem sucesso confirmado, desfaz e volta ao estado
+      // do servidor chegar · sem sucesso confirmado, desfaz e volta ao estado
       // anterior pra não deixar a tela mostrando uma ordem que não foi salva.
       lastLoadedTours = previousTours;
       lastMovedTourId = null;
@@ -2758,7 +2758,7 @@ const renderTourManagementTable = (tours) => {
     // no primeiro/último tour DESSA cidade, não da tabela inteira. A posição
     // exibida é o índice dentro da cidade (1-based), não a coluna `ordem` crua,
     // pra sempre bater com a ordem visual das linhas mesmo se houver gaps.
-    // Usa sempre `lastLoadedTours` (lista completa, não filtrada) — se
+    // Usa sempre `lastLoadedTours` (lista completa, não filtrada) · se
     // `tours` aqui já vier filtrado (Cidade/Modalidade/Status), a posição
     // dentro da cidade e o habilitar/desabilitar dos botões precisam
     // continuar refletindo a ordem real entre TODOS os tours da cidade,
@@ -2801,7 +2801,7 @@ const renderTourManagementTable = (tours) => {
   lastMovedTourId = null;
 };
 
-// Filtros da tabela "Tours da Página" (Cidade / Modalidade / Status) — a
+// Filtros da tabela "Tours da Página" (Cidade / Modalidade / Status) · a
 // filtragem é só de exibição: `lastLoadedTours` continua guardando a lista
 // completa, sem filtro, porque moveTourOrder/reorderTours precisam da
 // posição real do tour dentro da cidade inteira, não só dos tours visíveis
@@ -2836,7 +2836,7 @@ const initTourManagementFilters = () => {
   });
 };
 
-// Edição em massa via JSON: "baixar" não passa por nenhum endpoint novo —
+// Edição em massa via JSON: "baixar" não passa por nenhum endpoint novo ·
 // só pega o que /get_tours_pagina já devolve (o mesmo formato aceito de
 // volta em /bulk_update_tours_pagina) e monta o arquivo inteiramente no
 // navegador (Blob + <a download>), sem gerar nada no servidor.
@@ -2880,7 +2880,7 @@ const downloadToursJson = async () => {
   }
 };
 
-// O arquivo é lido inteiramente no navegador (FileReader/File.text — nunca
+// O arquivo é lido inteiramente no navegador (FileReader/File.text · nunca
 // enviado "como arquivo" pro servidor); só o JSON já interpretado (a lista
 // de tours) vai no corpo da requisição pra /bulk_update_tours_pagina, que
 // valida tudo antes de gravar qualquer linha no banco (tudo ou nada).
@@ -3016,7 +3016,7 @@ const initMaintenanceModeToggle = () => {
     }
   };
 
-  // Ligar manutenção tira a página do ar pros visitantes — pede confirmação
+  // Ligar manutenção tira a página do ar pros visitantes · pede confirmação
   // por barra deslizante (arrastar até o fim), pra não ser um clique
   // acidental. Desligar (voltar ao ar) é a ação "segura", salva na hora.
   const requestSlideConfirmation = () => new Promise((resolve) => {
@@ -3252,7 +3252,7 @@ const preencherCidadeVisualForm = (cidade) => {
     if (cor2Alpha) cor2Alpha.value = bloco.cor2Alpha ?? 100;
     if (degradeTipo) degradeTipo.value = bloco.degradeTipo || 'linear';
     // O seletor de cor/transparência (js/color-alpha-picker.js) guarda seu
-    // próprio estado a partir desses inputs ocultos — precisa ser avisado
+    // próprio estado a partir desses inputs ocultos · precisa ser avisado
     // depois que trocamos os .value programaticamente (setar .value não
     // dispara 'input'/'change' sozinho).
     if (window.refreshColorAlphaPicker) {
@@ -3730,7 +3730,7 @@ const carregarPaginaSecaoGerenciamento = async () => {
 
 // Cidade marcada = liberada; nenhuma marcada = nenhuma cidade liberada.
 // Usado como default local (fallback quando a API falha) pra admin/super_admin
-// não ficarem sem ver nada — precisam das 4 cidades explícitas.
+// não ficarem sem ver nada · precisam das 4 cidades explícitas.
 const TODAS_AS_CIDADES = ['Rio de Janeiro', 'Lencois', 'Sao Luis', 'Salvador'];
 
 const DEFAULT_ROLE_PERMISSIONS = {
@@ -3797,7 +3797,7 @@ const updateCountryPie = (accounts) => {
   // Sem nenhum cliente cadastrado ainda: mostra um estado vazio explícito em
   // vez de deixar o círculo com o gradiente degenerado do HTML inicial
   // (todos os stops em "0deg 0deg" colapsam e o navegador pinta um círculo
-  // sólido na última cor — parecia dado de verdade sem ser).
+  // sólido na última cor · parecia dado de verdade sem ser).
   if (!clientAccounts.length) {
     pie.style.background = '#e5e7eb';
     legend.innerHTML = '<div style="color:#6b7280;">Nenhum cliente cadastrado ainda.</div>';
@@ -4157,7 +4157,7 @@ const carregarAgendamentosDoBanco = async () => {
       const guiaValue = ag.guia || '-';
       const origemValue = ag.origem || 'Tour by food';
 
-      // Tudo aqui vem de reserva gravada pelo cliente — inclusive por rota
+      // Tudo aqui vem de reserva gravada pelo cliente · inclusive por rota
       // pública (/add_reserva_whatsapp). Sem escapeHtml, um "guia" com
       // <img onerror=...> executava no navegador de todo admin que abrisse
       // esta aba, com acesso ao localStorage da sessão.
@@ -4242,7 +4242,7 @@ const carregarAgendamentosDoBanco = async () => {
       }
     }
 
-    // "Sem guia definido" não conta como guia em comum — precisa ser um nome
+    // "Sem guia definido" não conta como guia em comum · precisa ser um nome
     // real pra valer a exceção abaixo.
     const GUIA_VAZIO = new Set(['', 'n/s', 'ns', '-', 'não definido', 'nao definido', 'sem guia']);
     const guiaEhReal = (guia) => {
@@ -4257,7 +4257,7 @@ const carregarAgendamentosDoBanco = async () => {
       const modalidade = (ag.modalidade || '').trim();
       const guia = (ag.guia || '').trim();
       // Modalidade diferente = saída diferente (ex: privado x compartilhado no
-      // mesmo horário não é o mesmo grupo) — EXCETO quando o guia é o mesmo
+      // mesmo horário não é o mesmo grupo) · EXCETO quando o guia é o mesmo
       // (nome real, não "N/S"): aí é o mesmo guia tocando as duas modalidades
       // juntas, então continua sendo a mesma saída.
       const key = guiaEhReal(guia)
@@ -4288,7 +4288,7 @@ const carregarAgendamentosDoBanco = async () => {
     const nextTourDetails = document.getElementById('nextTourDetails');
 
     if (nextTourDetails) {
-      // Fecha só via classe (max-height/opacity no CSS) — nunca via display
+      // Fecha só via classe (max-height/opacity no CSS) · nunca via display
       // inline, senão a animação de abrir/fechar quebra e o botão "pula".
       nextTourDetails.classList.remove('open');
       nextTourDetails.setAttribute('aria-hidden', 'true');
@@ -4362,7 +4362,7 @@ const mostrarSecao = (secao) => {
   try {
     localStorage.setItem('gerenciamentoUltimaSecao', secao);
   } catch (_err) {
-    // localStorage indisponível (modo privado etc.) — não é crítico, ignora.
+    // localStorage indisponível (modo privado etc.) · não é crítico, ignora.
   }
 
   hideAllSections();
@@ -4391,7 +4391,7 @@ const mostrarSecao = (secao) => {
 
   // #pageManagementSection é o wrapper compartilhado por #financeSection
   // (aba Financeiro) e pelos cards de Contato/Aviso/Textos/Tours (aba
-  // Gerenciamento) — precisa ficar visível nas duas abas; os cards
+  // Gerenciamento) · precisa ficar visível nas duas abas; os cards
   // específicos de "Gerenciamento" são escondidos individualmente mais abaixo.
   if (pageManagement) {
     pageManagement.style.display = (secao === 'gerenciamento' || secao === 'financeiro') ? 'block' : 'none';
@@ -4477,7 +4477,7 @@ const mostrarSecao = (secao) => {
   // Restrições finas dentro da própria aba: a aba "Financeiro" pode estar
   // visível para o nível de acesso sem que a permissão manageFinanceiro
   // esteja marcada (ex: perfil que só deve ver a aba mas sem mexer nos
-  // lançamentos) — o backend também recusa, isso só evita a UI carregar
+  // lançamentos) · o backend também recusa, isso só evita a UI carregar
   // dados que a requisição vai rejeitar de qualquer forma.
   if (secao === 'financeiro' && !currentUserPermissions.manageFinanceiro) {
     if (financeSection) {
@@ -4489,7 +4489,7 @@ const mostrarSecao = (secao) => {
   // #financeSection e os cards de Contato/Aviso/Textos/Tours são todos irmãos
   // dentro de #pageManagementSection (compartilham o wrapper). Por isso esses
   // 4 cards precisam ser escondidos explicitamente fora da aba "Gerenciamento"
-  // — sem isso, ou eles vazam para a aba Financeiro, ou (se a visibilidade do
+  // · sem isso, ou eles vazam para a aba Financeiro, ou (se a visibilidade do
   // wrapper inteiro for restrita só a "gerenciamento") o financeiro some junto.
   const canManagePageContent = secao === 'gerenciamento' && !!currentUserPermissions.managePageContent;
   [
@@ -4610,7 +4610,7 @@ const carregarContasDoBanco = async () => {
     const response = await fetchWithApiFallback(`/get_acessos?email=${encodeURIComponent(currentUserEmail)}`);
 
     if (response.status === 403) {
-      tableBody.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Acesso negado — somente admin/super_admin.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Acesso negado · somente admin/super_admin.</td></tr>';
       return;
     }
 
@@ -4826,7 +4826,7 @@ const parseWhatsAppNumeroBR = (raw) => {
 };
 
 // Confere com o admin se o número (DDI+DDD+número) está certo antes de
-// salvar um alerta de WhatsApp — evita cadastrar número sem código de país/área.
+// salvar um alerta de WhatsApp · evita cadastrar número sem código de país/área.
 const confirmWhatsAppNumero = (raw) => {
   const parsed = parseWhatsAppNumeroBR(raw);
   if (!parsed) {
@@ -4892,7 +4892,7 @@ const openAccountModal = (account) => {
 };
 
 // Clientes não recebem alerta de WhatsApp (não têm acesso a reservas de
-// terceiros) — o campo some do formulário quando a role selecionada é cliente_user.
+// terceiros) · o campo some do formulário quando a role selecionada é cliente_user.
 const updateAccountWhatsAppFieldsVisibility = (roleSelectId, wrapperId, checkboxId) => {
   const role = document.getElementById(roleSelectId)?.value || '';
   const isCliente = role.trim().toLowerCase() === 'cliente_user';
@@ -5170,7 +5170,7 @@ const setupAccountModalEvents = () => {
         return;
       }
     } catch (error) {
-      return; // usuário cancelou o compartilhamento nativo — não é erro
+      return; // usuário cancelou o compartilhamento nativo · não é erro
     }
     try {
       await navigator.clipboard.writeText(url);
@@ -5278,7 +5278,7 @@ const carregarLiberacoesCadastro = async () => {
 
 // ─── Auditoria (Contas > Auditoria) ──────────────────────────────────────────
 // Só visível pra quem tem a permissão "viewAuditoria" (ver applyAccessControls
-// e Gerenciamento de Níveis de Acesso) — a princípio, só super_admin.
+// e Gerenciamento de Níveis de Acesso) · a princípio, só super_admin.
 
 const AUDITORIA_ACAO_LABEL = { criar: 'Criou', atualizar: 'Alterou', excluir: 'Excluiu' };
 const AUDITORIA_ENTIDADE_LABEL = {
@@ -5292,19 +5292,19 @@ const AUDITORIA_ENTIDADE_LABEL = {
   pagina_secao: 'Textos da página', site_config: 'Configuração do site'
 };
 
-// Monta um resumo legível do campo "detalhes" de um registro — ou
+// Monta um resumo legível do campo "detalhes" de um registro · ou
 // {campo: [antes, depois]} (alteração) ou {dados: {...}} (criação/exclusão).
 const montarResumoAuditoria = (detalhes) => {
-  if (!detalhes || typeof detalhes !== 'object') return '—';
+  if (!detalhes || typeof detalhes !== 'object') return '·';
   if ('dados' in detalhes) {
     const n = Object.keys(detalhes.dados || {}).length;
     return `${n} campo(s) registrado(s)`;
   }
   const campos = Object.keys(detalhes);
-  if (!campos.length) return '—';
+  if (!campos.length) return '·';
   return campos.slice(0, 3).map((campo) => {
     const [antes, depois] = detalhes[campo];
-    return `${campo}: "${antes ?? '—'}" → "${depois ?? '—'}"`;
+    return `${campo}: "${antes ?? '·'}" → "${depois ?? '·'}"`;
   }).join('; ') + (campos.length > 3 ? ` (+${campos.length - 3})` : '');
 };
 
@@ -5319,9 +5319,9 @@ const renderAuditoriaTable = (registros) => {
   }
 
   tableBody.innerHTML = lista.map((registro) => {
-    const quando = registro.criadoEm ? new Date(registro.criadoEm).toLocaleString('pt-BR') : '—';
-    const acaoLabel = AUDITORIA_ACAO_LABEL[registro.acao] || registro.acao || '—';
-    const entidadeLabel = AUDITORIA_ENTIDADE_LABEL[registro.entidade] || registro.entidade || '—';
+    const quando = registro.criadoEm ? new Date(registro.criadoEm).toLocaleString('pt-BR') : '·';
+    const acaoLabel = AUDITORIA_ACAO_LABEL[registro.acao] || registro.acao || '·';
+    const entidadeLabel = AUDITORIA_ENTIDADE_LABEL[registro.entidade] || registro.entidade || '·';
     const detalhesJson = registro.detalhes ? JSON.stringify(registro.detalhes, null, 2) : '';
     return `
       <tr>
@@ -5329,11 +5329,11 @@ const renderAuditoriaTable = (registros) => {
         <td data-label="Responsável" title="${escapeHtml(registro.atorEmail)}">${escapeHtml(registro.atorNome)}</td>
         <td data-label="Ação">${escapeHtml(acaoLabel)}</td>
         <td data-label="Área">${escapeHtml(entidadeLabel)}</td>
-        <td data-label="Registro">${escapeHtml(registro.entidadeDescricao || registro.entidadeId || '—')}</td>
+        <td data-label="Registro">${escapeHtml(registro.entidadeDescricao || registro.entidadeId || '·')}</td>
         <td data-label="Detalhes">
           ${detalhesJson
             ? `<details><summary>${escapeHtml(montarResumoAuditoria(registro.detalhes))}</summary><pre style="white-space:pre-wrap; font-size:0.78rem; max-width:360px;">${escapeHtml(detalhesJson)}</pre></details>`
-            : '—'}
+            : '·'}
         </td>
       </tr>
     `;
@@ -5391,7 +5391,7 @@ const carregarAuditoria = async () => {
 };
 
 // ─── Ações dos Clientes (Contas > Ações dos Clientes) ────────────────────────
-// Mesma permissão da Auditoria (viewAuditoria) — mas é sobre clientes, não
+// Mesma permissão da Auditoria (viewAuditoria) · mas é sobre clientes, não
 // colaboradores: login, cadastro, pedido de liberação, reservas e cliques em
 // tour (ver detalhes / botão Reservar), que alimentam "Tours mais clicados".
 
@@ -5414,9 +5414,9 @@ const renderAtividadeClientesTable = (registros) => {
   }
 
   tableBody.innerHTML = lista.map((registro) => {
-    const quando = registro.criadoEm ? new Date(registro.criadoEm).toLocaleString('pt-BR') : '—';
-    const acaoLabel = ATIVIDADE_CLIENTE_TIPO_LABEL[registro.tipoAcao] || registro.tipoAcao || '—';
-    const tourCidade = [registro.tourNome, registro.cidade].filter(Boolean).join(' — ') || '—';
+    const quando = registro.criadoEm ? new Date(registro.criadoEm).toLocaleString('pt-BR') : '·';
+    const acaoLabel = ATIVIDADE_CLIENTE_TIPO_LABEL[registro.tipoAcao] || registro.tipoAcao || '·';
+    const tourCidade = [registro.tourNome, registro.cidade].filter(Boolean).join(' · ') || '·';
     return `
       <tr>
         <td data-label="Quando">${escapeHtml(quando)}</td>
@@ -5460,7 +5460,7 @@ const carregarAtividadeClientes = async () => {
 const TOURS_MAIS_CLICADOS_VISIVEIS = 3;
 
 // Só os 3 primeiros (já vêm ordenados por total de cliques) ficam sempre à
-// vista; o resto entra recolhido atrás de "Ver mais N" — a tabela tende a
+// vista; o resto entra recolhido atrás de "Ver mais N" · a tabela tende a
 // crescer junto com o catálogo de tours, e listar tudo sempre aberto
 // competia demais com o resto da aba Reservas.
 const renderToursMaisClicados = (ranking) => {
@@ -5508,7 +5508,7 @@ const renderToursMaisClicados = (ranking) => {
   }
 };
 
-// Mora na aba Reservas (não em Ações dos Clientes) — quem gerencia reservas
+// Mora na aba Reservas (não em Ações dos Clientes) · quem gerencia reservas
 // já tem motivo de sobra pra ver isso, sem precisar da permissão de
 // auditoria (viewAuditoria segue sendo aceita também, pra super_admin que
 // não tenha manageReservas continuar enxergando).
@@ -5531,9 +5531,9 @@ const carregarToursMaisClicados = async () => {
   }
 };
 
-// Gráfico de colunas com o top 5 (Contas) — mesma fonte de dados da tabela
+// Gráfico de colunas com o top 5 (Contas) · mesma fonte de dados da tabela
 // completa em Reservas, só que resumida e em formato visual. Barra em CSS
-// puro (altura em %, sem lib de gráfico) — só 5 colunas, não precisa de mais.
+// puro (altura em %, sem lib de gráfico) · só 5 colunas, não precisa de mais.
 const renderToursMaisClicadosBarChart = (ranking) => {
   const container = document.getElementById('toursMaisClicadosBarChart');
   if (!container) return;
@@ -5630,7 +5630,7 @@ const verificarAtualizacoesAutomaticas = async () => {
       const response = await fetchWithApiFallback(`/get_agendamentos?email=${encodeURIComponent(email)}`);
       if (response.ok) {
         const assinatura = JSON.stringify(await response.json());
-        // Primeira passagem só registra o estado atual — sem ela, a tabela
+        // Primeira passagem só registra o estado atual · sem ela, a tabela
         // seria recarregada uma vez à toa logo depois de abrir a página.
         if (reservasAssinatura !== null && assinatura !== reservasAssinatura) {
           carregarAgendamentosDoBanco();
@@ -5648,7 +5648,7 @@ const verificarAtualizacoesAutomaticas = async () => {
       if (response.ok) {
         const dados = await response.json();
         // A assinatura usa o que é EXIBIDO (bolinha ou "32m"), não os
-        // segundos crus — senão mudaria a cada ciclo e a tabela seria
+        // segundos crus · senão mudaria a cada ciclo e a tabela seria
         // redesenhada o tempo todo à toa.
         const assinatura = JSON.stringify(
           (Array.isArray(dados) ? dados : []).map((a) => [a.id, a.role, a.nome, montarBolinhaPresenca(a), a.ultimaPagina, formatarTempoDesde(a.segundosDesdeUltimoVisto)])
@@ -5765,7 +5765,7 @@ const recusarLiberacaoCadastro = async (id) => {
 // ─── Plataformas de Reserva (Gerenciamento > Contas) ─────────────────────────
 // Credenciais de login usadas pelo sincronizador de reservas
 // (Python/reserva_sync.py) para importar reservas de plataformas externas.
-// A senha nunca volta do backend em texto puro — get_reserva_sync_plataformas
+// A senha nunca volta do backend em texto puro · get_reserva_sync_plataformas
 // só informa "senhaDefinida" (bool); o campo do modal fica sempre vazio, e
 // só é enviado ao backend quando o admin digita um valor novo.
 let currentPlataformasReserva = [];
@@ -7474,7 +7474,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!userEmail || !role) {
     // Acesso direto sem sessão (ex: link salvo, aba nova): em vez de
     // redirecionar, abre o mesmo modal de login/cadastro/recuperação das
-    // páginas públicas (já carregado por Riodejaneiro.js — ver
+    // páginas públicas (já carregado por Riodejaneiro.js · ver
     // initLoginModal, que roda antes deste listener). O login bem-sucedido
     // recarrega a página (ver createLoginModal), que passa de novo por este
     // guard já autenticado.
@@ -7522,7 +7522,7 @@ window.addEventListener('DOMContentLoaded', () => {
         secaoInicial = salva;
       }
     } catch (_err) {
-      // localStorage indisponível — mantém o padrão "reservas".
+      // localStorage indisponível · mantém o padrão "reservas".
     }
 
     mostrarSecao(secaoInicial);
@@ -7890,7 +7890,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Delegação no .profile-menu (nunca é recriado) em vez de vincular direto
     // nos .profile-item: updateProfileMenuByPermissions() substitui o
     // innerHTML de .profile-dropdown depois que as permissões carregam, o que
-    // destruía os itens originais e, com eles, os listeners abaixo — os
+    // destruía os itens originais e, com eles, os listeners abaixo · os
     // botões ficavam visíveis mas clicar não fazia nada.
     profileMenu.addEventListener('click', (event) => {
       const item = event.target.closest('.profile-item');

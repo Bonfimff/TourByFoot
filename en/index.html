@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Checagem BLOQUEANTE de manutenção — precisa ser a primeira coisa no
+    <!-- Checagem BLOQUEANTE de manutenção · precisa ser a primeira coisa no
          <head>, antes de qualquer CSS/imagem, senão o navegador já pode ter
          pintado parte da página real antes do redirect. XHR síncrono
          (não fetch) é proposital: trava o parsing até a resposta chegar, só
@@ -19,7 +19,7 @@
             // pela checagem de manutencao. Dois motivos: (1) o XHR sincrono
             // travaria o rastreamento e entra na conta de tempo de carga que o
             // Google avalia; (2) com a manutencao ligada o crawler seria
-            // redirecionado para manutencao.html, que e noindex — o Google
+            // redirecionado para manutencao.html, que e noindex · o Google
             // entenderia que a pagina real saiu do ar e poderia tira-la do
             // indice. Visitante humano segue com o comportamento de sempre.
             if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|whatsapp|twitterbot|linkedinbot|embedly|pinterest|applebot|petalbot|yandex|baiduspider|duckduckbot/i.test(navigator.userAgent || '')) return;
@@ -35,26 +35,26 @@
         } catch (e) { /* offline/CORS/erro: não bloqueia o acesso */ }
     })();
     </script>
-    <title>Tour by Foot — Guided Walking Tours in Brazil</title>
+    <title>Tour by Foot · Guided Walking Tours in Brazil</title>
     <!-- SEO: description, canonical e cartões sociais. Bloco puramente de
-         metadados — nada aqui altera o que o visitante vê na página. -->
+         metadados · nada aqui altera o que o visitante vê na página. -->
     <meta name="description" content="Guided walking tours with licensed local guides in Rio de Janeiro, Salvador and São Luís, plus tours of the Lençóis Maranhenses. Book online or on WhatsApp.">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Tour by Foot">
     <meta property="og:locale" content="en_US">
-    <meta property="og:title" content="Tour by Foot — Guided Walking Tours in Brazil">
+    <meta property="og:title" content="Tour by Foot · Guided Walking Tours in Brazil">
     <meta property="og:description" content="Guided walking tours with licensed local guides in Rio de Janeiro, Salvador and São Luís, plus tours of the Lençóis Maranhenses. Book online or on WhatsApp.">
     <meta property="og:url" content="https://www.tourbyfoot.com/en/">
     <meta property="og:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Tour by Foot — Guided Walking Tours in Brazil">
+    <meta name="twitter:title" content="Tour by Foot · Guided Walking Tours in Brazil">
     <meta name="twitter:description" content="Guided walking tours with licensed local guides in Rio de Janeiro, Salvador and São Luís, plus tours of the Lençóis Maranhenses. Book online or on WhatsApp.">
     <meta name="twitter:image" content="https://www.tourbyfoot.com/imagem/assets/RiodeJaneiro.jpeg">
     <link rel="apple-touch-icon" href="../imagem/assets/Favicon.png?v=1">
     <link rel="icon" type="image/png" href="../imagem/assets/Favicon.png?v=1">
     <!-- Reforça pro Google (e outros crawlers) que o favicon.ico na raiz é o
-         mesmo logo declarado acima — não muda o prazo de atualização do
+         mesmo logo declarado acima · não muda o prazo de atualização do
          cache deles, só deixa o sinal mais explícito. -->
     <link rel="shortcut icon" href="/favicon.ico">
     <!-- Google Fonts + Font Awesome -->
@@ -74,7 +74,7 @@
     <!-- Os painéis das cidades são pré-carregados por js/preload-paineis.js, a
          partir das imagens cadastradas no banco. Não há preload estático aqui:
          qualquer arte fixa no HTML acabaria exibida no lugar da configurada. -->
-<!-- gerado por tools/gerar_paginas.py — nao editar a mao -->
+<!-- gerado por tools/gerar_paginas.py · nao editar a mao -->
     <link rel="canonical" href="https://www.tourbyfoot.com/en/">
     <link rel="alternate" hreflang="pt-BR" href="https://www.tourbyfoot.com/">
     <link rel="alternate" hreflang="en" href="https://www.tourbyfoot.com/en/">
@@ -85,7 +85,7 @@
     <link rel="alternate" hreflang="x-default" href="https://www.tourbyfoot.com/">
     <script>
     // A URL manda no idioma. Quem abrir /en/ ve ingles, mesmo com
-    // outro idioma salvo no navegador — senao a pagina mostraria um idioma
+    // outro idioma salvo no navegador · senao a pagina mostraria um idioma
     // enquanto a URL e o hreflang prometem outro, e o Google indexaria o
     // conteudo errado. O seletor de idioma le rotaIdioma para NAVEGAR ate a
     // versao escolhida em vez de so recarregar (ver selectLanguage no JS).

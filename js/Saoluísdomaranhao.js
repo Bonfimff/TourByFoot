@@ -13,7 +13,7 @@
         if (heroLocation) heroLocation.textContent = t.hero_location;
 
         // innerHTML (e não textContent) porque hero_desc traz <span class="rio-hero-accent">
-        // nos trechos destacados em dourado — com textContent essa marcação se perderia
+        // nos trechos destacados em dourado · com textContent essa marcação se perderia
         // na primeira troca de idioma.
         const heroDesc = document.querySelector('.rio-hero-desc');
         if (heroDesc) heroDesc.innerHTML = t.hero_desc;

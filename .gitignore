@@ -1,10 +1,10 @@
 # O backend NÃO pertence a este repositório: aqui é o site público (GitHub
-# Pages). Antes, Python/ estava apenas untracked — não ignorado — e um
+# Pages). Antes, Python/ estava apenas untracked · não ignorado · e um
 # `git add -A` distraído publicaria o código da API, com credenciais, num repo
 # aberto. A linha abaixo é o que impede isso.
 /Python/
 
-# Segredos — em qualquer caminho, mesmo que o backend volte para cá um dia.
+# Segredos · em qualquer caminho, mesmo que o backend volte para cá um dia.
 *.env
 !*.env.example
 credencial.env
