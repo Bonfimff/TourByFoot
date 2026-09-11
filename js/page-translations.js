@@ -285,7 +285,7 @@ notice_title: 'Informações Importantes',
 notice_lines: [
 'A melhor época para visitar os Lençóis Maranhenses é entre junho e setembro, quando as lagoas estão cheias.',
 'Para reservar sua experiência, entre em contato conosco pelo WhatsApp +55 21 97001-8590.',
-'Todos os passeios incluem transporte, guia credenciado e seguro.',
+'Todos os passeios incluem transporte e guia credenciado.',
 'Recomendamos protetor solar, roupas leves, chapéu e calçados confortáveis.'
 ],
 proceed: 'Prosseguir',
@@ -386,7 +386,7 @@ notice_title: 'Important Information',
 notice_lines: [
 'The best time to visit Lençóis Maranhenses is between June and September, when the lagoons are full.',
 'To book your experience, contact us on WhatsApp +55 21 97001-8590.',
-'All tours include transportation, an accredited guide and insurance.',
+'All tours include transportation and an accredited guide.',
 'We recommend sunscreen, light clothing, a hat and comfortable footwear.'
 ],
 proceed: 'Continue',
@@ -487,7 +487,7 @@ notice_title: 'Información Importante',
 notice_lines: [
 'La mejor época para visitar los Lençóis Maranhenses es entre junio y septiembre, cuando las lagunas están llenas.',
 'Para reservar tu experiencia, contáctanos por WhatsApp +55 21 97001-8590.',
-'Todos los paseos incluyen transporte, guía acreditado y seguro.',
+'Todos los paseos incluyen transporte y guía acreditado.',
 'Recomendamos protector solar, ropa ligera, sombrero y calzado cómodo.'
 ],
 proceed: 'Continuar',
@@ -588,7 +588,7 @@ notice_title: 'Informations Importantes',
 notice_lines: [
 'La meilleure période pour visiter les Lençóis Maranhenses se situe entre juin et septembre, lorsque les lagunes sont pleines.',
 'Pour réserver votre expérience, contactez-nous sur WhatsApp au +55 21 97001-8590.',
-'Toutes les excursions incluent le transport, un guide agréé et une assurance.',
+'Toutes les excursions incluent le transport et un guide agréé.',
 'Nous recommandons crème solaire, vêtements légers, chapeau et chaussures confortables.'
 ],
 proceed: 'Continuer',
@@ -689,7 +689,7 @@ notice_title: 'Informazioni Importanti',
 notice_lines: [
 'Il periodo migliore per visitare i Lençóis Maranhenses è tra giugno e settembre, quando le lagune sono piene.',
 'Per prenotare la tua esperienza, contattaci su WhatsApp al +55 21 97001-8590.',
-'Tutti i tour includono trasporto, guida autorizzata e assicurazione.',
+'Tutti i tour includono trasporto e guida autorizzata.',
 'Consigliamo crema solare, abiti leggeri, cappello e scarpe comode.'
 ],
 proceed: 'Continua',
@@ -790,7 +790,7 @@ notice_title: '重要信息',
 notice_lines: [
 '参观莱恩索伊斯沙丘（Lençóis Maranhenses）的最佳时间是6月至9月，此时泻湖水量充沛。',
 '如需预订您的行程，请通过 WhatsApp +55 21 97001-8590 与我们联系。',
-'所有行程均包含交通、持证向导及保险。',
+'所有行程均包含交通及持证向导。',
 '建议携带防晒霜、轻便衣物、帽子及舒适的鞋子。'
 ],
 proceed: '继续',
