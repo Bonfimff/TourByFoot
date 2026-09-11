@@ -4433,12 +4433,12 @@ header {
 
     .rio-footer-card-credit .footer-credit-copyright,
     .rio-footer-card-credit .footer-credit-text {
-        font-size: 0.68rem;
+        font-size: 0.62rem;
         white-space: nowrap;
     }
 
     .rio-footer-card-credit .footer-credit-logo {
-        max-width: 36px;
+        max-width: 46px;
         margin-left: 0.15rem;
     }
 }
