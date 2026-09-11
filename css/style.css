@@ -2384,6 +2384,12 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
         font-size: 1.35rem;
     }
 
+    /* "ENTRAR": fundo verde escuro pede texto branco (o #111 padrao do
+       botao some sobre esse fundo). */
+    #inicio .profile-btn.profile-btn--login {
+        color: #fff;
+    }
+
     /* Titulo grande ocupando a coluna da esquerda. Continua em uma linha so
        (pedido anterior) — na referencia ele quebra em duas, mas o corpo aqui
        foi calculado para preencher a mesma largura sem quebrar. */
