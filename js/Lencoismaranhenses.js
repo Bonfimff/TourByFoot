@@ -338,7 +338,12 @@
         const strings = () => window.uiTranslations?.[idiomaAtual()] || window.uiTranslations?.pt || {};
         const tituloPadraoAtual = () => strings().guide_title_default || titulo.textContent;
 
-        function abrirResposta(pergunta, respostaHtml) {
+        // Telas pequenas escondem os icones de Instagram/WhatsApp/Email por
+        // padrao (ver @media em Lencoismaranhenses.css) - so aparecem quando
+        // a pessoa clica em CONTATO no menu, via essa classe.
+        const iconesContato = document.querySelector('.footer-info-icons');
+
+        function abrirResposta(pergunta, respostaHtml, mostrarIcones) {
             if (!pergunta || !respostaHtml) return;
 
             titulo.textContent = pergunta;
@@ -347,6 +352,7 @@
 
             grid.hidden = true;
             painel.hidden = false;
+            if (iconesContato) iconesContato.classList.toggle('is-contact-open', !!mostrarIcones);
             botaoFechar.focus();
         }
 
@@ -355,6 +361,7 @@
             if (subtitulo) subtitulo.hidden = false;
             painel.hidden = true;
             grid.hidden = false;
+            if (iconesContato) iconesContato.classList.remove('is-contact-open');
         }
 
         // So os 4 cards reais tem data-question/data-answer; as copias da
@@ -405,7 +412,7 @@
                     const conteudo = corpoLegado.innerHTML;
                     if (!conteudo || !conteudo.trim()) return;
                     const tituloAcao = strings()['footer_' + acao + '_title'] || strings()['nav_' + (acao === 'sobre' ? 'about' : acao === 'contato' ? 'contact' : 'help')] || acao;
-                    abrirResposta(tituloAcao, conteudo);
+                    abrirResposta(tituloAcao, conteudo, acao === 'contato');
                 }, 0);
             });
         });

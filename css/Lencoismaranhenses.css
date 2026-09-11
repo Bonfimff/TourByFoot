@@ -4407,6 +4407,40 @@ header {
     .rio-guide-top {
         flex-wrap: wrap;
     }
+
+    /* Tela pequena: sem espaco para os icones de contato nem para o
+       subtitulo do Guia de Viagem. Os icones so voltam quando a pessoa
+       seleciona CONTATO no menu (classe aplicada por Lencoismaranhenses.js). */
+    .rio-guide-top .footer-info-icons {
+        display: none;
+    }
+
+    .rio-guide-top .footer-info-icons.is-contact-open {
+        display: flex;
+    }
+
+    .rio-guide-subtitle {
+        display: none;
+    }
+
+    /* Credito do rodape precisa caber numa linha so, mesmo em telas
+       estreitas - reduz fonte, espacamento e logo em vez de deixar
+       quebrar (o wrap normal vem de .rio-footer-card-credit). */
+    .rio-footer-card-credit {
+        flex-wrap: nowrap;
+        gap: 0.2rem;
+    }
+
+    .rio-footer-card-credit .footer-credit-copyright,
+    .rio-footer-card-credit .footer-credit-text {
+        font-size: 0.68rem;
+        white-space: nowrap;
+    }
+
+    .rio-footer-card-credit .footer-credit-logo {
+        max-width: 36px;
+        margin-left: 0.15rem;
+    }
 }
 
 /* .footer-info-icons por padrao fica centralizado embaixo do texto (uso
