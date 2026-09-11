@@ -3394,6 +3394,16 @@ header {
     text-shadow: none;
     opacity: 1;
     transition: opacity 0.2s;
+    /* Reseta o que "nav a" (style.css, carregado por Salvador/Sao Luis mas
+       nao pelo Rio) empurra pra dentro deste link so por ele estar dentro de
+       uma <nav>: maiusculas, negrito, fonte maior e sublinhado tracejado
+       faziam os 3 links quebrarem em varias linhas so nessas duas cidades. */
+    text-transform: none;
+    font-weight: 400;
+    font-size: inherit;
+    letter-spacing: normal;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .rio-footer-destinos a:hover,
