@@ -571,32 +571,15 @@
             </div>
         </section>
 
-        <section class="rio-tours" id="depoimentos">
-            <h2 class="rio-section-title">A galera que já curtiu os lençóis conosco</h2>
-            <div class="rio-section-divider rio-divider-small"></div>
-
-            <div class="rio-testimonials-quotes">
-                <article class="rio-testimonial-quote">
-                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
-                    <p class="rio-testimonial-text">Bem legal o passeio, em grupo e com guia. A experiência foi segura e muito bem conduzida.</p>
-                    <span class="rio-testimonial-author">Maximiliano Osaida</span>
-                </article>
-                <article class="rio-testimonial-quote">
-                    <i class="fa fa-quote-left rio-testimonial-icon"></i>
-                    <p class="rio-testimonial-text">Conheci os locais com outro olhar. A guia explicou tudo e trouxe muita segurança durante o dia.</p>
-                    <span class="rio-testimonial-author">Marianna Burlamaqui</span>
-                </article>
-            </div>
-
-            <!-- A galeria de fotos que existia aqui foi removida (a pedido),
-                 mas varios scripts (cidade-visual.js, site-shell.js) leem
-                 data-cidade DESTE elemento para saber "qual cidade e essa
-                 pagina" - sem ele, tudo cai no padrao 'Rio de Janeiro'
-                 (fundo, cores, painel viravam os do Rio). Mantido oculto so
-                 por isso; nao remover sem antes migrar essas leituras para
-                 outro marcador. -->
-            <div id="relatosGallery" data-cidade="Lencois" hidden></div>
-        </section>
+        <!-- A secao de depoimentos (com titulo "A galera que ja curtiu os
+             lencois conosco" e as 2 citacoes) foi removida a pedido. O
+             #relatosGallery continua aqui, so que escondido fora de
+             qualquer <section> visivel: varios scripts (cidade-visual.js,
+             site-shell.js) leem data-cidade DESTE elemento pra saber "qual
+             cidade e essa pagina" - sem ele, tudo cai no padrao 'Rio de
+             Janeiro' (fundo, cores, painel viravam os do Rio). Nao remover
+             sem antes migrar essas leituras para outro marcador. -->
+        <div id="relatosGallery" data-cidade="Lencois" hidden></div>
 
         <!-- FOOTER -->
         <footer class="rio-footer">
