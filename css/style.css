@@ -884,13 +884,15 @@ img.city-thumb {
     padding: 1rem 1.2rem;
 }
 
+/* Botao solido verde-escuro: sobre o novo fundo de vidro fosco (claro),
+   o antigo botao creme quase sumia por falta de contraste. */
 .award-modal__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: #ece4d3;
-    color: var(--green-dark);
+    background: #0d5548;
+    color: #f5f2e9;
     padding: 0.85rem 1.4rem;
     border-radius: 40px;
     font-weight: 800;
@@ -903,7 +905,7 @@ img.city-thumb {
 }
 
 .award-modal__cta:hover {
-    background: #f6df99;
+    background: #0a4638;
     transform: translateY(-1px) scale(1.02);
 }
 
