@@ -2199,6 +2199,25 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     margin-left: 0.25rem;
 }
 
+/* Tela pequena: a logo do credito fica maior (mais legivel) que no
+   desktop, mesmo tamanho usado nas paginas de cidade. */
+@media (max-width: 520px) {
+    .index-footer-credit {
+        row-gap: 0.15rem;
+    }
+
+    .index-footer-credit .footer-credit-copyright,
+    .index-footer-credit .footer-credit-text {
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .index-footer-credit .footer-credit-logo {
+        max-width: 72px;
+        margin-left: 0.2rem;
+    }
+}
+
 /* Pin dourado antes do nome (Font Awesome ja carregado no index.html). */
 #inicio .city-name::before {
     content: "\f3c5";
