@@ -3406,12 +3406,13 @@ header {
   grid-column: 1 / -1;
   justify-self: center;
   margin: 1rem auto 0;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 0.25rem;
   text-align: center;
-  width: auto;
+  width: 100%;
 }
 
 .footer-credit-copyright {
@@ -3440,10 +3441,9 @@ header {
 }
 
 .footer-credit-logo {
-  max-width: 70px;
+  max-width: 54px;
   height: auto;
   display: inline-block;
-  transform: translateY(-2px);
   margin-left: 0.25rem;
 }
 

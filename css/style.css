@@ -2192,7 +2192,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
 }
 
 .index-footer-credit .footer-credit-logo {
-    max-width: 70px;
+    max-width: 54px;
     height: auto;
     display: inline-block;
     transform: translateY(-2px);
