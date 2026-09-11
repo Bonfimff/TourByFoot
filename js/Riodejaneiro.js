@@ -1686,11 +1686,40 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         try { alreadySeen = sessionStorage.getItem('awardModalSeen') === '1'; } catch (e) {}
         if (alreadySeen) return;
 
+        // So exibe o card de premiacao depois que o visitante rola alem da
+        // metade da altura da pagina (pedido explicito) - antes disso, so
+        // registra um listener de scroll e espera. Paginas que nao rolam
+        // o suficiente pra ter "metade" (full <= 0) mostram na hora, pra nao
+        // ficar esperando um scroll que nunca vai acontecer.
+        const scrolledPastHalf = () => {
+            const doc = document.documentElement;
+            const viewport = window.innerHeight || doc.clientHeight || 0;
+            const full = Math.max(doc.scrollHeight, document.body.scrollHeight) - viewport;
+            if (full <= 0) return true;
+            const scrollTop = window.scrollY || doc.scrollTop || 0;
+            return (scrollTop / full) >= 0.5;
+        };
+        const showWhenScrolledPastHalf = (displayFn) => {
+            if (scrolledPastHalf()) {
+                displayFn();
+                return;
+            }
+            const onScroll = () => {
+                if (!scrolledPastHalf()) return;
+                window.removeEventListener('scroll', onScroll);
+                displayFn();
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+        };
+
         window.__showAwardCard = () => {
-            if (window.__awardCardShown) return;
-            window.__awardCardShown = true;
-            showAwardToast();
-            try { sessionStorage.setItem('awardModalSeen', '1'); } catch (e) {}
+            if (window.__awardCardShown || window.__awardCardScrollWired) return;
+            window.__awardCardScrollWired = true;
+            showWhenScrolledPastHalf(() => {
+                window.__awardCardShown = true;
+                showAwardToast();
+                try { sessionStorage.setItem('awardModalSeen', '1'); } catch (e) {}
+            });
         };
     };
 
