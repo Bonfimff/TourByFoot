@@ -558,7 +558,7 @@ main {
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-    border: 4px solid #fff;
+    border: 2px solid #C2B280;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -579,7 +579,7 @@ main {
 .city-name {
     font-size: 0.85rem;
     font-weight: 700;
-    padding: 1.1rem 0.5rem 0.7rem;
+    padding: 0.5rem 0.5rem 0.7rem;
     text-align: center;
     color: #043668;
 }
@@ -2083,45 +2083,45 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
    no desktop o titulo aparece sozinho (ver media query no fim do bloco). */
 
 /* ---------- Cards de cidade ---------- */
-/* Foto com moldura branca (tipo Polaroid) e o nome da cidade abaixo dela,
-   fora da foto — antes o nome ficava sobreposto no rodape da foto, sobre
-   um degrade escuro. */
+/* Na referencia a foto ocupa o card inteiro e o nome fica sobreposto no
+   rodape, sobre um degrade escuro — antes a foto era um retangulo menor
+   dentro de uma caixa dourada, com o nome abaixo dela. */
 #inicio .city-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: transparent;
-    animation: none;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-#inicio .city-thumb {
-    position: static;
-    width: 100%;
-    height: auto;
+    display: block;
     aspect-ratio: 4 / 3.6;
-    margin: 0;
-    border: 4px solid #fff;
-    border-radius: 16px;
+    background: #0a4a40;
+    animation: none;
+    border: 2px solid #cea852;
+    border-radius: 18px;
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
 }
 
+#inicio .city-thumb {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    aspect-ratio: auto;
+    margin: 0;
+    border-radius: 16px;
+}
+
 #inicio .city-name {
-    position: static;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.45rem;
-    padding: 1.1rem 0.5rem 0;
-    text-align: center;
+    padding: 1.9rem 0.7rem 0.65rem;
+    text-align: left;
     color: #ffffff;
     font-weight: 700;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-    background: none;
-    border-radius: 0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+    border-radius: 0 0 16px 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.68) 62%, rgba(0, 0, 0, 0.82) 100%);
 }
 
 /* ---------- Rodape creme: redes sociais + credito do desenvolvedor ---------- */
@@ -2320,7 +2320,7 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
 
     #inicio .city-name {
         font-size: clamp(0.8rem, 3.4vw, 0.95rem);
-        padding: 0.9rem 0.6rem 0;
+        padding: 1.7rem 0.6rem 0.6rem;
     }
 
 }
@@ -2417,22 +2417,35 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     }
 
     /* Card "Polaroid" da referencia: moldura branca envolvendo foto e
-       legenda, com o nome em azul escuro dentro da parte branca. */
+       legenda, com o nome em azul escuro dentro da parte branca.
+       (No mobile continua a foto cheia com o nome sobreposto.) */
     #inicio .city-card {
+        display: flex;
+        flex-direction: column;
         height: 100%;
+        aspect-ratio: auto;
         background: #ffffff;
         padding: 7px 7px 0;
+        border: none;
         border-radius: 14px;
         box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
     }
 
     #inicio .city-thumb {
+        position: static;
+        width: 100%;
+        aspect-ratio: 4 / 3.6;
         border: none;
         border-radius: 9px;
         box-shadow: none;
     }
 
     #inicio .city-name {
+        position: static;
+        justify-content: center;
+        text-align: center;
+        background: none;
+        border-radius: 0;
         flex: 1;
         min-height: 3.4rem;
         padding: 0.55rem 0.3rem 0.65rem;
