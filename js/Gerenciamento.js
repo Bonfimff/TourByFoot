@@ -30,6 +30,23 @@ const fetchWithApiFallback = async (path, options = {}) => {
       }
 
       lastResponse = response;
+
+      // 4xx não é endereço errado: é o servidor respondendo, e respondendo de
+      // forma definitiva ("não encontrado", "sem permissão", "dado inválido").
+      // Insistir nos outros endereços não muda a resposta — só enche o console
+      // de erro de CORS e de conexão recusada, escondendo a mensagem real, e
+      // ainda atrasa o retorno para quem está esperando. Repetir só faz sentido
+      // quando o servidor não respondeu (erro de rede, abaixo) ou quebrou (5xx).
+      if (response.status >= 400 && response.status < 500) {
+        console.warn('Servidor respondeu com erro de requisição:', {
+          base,
+          status: response.status,
+          statusText: response.statusText,
+          path
+        });
+        return response;
+      }
+
       console.warn('Endpoint respondeu com erro HTTP, tentando próximo:', {
         base,
         status: response.status,
