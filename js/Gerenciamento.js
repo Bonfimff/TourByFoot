@@ -6328,20 +6328,22 @@ const initReservationManagement = () => {
   const populateModalOptions = () => {
     const reservations = getReservations();
 
-    const indexTours = [
-      'Centro Histórico',
-      'Santa Teresa',
-      'Pedra do Sal: Samba e Herança Afrobrasileira',
-      'Copacabana e Ipanema',
-      'Favela Tour (Morro Dona Marta)',
-      'Tour das Praias',
-      'Tour Cultural do Centro'
-    ];
-
     const indexLanguages = ['Português', 'Inglês', 'Espanhol'];
 
-    const reservationTours = [...new Set(reservations.map(r => r.tour).filter(Boolean))];
-    const tours = [...new Set([...indexTours, ...reservationTours])].sort();
+    // Os tours vêm do cadastro (Gerenciamento da Página), nunca de uma lista
+    // escrita aqui: uma lista fixa envelhece calada — tour novo não aparecia
+    // para quem registra a reserva, e tour renomeado continuava na lista com o
+    // nome antigo. Agrupados por cidade porque hoje são mais de vinte.
+    const cadastrados = getPageTours()
+      .map(t => ({ nome: String(t.name || '').trim(), cidade: String(t.cidade || '').trim() }))
+      .filter(t => t.nome);
+
+    // Tour que só aparece em reserva antiga (foi excluído do cadastro, ou a
+    // reserva veio de fora) entra mesmo assim: sem ele, abrir essa reserva para
+    // editar apagaria o tour dela sem ninguém perceber.
+    const conhecidos = new Set(cadastrados.map(t => t.nome));
+    const soEmReservas = [...new Set(reservations.map(r => String(r.tour || '').trim()))]
+      .filter(nome => nome && !conhecidos.has(nome));
 
     const reservationLanguages = reservations
       .flatMap(r => parseLanguages(r.language))
@@ -6350,9 +6352,36 @@ const initReservationManagement = () => {
 
     if (modalTour) {
       const current = modalTour.value;
-      modalTour.innerHTML = '<option value="">Selecione um tour</option>' + tours.map(t => `
-        <option value="${t}"${t === current ? ' selected' : ''}>${t}</option>
-      `).join('');
+      const opcao = (nome) => `
+        <option value="${escapeHtml(nome)}"${nome === current ? ' selected' : ''}>${escapeHtml(nome)}</option>`;
+
+      const porCidade = new Map();
+      cadastrados.forEach(({ nome, cidade }) => {
+        const chave = cidade || 'Outros';
+        if (!porCidade.has(chave)) porCidade.set(chave, []);
+        porCidade.get(chave).push(nome);
+      });
+
+      const grupos = [...porCidade.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'))
+        .map(([cidade, nomes]) => `
+      <optgroup label="${escapeHtml(cidade)}">${nomes
+          .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+          .map(opcao).join('')}
+      </optgroup>`).join('');
+
+      const antigos = soEmReservas.length
+        ? `
+      <optgroup label="Fora do cadastro">${soEmReservas
+            .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+            .map(opcao).join('')}
+      </optgroup>`
+        : '';
+
+      modalTour.innerHTML = '<option value="">Selecione um tour</option>' + grupos + antigos;
+      // O innerHTML acima recria as opções, então a seleção precisa ser
+      // reposta: sem isto, reabrir o modal perderia o tour já escolhido.
+      modalTour.value = current;
     }
 
     if (modalLanguage) {
@@ -6369,6 +6398,16 @@ const initReservationManagement = () => {
       const nationalities = [...new Set(reservations.map(r => r.nationality || r.nacionalidade).filter(Boolean))].sort();
       modalNationalityOptions.innerHTML = nationalities.map(n => `<option value="${n}"></option>`).join('');
     }
+  };
+
+  // Relê os tours no servidor e repovoa o campo. Roda em segundo plano, depois
+  // de o modal já ter aberto preenchido pelo cache: quem registra a reserva não
+  // espera a rede, e se um tour foi criado ou renomeado desde a última visita a
+  // lista se corrige sozinha em seguida. Falha de rede não mexe em nada — o
+  // campo fica com a lista que já estava.
+  const atualizarToursDoCampo = async () => {
+    const tours = await fetchPageToursFromBackend();
+    if (Array.isArray(tours)) populateModalOptions();
   };
 
   const openEditModal = (index) => {
@@ -6388,6 +6427,7 @@ const initReservationManagement = () => {
     populateModalOptions();
 
     modalTour.value = reservation.tour || '';
+    atualizarToursDoCampo();
 
     const when = new Date(reservation.when);
     modalDate.value = when.toISOString().slice(0, 10);
@@ -6422,7 +6462,9 @@ const initReservationManagement = () => {
 
     populateModalOptions();
 
-    modalTour.value = '';    modalModality.value = 'free';    const today = new Date();
+    modalTour.value = '';
+    atualizarToursDoCampo();
+    modalModality.value = 'free';    const today = new Date();
     modalDate.value = today.toISOString().slice(0, 10);
     modalTime.value = '10:00';
 
