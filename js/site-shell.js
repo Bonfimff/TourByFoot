@@ -4862,6 +4862,33 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             });
         }
 
+        // O campo aceita texto livre (o visitante digita e o navegador filtra as
+        // sugestões), mas o valor enviado precisa ser um país da lista: sem isso
+        // entrava qualquer coisa digitada, e a coluna "nacionalidade" virava
+        // texto solto — impossível de somar por país depois.
+        // A comparação ignora maiúsculas, acentos e espaço sobrando, então
+        // "  brasil " e "BRAZIL" encontram "Brazil"; o que vai para o banco é
+        // sempre a grafia da lista, não a que a pessoa digitou.
+        const normalizarPais = (texto) => String(texto || '')
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .trim().replace(/\s+/g, ' ').toLowerCase();
+
+        const PAIS_POR_CHAVE = new Map(
+            RESERVATION_COUNTRY_LIST.map((pais) => [normalizarPais(pais), pais])
+        );
+
+        const paisDaLista = (texto) => PAIS_POR_CHAVE.get(normalizarPais(texto)) || '';
+
+        // Ao sair do campo, corrige a grafia para a da lista. É só um retoque:
+        // quem digitou certo não vê diferença, e quem digitou errado descobre
+        // ali, e não depois de apertar "Confirmar".
+        if (reservationNationality) {
+            reservationNationality.addEventListener('blur', () => {
+                const certo = paisDaLista(reservationNationality.value);
+                if (certo) reservationNationality.value = certo;
+            });
+        }
+
         const closeReservationModal = () => {
             if (!reservationModal) return;
             reservationModal.classList.add('hidden');
@@ -5361,6 +5388,18 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     return;
                 }
 
+                // Nacionalidade precisa ser um país da lista de sugestões.
+                const nacionalidadeValida = paisDaLista(nationality);
+                if (!nacionalidadeValida) {
+                    showGlobalNotification(
+                        ui.reservation_nationality_invalid
+                        || 'Escolha um país da lista de sugestões no campo Nacionalidade.',
+                        'error'
+                    );
+                    if (reservationNationality) reservationNationality.focus();
+                    return;
+                }
+
                 if (parseHorariosPorDia(matchedTour?.horarios_por_dia) && !horariosDisponiveis.length) {
                     showGlobalNotification('Este tour não está disponível no dia da semana escolhido. Selecione outra data.', 'error');
                     return;
@@ -5416,7 +5455,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         `Idioma: ${language}`,
                         `Celular: ${phone}`,
                         `Email: ${email}`,
-                        `Nacionalidade: ${nationality}`
+                        `Nacionalidade: ${nacionalidadeValida}`
                     ].filter(Boolean).join('\n');
                     // Registra no painel antes de sair para o WhatsApp (ver
                     // window.registrarReservaWhatsApp: sai sem await, para o
@@ -5430,7 +5469,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         nome: clientName,
                         celular: phone,
                         email,
-                        nacionalidade: nationality
+                        nacionalidade: nacionalidadeValida
                     });
                     window.open(`https://wa.me/${whatsPhone}?text=${encodeURIComponent(whatsMensagem)}`, '_blank', 'noopener');
                     closeReservationModal();
@@ -5449,7 +5488,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     nome: clientName,
                     celular: phone,
                     email,
-                    nacionalidade: nationality
+                    nacionalidade: nacionalidadeValida
                 };
 
                 const sendReservationToApi = async (url) => {
