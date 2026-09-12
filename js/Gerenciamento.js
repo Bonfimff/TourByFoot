@@ -741,6 +741,7 @@ const normalizeTourStatus = (status) => {
 const mapBackendTourToPageTour = (tour) => {
   return {
     id: String(tour?.id ?? ''),
+    codigo: tour?.codigo || '',
     name: tour?.nome_tour || tour?.name || '',
     languages: tour?.idiomas || tour?.languages || '',
     meeting: tour?.encontro || tour?.meeting || '',
@@ -825,6 +826,8 @@ const formatTourValueBRL = (value) => {
 };
 
 let currentlyEditingTourId = null;
+// Código curto do tour aberto no modal — é ele que monta o link público.
+let currentlyEditingTourCodigo = '';
 let isCreatingNewTour = false;
 
 // Chaves fixas usadas em todo o front e no backend (ver DIAS_SEMANA_KEYS em
@@ -2193,29 +2196,28 @@ const initFinanceControls = () => {
   });
 };
 
-// URL pública (GitHub Pages) que leva direto a um tour específico, sem
-// mostrar o aviso importante nem o card de premiação da cidade · ver
-// tratamento do parâmetro ?tour= em Riodejaneiro.js/site-shell.js. Gerada só
-// a partir do id do tour + página da cidade; não é salva em lugar nenhum.
-const TOUR_DIRECT_URL_BASE = 'https://bonfimff.github.io/Web-Teste';
-const TOUR_DIRECT_URL_PAGINA_POR_CIDADE = {
-  'Rio de Janeiro': 'rio-de-janeiro/',
-  'Salvador': 'salvador/',
-  'Sao Luis': 'sao-luis/',
-  'Lencois': 'lencois-maranhenses/',
-};
+// Link curto e permanente de um tour. O endereço leva à página da cidade já
+// aberta nesse tour, sem o aviso importante nem o card de premiação · quem
+// resolve o código e redireciona é a rota /t/<codigo> no servidor (ver
+// abrir_tour_por_codigo em app.py), e quem rola até o card é o parâmetro
+// ?tour= tratado em site-shell.js/Riodejaneiro.js.
+//
+// Usa o CÓDIGO do tour, não o id: o código é sorteado uma vez e nunca muda —
+// nem ao reordenar, nem ao renomear, nem ao trocar de cidade —, então serve
+// para folheto impresso e QR code. O id continua existindo, só não aparece
+// mais em link público.
+const TOUR_DIRECT_URL_BASE = 'https://link-tour.tourbyfoot.com';
 
-const montarTourDirectUrl = (tourId, cidade) => {
-  const pagina = TOUR_DIRECT_URL_PAGINA_POR_CIDADE[cidade];
-  if (!tourId || !pagina) return '';
-  return `${TOUR_DIRECT_URL_BASE}/${pagina}?tour=${tourId}`;
+const montarTourDirectUrl = (codigo) => {
+  const limpo = String(codigo || '').trim();
+  if (!limpo) return '';
+  return `${TOUR_DIRECT_URL_BASE}/t/${encodeURIComponent(limpo)}`;
 };
 
 const atualizarTourModalDirectUrl = () => {
   const input = document.getElementById('tourModalDirectUrl');
   if (!input) return;
-  const cidade = document.getElementById('tourModalCidade')?.value || '';
-  const url = montarTourDirectUrl(currentlyEditingTourId, cidade);
+  const url = montarTourDirectUrl(currentlyEditingTourCodigo);
   input.value = url;
   // O botão de compartilhar só faz sentido quando já existe link (tour salvo
   // + cidade escolhida) · antes disso fica desabilitado, no lugar da mensagem
@@ -2225,9 +2227,7 @@ const atualizarTourModalDirectUrl = () => {
     shareBtn.disabled = !url;
     shareBtn.title = url
       ? 'Copiar link direto deste tour'
-      : (currentlyEditingTourId
-          ? 'Selecione a cidade do tour para gerar o link'
-          : 'Salve o tour para gerar o link');
+      : 'Salve o tour para gerar o link';
   }
 };
 
@@ -2236,6 +2236,7 @@ const openTourEditModal = (tourData) => {
   if (!modal) return;
 
   currentlyEditingTourId = tourData.id;
+  currentlyEditingTourCodigo = tourData.codigo || '';
   isCreatingNewTour = !tourData.id;
 
   const deleteButton = document.getElementById('tourModalDelete');
