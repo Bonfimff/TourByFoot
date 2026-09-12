@@ -2612,3 +2612,77 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay) {
     font-size: 0.88rem;
     cursor: default;
 }
+
+/* ===================================================== */
+/* NOTEBOOK · tela larga, mas baixa                      */
+/* ===================================================== */
+/* O layout de desktop foi desenhado para uma tela alta: título grande,
+   respiros generosos e a foto do card em 3/4 fixo. Num notebook de 1366x768
+   (menos a barra do Windows e o cromo do navegador, sobram ~620px de altura)
+   esse conjunto soma ~810px · o nome da cidade fica 100px abaixo da dobra,
+   escondido, que foi o problema relatado.
+
+   A resposta é dimensionar por ALTURA, e não por largura: o que falta não é
+   espaço lateral (há de sobra em 1366px), é vertical. Por isso a consulta usa
+   max-height, e as medidas usam dvh · cada respiro e a foto encolhem na
+   proporção da tela, em vez de saltarem num ponto fixo.
+
+   min-width:901px mantém tudo isto longe do celular e do tablet, que têm o
+   próprio bloco (@media max-width:900px) com uma organização diferente · a
+   pedido, essa organização não muda.
+
+   Cada coeficiente em dvh foi escolhido para atingir o máximo exatamente aos
+   900px de altura · o mesmo ponto em que a consulta deixa de valer. Assim não
+   existe salto na fronteira: numa tela alta o resultado é o de sempre, pixel
+   a pixel, e a partir dali a página encolhe de forma contínua. */
+@media (min-width: 901px) and (max-height: 900px) {
+    main {
+        padding-top: clamp(0.5rem, 3.6dvh, 2rem);
+        padding-bottom: clamp(0.3rem, 1dvh, 0.6rem);
+    }
+
+    /* O título é o maior bloco de altura fixa da página depois dos cards. */
+    #inicio .hero-title {
+        font-size: clamp(2rem, 6.2dvh, 3.5rem);
+    }
+
+    #inicio .hero-brandline {
+        margin-bottom: clamp(0.3rem, 2.8dvh, 1.6rem);
+    }
+
+    #inicio .hero-text .subtitle {
+        margin-bottom: clamp(0.4rem, 3.2dvh, 1.8rem);
+        line-height: 1.5;
+    }
+
+    /* O espaço acima de "Escolha a cidade:" somava 53px (margem de baixo do
+       subtítulo + margem de cima do título), o maior respiro da página · era
+       o "espaço sobrando" apontado. */
+    #inicio .city-title {
+        margin-top: clamp(0.2rem, 2.7dvh, 1.5rem);
+        margin-bottom: clamp(0.25rem, 1.8dvh, 1rem);
+    }
+
+    /* A foto é o que mais pesa: 213px de altura num card de 279px. Trocar a
+       proporção fixa por altura em dvh é o que realmente traz o nome da
+       cidade de volta para dentro da tela. O piso de 105px mantém a foto
+       reconhecível mesmo numa janela bem baixa. */
+    /* O seletor precisa do "img" porque a regra base (#inicio img.city-thumb,
+       lá em cima) fixa height:100% e venceria por especificidade · sem isto a
+       altura em dvh é simplesmente ignorada. flex:none impede que o card, que
+       é um flex em coluna, encolha a foto de volta. */
+    #inicio img.city-thumb {
+        aspect-ratio: auto;
+        height: clamp(105px, 23.6dvh, 213px);
+        flex: none;
+    }
+
+    #inicio .city-name {
+        min-height: clamp(2.1rem, 6dvh, 3.4rem);
+        padding: clamp(0.3rem, 1dvh, 0.55rem) 0.3rem clamp(0.35rem, 1.1dvh, 0.65rem);
+    }
+
+    .social-icons {
+        margin-top: clamp(0.4rem, 3.6dvh, 2rem);
+    }
+}
