@@ -468,12 +468,21 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     };
 
     // Link de compartilhar: não é a URL direta da página (?tour=<id>), e sim
-    // uma rota do backend (/compartilhar/tour/<id>) que gera as meta tags
-    // Open Graph certas pra ESTE tour (nome + primeira foto) e redireciona
-    // pra a página real na hora · o HTML estático da página não tem como
-    // saber qual tour é até o JS rodar, e o crawler do WhatsApp/Facebook não
-    // roda JS. Ver compartilhar_tour() em app.py.
-    const buildTourShareUrl = (tourId) => `${API_BASE_URL}/compartilhar/tour/${tourId}`;
+    // uma rota do backend que gera as meta tags Open Graph certas pra ESTE
+    // tour (nome + primeira foto) e salta pra página real na hora · o HTML
+    // estático da página não tem como saber qual tour é até o JS rodar, e o
+    // crawler do WhatsApp/Facebook não roda JS.
+    //
+    // Usa o código curto do tour quando ele existe: é o endereço da marca, e
+    // o código é permanente (não muda ao reordenar, renomear ou trocar de
+    // cidade), então serve pra folheto e QR code. Enquanto o tour não tiver
+    // código — backend ainda não publicado —, cai na rota antiga por id, que
+    // continua valendo: assim nenhum link quebra no meio da publicação.
+    // Ver abrir_tour_por_codigo() e compartilhar_tour() em app.py.
+    const TOUR_SHARE_BASE = 'https://link-tour.tourbyfoot.com';
+    const buildTourShareUrl = (tour) => (tour && tour.codigo)
+        ? `${TOUR_SHARE_BASE}/t/${encodeURIComponent(tour.codigo)}`
+        : `${API_BASE_URL}/compartilhar/tour/${tour?.id}`;
 
     // Ícone de compartilhar em cada card · some se já existir (cards são
     // re-processados a cada troca de idioma) pra não duplicar.
@@ -491,7 +500,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         shareBtn.innerHTML = '<i class="fa fa-share-alt" aria-hidden="true"></i>';
         shareBtn.addEventListener('click', async (event) => {
             event.preventDefault();
-            const url = buildTourShareUrl(tour.id);
+            const url = buildTourShareUrl(tour);
             try {
                 if (navigator.share) {
                     await navigator.share({ title: tour.nome_tour || tour.name || '', url });
@@ -3895,6 +3904,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     const mapBackendTourToPageTour = (tour) => {
         return {
             id: String(tour?.id ?? ''),
+            // Código curto e permanente do tour — é o que monta o link de
+            // compartilhar (ver buildTourShareUrl). Vazio enquanto o backend
+            // com a coluna "codigo" não estiver publicado.
+            codigo: tour?.codigo || '',
             name: tour?.nome_tour || tour?.name || '',
             languages: tour?.idiomas || '',
             meeting: tour?.encontro || '',
