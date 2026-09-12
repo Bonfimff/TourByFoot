@@ -1557,7 +1557,13 @@ const applyReservasRestrictions = () => {
     const valorAtual = cityFilter.value;
     Array.from(cityFilter.options).forEach((opt) => {
       if (!opt.value) {
-        opt.hidden = cidadesPermitidas.length > 0;
+        // "Todas as cidades" continua disponível para quem pode ver mais de
+        // uma: ali ela significa "todas as que eu posso ver", e o servidor
+        // garante isso — /get_agendamentos filtra pelas cidades permitidas
+        // independentemente do que o filtro pedir. Escondê-la obrigava a
+        // olhar cidade por cidade, sem nunca ver a lista inteira. Some só
+        // quando há exatamente uma cidade liberada, onde não significa nada.
+        opt.hidden = cidadesPermitidas.length === 1;
       } else {
         opt.hidden = cidadesPermitidas.length > 0 && !cidadesPermitidas.includes(opt.value);
       }
@@ -4153,7 +4159,11 @@ const carregarAgendamentosDoBanco = async () => {
       const statusClass = statusValue.toLowerCase();
       const qtdValue = ag.qtd != null ? ag.qtd : (ag.qtd_pessoas != null ? ag.qtd_pessoas : '-');
       const idiomaValue = ag.idioma || '-';
-      const modalidadeValue = ag.modalidade || 'free';
+      // A coluna mostrava o valor cru do banco ("privado", "transfer"). Os
+      // rótulos são os mesmos do filtro de Modalidade logo acima da tabela.
+      const modalidadeBruta = (ag.modalidade || 'free').toLowerCase();
+      const modalidadeValue = modalidadeBruta === 'privado' ? 'Privado'
+        : modalidadeBruta === 'transfer' ? 'Transfer' : 'Free';
       const guiaValue = ag.guia || '-';
       const nacionalidadeValue = ag.nacionalidade || '-';
       const origemValue = ag.origem || 'Tour by food';
@@ -6794,7 +6804,7 @@ const initReservationManagement = () => {
       row.innerHTML = `
         <td data-label="Tour">${r.tour}</td>
         <td data-label="Idioma">${r.language || '-'}</td>
-        <td data-label="Modalidade">${r.modality === 'privado' ? 'Privado' : 'Free'}</td>
+        <td data-label="Modalidade">${r.modality === 'privado' ? 'Privado' : r.modality === 'transfer' ? 'Transfer' : 'Free'}</td>
         <td data-label="Guia">${r.guide || '-'}</td>
         <td data-label="Data">${date}</td>
         <td data-label="Hora">${time}</td>
