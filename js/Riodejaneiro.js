@@ -5550,10 +5550,15 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             }
 
             const strings = window.uiTranslations?.[window.getCurrentLang?.() || (document.documentElement.lang || 'pt').slice(0, 2)] || window.uiTranslations?.pt || {};
-            const langs = (languageText || '').split(/[,;]+|\s+e\s+/i)
-                .map(s => s.trim())
-                .filter(Boolean)
-                .filter((v, i, arr) => arr.indexOf(v) === i);
+            // Opções a partir do cadastro do tour, em pt-BR, e não do texto do card,
+            // que já vem traduzido: antes a mesma reserva gravava "Portuguese" numa
+            // página e "Português" noutra. O valor gravado é sempre o nome pt-BR; só
+            // o que aparece na tela segue o idioma da página (ver js/idiomas.js).
+            const idiomaPagina = window.rotaIdioma?.atual || (document.documentElement.lang || 'pt').slice(0, 2);
+            const fonteIdiomas = matchedTour?.languages || matchedTour?.idiomas || languageText || 'Português, Inglês, Espanhol';
+            const opcoesIdioma = window.Idiomas
+                ? window.Idiomas.opcoes(fonteIdiomas, idiomaPagina)
+                : String(fonteIdiomas).split(/[,;]+|\s+e\s+/i).map((s) => s.trim()).filter(Boolean).map((s) => ({ valor: s, texto: s }));
 
             if (reservationLanguage) {
                 reservationLanguage.innerHTML = '';
@@ -5563,15 +5568,15 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 defaultOption.textContent = strings.reservation_language_placeholder || 'Selecionar';
                 reservationLanguage.appendChild(defaultOption);
 
-                langs.forEach(lang => {
+                opcoesIdioma.forEach(({ valor, texto }) => {
                     const option = document.createElement('option');
-                    option.value = lang;
-                    option.textContent = lang;
+                    option.value = valor;
+                    option.textContent = texto;
                     reservationLanguage.appendChild(option);
                 });
 
-                if (langs.length === 1) {
-                    reservationLanguage.value = langs[0];
+                if (opcoesIdioma.length === 1) {
+                    reservationLanguage.value = opcoesIdioma[0].valor;
                 }
             }
 
