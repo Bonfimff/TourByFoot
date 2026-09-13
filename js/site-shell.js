@@ -4956,7 +4956,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.setAttribute('data-i18n', 'reservation_time_placeholder');
-            defaultOption.textContent = strings.reservation_time_placeholder || 'Selecione um horário';
+            defaultOption.textContent = strings.reservation_time_placeholder || 'Selecionar';
             reservationTime.appendChild(defaultOption);
 
             horarios.forEach(horario => {
@@ -5317,7 +5317,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const defaultOption = document.createElement('option');
                 defaultOption.value = '';
                 defaultOption.setAttribute('data-i18n', 'reservation_language_placeholder');
-                defaultOption.textContent = strings.reservation_language_placeholder || 'Selecione um idioma';
+                defaultOption.textContent = strings.reservation_language_placeholder || 'Selecionar';
                 reservationLanguage.appendChild(defaultOption);
 
                 langs.forEach(lang => {
