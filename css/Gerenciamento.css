@@ -5891,49 +5891,72 @@ section,
 }
 
 /* ==========================================================================
-   Aba Reservas no celular · tabela só com Tour, Idioma e Data (dd/mm), com
-   o texto na cor do status. O restante abre ao tocar na reserva.
+   Aba Reservas no celular · colunas Tour, Idioma e Data (dd/mm) primeiro,
+   com o texto na cor do status; as demais seguem com rolagem lateral.
    ========================================================================== */
 .data-curta {
   display: none;
 }
 
 @media (max-width: 768px) {
+  /* Linhas em flex (e não tabela) só pra poder reordenar as colunas:
+     Tour, Idioma, Data primeiro; o resto segue com rolagem lateral. */
   #reservationsTableSection .reservas-tabela {
-    min-width: 0 !important;
-    table-layout: fixed;
+    display: block !important;
+    width: max-content !important;
+    min-width: 100% !important;
   }
 
-  #reservationsTableSection .reservas-tabela th:nth-child(n+3):not(:nth-child(5)),
-  #reservationsTableSection .reservas-tabela td:nth-child(n+3):not(:nth-child(5)):not([colspan]) {
-    display: none !important;
+  #reservationsTableSection .reservas-tabela thead,
+  #reservationsTableSection .reservas-tabela tbody {
+    display: block !important;
   }
 
-  #reservationsTableSection .reservas-tabela th:nth-child(2),
-  #reservationsTableSection .reservas-tabela td:nth-child(2) {
-    width: 5.5rem;
+  #reservationsTableSection .reservas-tabela tr {
+    display: flex !important;
+    align-items: stretch;
   }
 
-  #reservationsTableSection .reservas-tabela th:nth-child(5),
-  #reservationsTableSection .reservas-tabela td:nth-child(5) {
-    width: 3.2rem;
-    text-align: right !important;
-  }
-
+  #reservationsTableSection .reservas-tabela th,
   #reservationsTableSection .reservas-tabela td {
-    font-size: 0.78rem !important;
-    font-weight: 600;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-  }
-
-  #reservationsTableSection .reservas-tabela td:first-child {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    flex: 0 0 auto;
+    box-sizing: border-box;
     min-width: 0 !important;
     max-width: none !important;
   }
 
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(1) { order: 1; width: 8.5rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(2) { order: 2; width: 5.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(5) { order: 3; width: 3.4rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(6) { order: 4; width: 3.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(7) { order: 5; width: 3.9rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(3) { order: 6; width: 5.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(4) { order: 7; width: 5rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(8) { order: 8; width: 5.6rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(9) { order: 9; width: 6.4rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(10) { order: 10; width: 5.6rem; }
+
+  /* "Carregando" / "Nenhuma reserva" ocupa a largura visível */
+  #reservationsTableSection .reservas-tabela td[colspan] {
+    width: calc(100vw - 3.5rem) !important;
+  }
+
+  #reservationsTableSection .reservas-tabela td {
+    font-size: 0.74rem !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
   #reservationsTableSection .reservas-tabela th {
-    font-size: 0.6rem !important;
+    font-size: 0.58rem !important;
+  }
+
+  #reservationsTableSection .reservas-tabela td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+    font-weight: 600;
   }
 
   #reservationsTableSection .reservas-tabela .data-longa {
@@ -5945,19 +5968,19 @@ section,
     white-space: nowrap;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
     color: #d97706 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
     color: #059669 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
     color: #4f46e5 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
     color: #dc2626 !important;
   }
 }
