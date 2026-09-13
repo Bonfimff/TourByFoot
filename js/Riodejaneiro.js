@@ -6,6 +6,21 @@
 //
 // Vive em window, e nao dentro de um IIFE, porque este arquivo tem dois escopos
 // separados e quem monta os cards nao esta no mesmo que este trecho.
+// Endereço público de um tour — o mesmo no botão de compartilhar e na
+// mensagem de reserva por WhatsApp. Fica em window, e não dentro de um IIFE,
+// porque as duas coisas moram em escopos diferentes deste arquivo: foi por
+// isso que a mensagem do Rio acabou montando o link à mão, no formato
+// antigo, e mandava /compartilhar/tour/<id> mesmo com o link curto no ar.
+//
+// Usa o código curto quando o tour tem; sem código (backend antigo), cai na
+// rota por id, que continua respondendo.
+window.linkDoTour = (tour) => {
+    if (!tour) return '';
+    if (tour.codigo) return `https://link-tour.tourbyfoot.com/t/${encodeURIComponent(tour.codigo)}`;
+    if (tour.id == null || tour.id === '') return '';
+    return `${window.API_BASE_URL || 'https://api-tour.exksvol.com'}/compartilhar/tour/${tour.id}`;
+};
+
 // Reserva por WhatsApp: alem de abrir a conversa com o guia, registra a reserva
 // como Pendente no painel. Antes disso, nada ficava gravado · se a conversa se
 // perdesse, a reserva se perdia junto.
@@ -479,10 +494,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // código — backend ainda não publicado —, cai na rota antiga por id, que
     // continua valendo: assim nenhum link quebra no meio da publicação.
     // Ver abrir_tour_por_codigo() e compartilhar_tour() em app.py.
-    const TOUR_SHARE_BASE = 'https://link-tour.tourbyfoot.com';
-    const buildTourShareUrl = (tour) => (tour && tour.codigo)
-        ? `${TOUR_SHARE_BASE}/t/${encodeURIComponent(tour.codigo)}`
-        : `${API_BASE_URL}/compartilhar/tour/${tour?.id}`;
+    const buildTourShareUrl = (tour) => window.linkDoTour(tour);
 
     // Ícone de compartilhar em cada card · some se já existir (cards são
     // re-processados a cada troca de idioma) pra não duplicar.
@@ -5757,9 +5769,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     const [wYyyy, wMm, wDd] = date.split('-');
                     const whatsFormattedDate = (wDd && wMm && wYyyy) ? `${wDd}/${wMm}/${wYyyy}` : date;
                     const whatsPhone = window.__cidadeContatoPhone || '5521970018590';
-                    const whatsTourUrl = matchedTour?.id != null
-                        ? `${window.API_BASE_URL || 'https://api-tour.exksvol.com'}/compartilhar/tour/${matchedTour.id}`
-                        : '';
+                    const whatsTourUrl = window.linkDoTour(matchedTour);
                     // Formato pedido pela equipe: saudação no idioma em que o cliente
                     // está usando o site — é por ela que o guia sabe em que língua
                     // responder —, uma linha em branco, o tour em negrito (asteriscos
