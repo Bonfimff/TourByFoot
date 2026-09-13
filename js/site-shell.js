@@ -5457,10 +5457,19 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     const whatsFormattedDate = (wDd && wMm && wYyyy) ? `${wDd}/${wMm}/${wYyyy}` : date;
                     const whatsPhone = window.__cidadeContatoPhone || '5521970018590';
                     const whatsTourUrl = matchedTour?.id != null ? buildTourShareUrl(matchedTour) : '';
+                    // Formato pedido pela equipe: saudação no idioma em que o cliente
+                    // está usando o site — é por ela que o guia sabe em que língua
+                    // responder —, uma linha em branco, o tour em negrito (asteriscos
+                    // são o negrito do WhatsApp), os dados, outra linha em branco e o
+                    // link curto do tour por último, sozinho na linha, para o WhatsApp
+                    // montar a prévia com foto logo abaixo da mensagem.
+                    //
+                    // O filtro é "!== null", e não filter(Boolean): as linhas em branco
+                    // são strings vazias de propósito, e filter(Boolean) as apagaria.
                     const whatsMensagem = [
-                        'Olá! Gostaria de confirmar uma reserva:',
-                        `Tour: ${tour}`,
-                        whatsTourUrl ? `Link do tour: ${whatsTourUrl}` : null,
+                        ui.whatsapp_booking_greeting || 'Olá! Gostaria de confirmar uma reserva:',
+                        '',
+                        `*Tour: ${tour}*`,
                         `Nome: ${clientName}`,
                         `Data: ${whatsFormattedDate}`,
                         `Hora: ${finalTime}`,
@@ -5468,8 +5477,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         `Idioma: ${language}`,
                         `Celular: ${phone}`,
                         `Email: ${email}`,
-                        `Nacionalidade: ${nacionalidadeValida}`
-                    ].filter(Boolean).join('\n');
+                        `Nacionalidade: ${nacionalidadeValida}`,
+                        whatsTourUrl ? '' : null,
+                        whatsTourUrl || null
+                    ].filter((linha) => linha !== null).join('\n');
                     // Registra no painel antes de sair para o WhatsApp (ver
                     // window.registrarReservaWhatsApp: sai sem await, para o
                     // window.open abaixo continuar valendo como clique).
