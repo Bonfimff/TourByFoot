@@ -6302,8 +6302,19 @@ const initReservationManagement = () => {
     return { from, to, status, tour, modality };
   };
 
-  // Não aplica filtro de data automático na abertura.
-  // O usuário define o período manualmente quando desejar.
+  // Período padrão ao abrir: de hoje até 31 dias depois. É a janela que
+  // interessa no dia a dia — o que vem pela frente —, sem a tabela abrir
+  // entupida de reserva antiga. Os campos continuam editáveis.
+  //
+  // A data é montada com a hora local, e não com toISOString: em UTC, no
+  // Brasil, a partir das 21h já seria o dia seguinte, e o filtro esconderia
+  // as reservas de hoje à noite.
+  const dataLocalISO = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const hojeFiltro = new Date();
+  const limiteFiltro = new Date(hojeFiltro.getFullYear(), hojeFiltro.getMonth(), hojeFiltro.getDate() + 31);
+  if (filterFrom && !filterFrom.value) filterFrom.value = dataLocalISO(hojeFiltro);
+  if (filterTo && !filterTo.value) filterTo.value = dataLocalISO(limiteFiltro);
 
   // Ensure default filter options are set
   if (filterStatus) filterStatus.value = 'all';
