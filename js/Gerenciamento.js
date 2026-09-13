@@ -84,6 +84,18 @@ const escapeHtml = (value) => String(value ?? '')
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#39;');
 
+// Ícones (traço, cor herdada) dos campos do card "Próximo tour".
+const NT_SVG = (conteudo) => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${conteudo}</svg>`;
+const NT_ICONES = {
+  tour: NT_SVG('<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>'),
+  idioma: NT_SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+  modalidade: NT_SVG('<rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v3M16 17v3"/><circle cx="8" cy="14" r="0.5"/><circle cx="16" cy="14" r="0.5"/>'),
+  guia: NT_SVG('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  pessoas: NT_SVG('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>'),
+  nacionalidade: NT_SVG('<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>'),
+  origem: NT_SVG('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>')
+};
+
 let lastImportantActivityTimestamp = localStorage.getItem('lastImportantActivityTimestamp') || null;
 
 // ─── Presença na página de Gerenciamento ─────────────────────────────────────
@@ -4294,11 +4306,15 @@ const carregarAgendamentosDoBanco = async () => {
         ? `${tour}||${idioma}||${guia}`
         : `${tour}||${idioma}||${modalidade}||${guia}`;
       const qtd = Number(ag.qtd ?? ag.qtd_pessoas ?? 0) || 0;
+      const nacionalidade = (ag.nacionalidade || '').trim();
+      const origem = (ag.origem || '').trim();
       if (!grouped[key]) {
         grouped[key] = {
           tour: tour || '-',
           idioma: idioma || '-',
           modalidades: new Set([modalidade || '-']),
+          nacionalidades: new Set(nacionalidade ? [nacionalidade] : []),
+          origens: new Set(origem ? [origem] : []),
           guia: guia || '-',
           data: ag.data || '-',
           hora: ag.hora || '-',
@@ -4307,6 +4323,8 @@ const carregarAgendamentosDoBanco = async () => {
         };
       } else {
         grouped[key].modalidades.add(modalidade || '-');
+        if (nacionalidade) grouped[key].nacionalidades.add(nacionalidade);
+        if (origem) grouped[key].origens.add(origem);
         grouped[key].pessoas += qtd;
         grouped[key].count += 1;
       }
@@ -4337,36 +4355,55 @@ const carregarAgendamentosDoBanco = async () => {
         const totalPeople = nextTours.reduce((sum, group) => sum + (group.pessoas || 0), 0);
         const tourGuides = [...new Set(nextTours.map(group => group.guia || '-'))].join(', ');
 
-        tourListContainer.innerHTML = nextTours.map(group => {
-          return `
-            <div class="next-tour-entry" style="margin-bottom:0.4rem; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:0.4rem;">
-              <div><strong>Tour:</strong> ${group.tour}</div>
-              <div><strong>Idioma:</strong> ${group.idioma}</div>
-              <div><strong>Modalidade:</strong> ${[...group.modalidades].join(', ')}</div>
-              <div><strong>Guia:</strong> ${group.guia}</div>
-              <div><strong>Pessoas:</strong> ${group.pessoas}</div>
-            </div>`;
-        }).join('');
+        // Valores vêm de reservas gravadas pelo cliente · sempre escapados.
+        const itemProximoTour = (icone, rotulo, valor) => `
+          <div class="nt-item">
+            <span class="nt-icone" aria-hidden="true">${NT_ICONES[icone]}</span>
+            <span class="nt-texto">
+              <span class="nt-rotulo">${rotulo}</span>
+              <span class="nt-valor">${escapeHtml(valor)}</span>
+            </span>
+          </div>`;
+        const juntar = (conjunto) => [...conjunto].join(', ') || '-';
+
+        tourListContainer.innerHTML = nextTours.map(group => `
+            <div class="next-tour-entry">
+              <div class="nt-coluna">
+                ${itemProximoTour('tour', 'Tour', group.tour)}
+                ${itemProximoTour('idioma', 'Idioma', group.idioma)}
+                ${itemProximoTour('modalidade', 'Modalidade', juntar(group.modalidades))}
+              </div>
+              <div class="nt-coluna">
+                ${itemProximoTour('guia', 'Guia', group.guia)}
+                ${itemProximoTour('pessoas', 'Pessoas', group.pessoas)}
+                ${itemProximoTour('nacionalidade', 'Nacionalidade', juntar(group.nacionalidades))}
+                ${itemProximoTour('origem', 'Origem', juntar(group.origens))}
+              </div>
+            </div>`).join('');
 
       }
     }
 
     const nextToggle = document.getElementById('nextTourToggle');
     const nextDetails = document.getElementById('nextTourDetails');
-    if (nextDetails) {
-      nextDetails.classList.remove('open');
-      nextDetails.setAttribute('aria-hidden', 'true');
-    }
+    const abrirDetalhes = (aberto) => {
+      if (nextDetails) {
+        nextDetails.classList.toggle('open', aberto);
+        nextDetails.setAttribute('aria-hidden', String(!aberto));
+      }
+      if (nextToggle) {
+        nextToggle.setAttribute('aria-expanded', String(aberto));
+        nextToggle.classList.toggle('open', aberto);
+      }
+    };
+    // No celular o card já abre com os detalhes, como no layout de referência.
+    abrirDetalhes(nextTours.length > 0 && window.matchMedia('(max-width: 768px)').matches);
+    if (nextToggle) nextToggle.hidden = nextTours.length === 0;
 
+    // onclick (e não addEventListener): esta função roda a cada filtro e
+    // empilhava um listener por execução, que abria e fechava no mesmo clique.
     if (nextToggle && nextDetails) {
-      nextToggle.onclick = null;
-      nextToggle.addEventListener('click', () => {
-        const expanded = nextDetails.classList.toggle('open');
-        nextDetails.setAttribute('aria-hidden', String(!expanded));
-        nextToggle.setAttribute('aria-expanded', String(expanded));
-        nextToggle.classList.toggle('open', expanded);
-        nextToggle.textContent = expanded ? '▼' : '▶';
-      });
+      nextToggle.onclick = () => abrirDetalhes(!nextDetails.classList.contains('open'));
     }
 
     console.log('Tabela atualizada com sucesso!');
@@ -6949,6 +6986,22 @@ const initReservationManagement = () => {
     [filterFrom, filterTo, filterStatus, filterTour, filterModality, filterCity].forEach(el => {
       if (!el) return;
       el.addEventListener('change', carregarAgendamentosDoBanco);
+    });
+
+    // Botão "Filtrar" e seta de recolher (só aparecem no celular).
+    document.getElementById('aplicarFiltrosBtn')?.addEventListener('click', carregarAgendamentosDoBanco);
+    // No celular o ícone nativo do calendário fica escondido (não cabia a
+    // data) · tocar em qualquer parte do campo abre o seletor.
+    [filterFrom, filterTo].forEach(el => {
+      el?.addEventListener('click', () => {
+        try { el.showPicker?.(); } catch (_err) { /* navegador sem suporte */ }
+      });
+    });
+    const recolherFiltros = document.getElementById('recolherFiltrosBtn');
+    recolherFiltros?.addEventListener('click', () => {
+      const card = recolherFiltros.closest('.filtros-card');
+      const recolhido = card.classList.toggle('filtros-recolhidos');
+      recolherFiltros.setAttribute('aria-expanded', String(!recolhido));
     });
 
     if (addReservationBtn) {

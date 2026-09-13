@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <link rel="stylesheet" href="../css/Gerenciamento.css?v=70">
+    <link rel="stylesheet" href="../css/Gerenciamento.css?v=71">
 </head>
 <body class="gerenciamento-page">
     <header class="gerenciamento-header">
@@ -84,7 +84,7 @@
                     <div id="nextTourCard" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px; min-width:220px;">
                         <strong>Próximo tour</strong>
                         <div id="statNext" style="font-size:1.2rem; font-weight:700;">-</div>
-                        <button id="nextTourToggle" type="button" class="next-tour-toggle" aria-expanded="false">▾</button>
+                        <button id="nextTourToggle" type="button" class="next-tour-toggle" aria-expanded="false" aria-label="Detalhes do próximo tour"><span class="next-tour-toggle-rotulo">Confirmado</span><span class="next-tour-toggle-seta">▾</span></button>
                         <div id="nextTourDetails" class="next-tour-details-panel" style="margin-top:0.5rem; font-size:0.85rem; color:#374151;"></div>
                     </div>
                 </div>
@@ -110,8 +110,11 @@
         </section>
 
         <section id="reservationsTableSection" class="reservas-section" style="margin-top: 2rem;">
-            <div class="rio-notice-text" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
-                <strong>Filtros</strong>
+            <div class="rio-notice-text filtros-card" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                <div class="filtros-cabecalho">
+                    <strong>Filtros</strong>
+                    <button id="recolherFiltrosBtn" type="button" class="filtros-recolher" aria-expanded="true" aria-label="Mostrar ou esconder filtros">▴</button>
+                </div>
                 <div class="filtro-reservas-grid" style="margin-top:0.75rem;">
                     <label style="display:flex; flex-direction:column; font-size:0.85rem;">
                         Data inicial
@@ -156,6 +159,7 @@
                             <option value="Finalizado">Finalizado</option>
                         </select>
                     </label>
+                    <button id="aplicarFiltrosBtn" type="button" class="btn-book filtros-aplicar">Filtrar</button>
                     <button id="addReservation" class="btn-book" style="height:fit-content; border-radius:999px;">Adicionar reserva</button>
                     <button id="syncReservasBtn" class="btn-book" style="height:fit-content; border-radius:999px; background:#1f6feb;" title="Verifica agora se há reservas novas nas plataformas externas conectadas">Verificar novas reservas</button>
                 </div>
@@ -166,8 +170,10 @@
                 <button type="button" class="reservations-alert-close" aria-label="Fechar alerta">×</button>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table class="rio-tour-table">
+            <div class="reservas-tabela-card">
+                <strong class="reservas-tabela-titulo">Tours</strong>
+            <div class="reservas-tabela-rolagem" style="overflow-x:auto;">
+                <table class="rio-tour-table reservas-tabela">
                     <thead>
                             <tr>
                             <th>Tour</th>
@@ -186,6 +192,7 @@
                         <tr><td colspan="10" style="padding:0.75rem;">Carregando reservas...</td></tr>
                     </tbody>
                 </table>
+            </div>
             </div>
         </section>
 
@@ -1538,7 +1545,7 @@
     <script src="../js/Translation.js?v=8"></script>
     <script src="../js/Riodejaneiro.js?v=107"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=121"></script>
+    <script src="../js/Gerenciamento.js?v=122"></script>
 </body>
 </html>
 
