@@ -5851,3 +5851,103 @@ section,
     font-size: 0.72rem !important;
   }
 }
+
+/* ==========================================================================
+   Aba Reservas no celular · tabela só com Tour, Idioma e Data (dd/mm), com
+   o texto na cor do status. O restante abre ao tocar na reserva.
+   ========================================================================== */
+.data-curta,
+.reservas-legenda {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #reservationsTableSection .reservas-tabela {
+    min-width: 0 !important;
+    table-layout: fixed;
+  }
+
+  #reservationsTableSection .reservas-tabela th:nth-child(n+3):not(:nth-child(5)),
+  #reservationsTableSection .reservas-tabela td:nth-child(n+3):not(:nth-child(5)):not([colspan]) {
+    display: none !important;
+  }
+
+  #reservationsTableSection .reservas-tabela th:nth-child(2),
+  #reservationsTableSection .reservas-tabela td:nth-child(2) {
+    width: 5.5rem;
+  }
+
+  #reservationsTableSection .reservas-tabela th:nth-child(5),
+  #reservationsTableSection .reservas-tabela td:nth-child(5) {
+    width: 3.2rem;
+    text-align: right !important;
+  }
+
+  #reservationsTableSection .reservas-tabela td {
+    font-size: 0.78rem !important;
+    font-weight: 600;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  #reservationsTableSection .reservas-tabela td:first-child {
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  #reservationsTableSection .reservas-tabela th {
+    font-size: 0.6rem !important;
+  }
+
+  #reservationsTableSection .reservas-tabela .data-longa {
+    display: none;
+  }
+
+  #reservationsTableSection .reservas-tabela .data-curta {
+    display: inline;
+    white-space: nowrap;
+  }
+
+  .reservas-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin: -0.2rem 0.2rem 0.55rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+  }
+
+  .reservas-legenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .reservas-legenda span::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .reserva-status-pendente,
+  #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td {
+    color: #d97706 !important;
+  }
+
+  .reserva-status-confirmado,
+  #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td {
+    color: #059669 !important;
+  }
+
+  .reserva-status-finalizado,
+  #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td {
+    color: #4f46e5 !important;
+  }
+
+  .reserva-status-cancelado,
+  #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td {
+    color: #dc2626 !important;
+  }
+}

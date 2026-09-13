@@ -4187,6 +4187,8 @@ const carregarAgendamentosDoBanco = async () => {
 
       const statusValue = (ag.status || 'Pendente').toString();
       const statusClass = statusValue.toLowerCase();
+      // Cor do texto por status na tabela do celular (Tour, Idioma e Data).
+      row.classList.add(`reserva-status-${statusClass.replace(/[^a-z]/g, '')}`);
       const qtdValue = ag.qtd != null ? ag.qtd : (ag.qtd_pessoas != null ? ag.qtd_pessoas : '-');
       const idiomaValue = ag.idioma || '-';
       // A coluna mostrava o valor cru do banco ("privado", "transfer"). Os
@@ -4197,6 +4199,8 @@ const carregarAgendamentosDoBanco = async () => {
       const guiaValue = ag.guia || '-';
       const nacionalidadeValue = ag.nacionalidade || '-';
       const origemValue = ag.origem || 'Tour by food';
+      // No celular a coluna Data mostra só dd/mm (ver .data-curta no CSS).
+      const dataCurta = String(ag.data || '').split('/').slice(0, 2).join('/');
 
       // Tudo aqui vem de reserva gravada pelo cliente · inclusive por rota
       // pública (/add_reserva_whatsapp). Sem escapeHtml, um "guia" com
@@ -4207,7 +4211,7 @@ const carregarAgendamentosDoBanco = async () => {
         <td data-label="Idioma">${escapeHtml(idiomaValue)}</td>
         <td data-label="Modalidade">${escapeHtml(modalidadeValue)}</td>
         <td data-label="Guia">${escapeHtml(guiaValue)}</td>
-        <td data-label="Data">${escapeHtml(ag.data)}</td>
+        <td data-label="Data"><span class="data-longa">${escapeHtml(ag.data)}</span><span class="data-curta">${escapeHtml(dataCurta)}</span></td>
         <td data-label="Hora">${escapeHtml(ag.hora)}</td>
         <td data-label="Pessoas">${escapeHtml(qtdValue)}</td>
         <td data-label="Status"><span class="status-badge ${escapeHtml(statusClass)}">${escapeHtml(statusValue)}</span></td>
