@@ -7618,7 +7618,71 @@ const initCurrencyConverter = () => {
   fetchCurrentUsdBrlRate().then(() => window.convertCurrency()).catch(() => window.convertCurrency());
 };
 
+// Celular: blocos de configuração viram cards recolhíveis (só o título fica
+// visível até tocar na seta) e os formulários do financeiro ficam atrás de um
+// botão "+ Adicionar". As classes só têm efeito no CSS até 768px · no desktop
+// nada muda.
+const prepararCardsRecolhiveisCelular = () => {
+  const cards = [
+    ['#liberacoesCadastroManager', ':scope > strong'],
+    ['#rolesManager', ':scope > strong'],
+    ['#reservaSyncPlataformasManager', ':scope > div:first-child'],
+    ['#cidadeContatoCard', ':scope > h3'],
+    ['#cidadeAvisoCard', ':scope > h3'],
+    ['#cidadeAwardCard', ':scope > h3'],
+    ['#paginaSecaoCard', ':scope > h3'],
+    ['#cidadeVisualCard', ':scope > h3'],
+    ['#maintenanceModeCard', ':scope > h3']
+  ];
+
+  cards.forEach(([seletorCard, seletorCabecalho]) => {
+    const card = document.querySelector(seletorCard);
+    const cabecalho = card?.querySelector(seletorCabecalho);
+    if (!card || !cabecalho || cabecalho.classList.contains('card-mobile-cabecalho')) return;
+
+    card.classList.add('card-mobile', 'card-mobile-recolhido');
+    cabecalho.classList.add('card-mobile-cabecalho');
+
+    const seta = document.createElement('button');
+    seta.type = 'button';
+    seta.className = 'card-mobile-seta';
+    seta.textContent = '▴';
+    seta.setAttribute('aria-expanded', 'false');
+    seta.setAttribute('aria-label', 'Mostrar ou esconder');
+    cabecalho.appendChild(seta);
+
+    cabecalho.addEventListener('click', (event) => {
+      // Outros botões do cabeçalho (ex: "+ Nova Plataforma") seguem com a
+      // própria ação.
+      const botao = event.target.closest('button');
+      if (botao && botao !== seta) return;
+      const recolhido = card.classList.toggle('card-mobile-recolhido');
+      seta.setAttribute('aria-expanded', String(!recolhido));
+    });
+  });
+
+  document.querySelectorAll('.finance-add-form').forEach((form) => {
+    if (form.previousElementSibling?.classList.contains('finance-form-toggle')) return;
+    const rotulo = form.querySelector('button[type="submit"]')?.textContent.trim() || 'Adicionar';
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'btn-book finance-form-toggle';
+    botao.textContent = `+ ${rotulo}`;
+    botao.setAttribute('aria-expanded', 'false');
+    form.classList.add('finance-form-recolhido');
+    form.before(botao);
+    botao.addEventListener('click', () => {
+      const recolhido = form.classList.toggle('finance-form-recolhido');
+      botao.setAttribute('aria-expanded', String(!recolhido));
+      botao.classList.toggle('aberto', !recolhido);
+      botao.textContent = recolhido ? `+ ${rotulo}` : 'Fechar formulário';
+    });
+  });
+};
+
 window.addEventListener('DOMContentLoaded', () => {
+  prepararCardsRecolhiveisCelular();
+
   const userEmail = localStorage.getItem('userEmail');
   const role = localStorage.getItem('userRole');
 
