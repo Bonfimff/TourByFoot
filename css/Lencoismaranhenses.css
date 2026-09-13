@@ -3549,6 +3549,18 @@ header {
   background: rgba(11, 77, 139, 0.18);
 }
 
+/* Mês anterior fica bloqueado quando o calendário já está no mês atual:
+   não há dia reservável para trás. Sem este estilo o botão parecia igual
+   ao ativo e simplesmente não respondia ao toque. */
+.res-calendar-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.res-calendar-nav:disabled:hover {
+  background: rgba(11, 77, 139, 0.08);
+}
+
 .res-calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

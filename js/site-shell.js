@@ -4822,6 +4822,30 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         return dia && Array.isArray(porDia[dia]) ? porDia[dia] : [];
     };
 
+    // Data e hora LOCAIS, no mesmo formato das datas do formulário. Não usa
+    // toISOString(): ele devolve em UTC, e no Brasil (UTC-3) a partir das 21h
+    // já seria "amanhã" — o calendário travaria o dia de hoje à noite.
+    const hojeLocal = () => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+    const agoraLocal = () => {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    };
+
+    // Horários que ainda dá tempo de reservar: num dia que já passou, nenhum;
+    // hoje, só os que ainda não começaram. É uma trava só do front end — o
+    // servidor não recusa data passada —, suficiente para o cliente não
+    // conseguir escolher sem querer uma saída que já aconteceu.
+    const horariosAindaValidos = (horarios, dateStr) => {
+        const hoje = hojeLocal();
+        if (!dateStr || dateStr < hoje) return [];
+        if (dateStr > hoje) return horarios;
+        const agora = agoraLocal();
+        return horarios.filter((h) => String(h).trim().slice(0, 5) > agora);
+    };
+
     const initReservationTracking = () => {
         const reservationModal = document.getElementById('reservationModal');
         const reservationForm = document.getElementById('reservationForm');
@@ -4963,10 +4987,14 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 buildReservationTimeOptions([]);
                 return;
             }
-            const horariosDoDia = horariosParaData(activeReservationTour, dateValue);
+            const horariosDoTour = horariosParaData(activeReservationTour, dateValue);
+            const horariosDoDia = horariosAindaValidos(horariosDoTour, dateValue);
             buildReservationTimeOptions(horariosDoDia);
             if (!horariosDoDia.length) {
-                showGlobalNotification('Este tour não está disponível no dia da semana escolhido. Selecione outra data.', 'error');
+                let aviso = 'Este tour não está disponível no dia da semana escolhido. Selecione outra data.';
+                if (dateValue < hojeLocal()) aviso = 'Essa data já passou. Escolha uma data a partir de hoje.';
+                else if (horariosDoTour.length) aviso = 'Os horários deste dia já passaram. Selecione outra data.';
+                showGlobalNotification(aviso, 'error');
             }
         };
 
@@ -5092,12 +5120,17 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const selected = reservationDate?.value || '';
 
+            const hoje = hojeLocal();
             let cells = '';
             for (let i = 0; i < firstWeekday; i++) cells += '<span class="res-calendar-day res-calendar-day--empty"></span>';
             for (let day = 1; day <= daysInMonth; day++) {
                 const diaKey = DIAS_SEMANA_KEYS[new Date(year, month, day).getDay()];
-                const disponivel = !porDia || (Array.isArray(porDia[diaKey]) && porDia[diaKey].length > 0);
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                // Dia que já passou nunca é reservável, qualquer que seja a agenda
+                // do tour. Comparação de texto funciona porque a data está em
+                // AAAA-MM-DD, que ordena igual ao calendário.
+                const disponivel = dateStr >= hoje
+                    && (!porDia || (Array.isArray(porDia[diaKey]) && porDia[diaKey].length > 0));
                 const classes = ['res-calendar-day', disponivel ? 'res-calendar-day--available' : 'res-calendar-day--unavailable'];
                 if (dateStr === selected) classes.push('res-calendar-day--selected');
                 cells += `<button type="button" class="${classes.join(' ')}" data-date="${dateStr}" ${disponivel ? '' : 'disabled'}>${day}</button>`;
@@ -5108,10 +5141,13 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const nextMonthLabel = strings.reservation_calendar_next_month || 'Próximo mês';
             const legendLabel = strings.reservation_calendar_legend || 'Dias disponíveis para este tour';
             const weekdayCells = diasSemanaAbreviados().map((d) => `<span>${d}</span>`).join('');
+            const agoraData = new Date();
+            const mesJaPassou = year < agoraData.getFullYear()
+                || (year === agoraData.getFullYear() && month <= agoraData.getMonth());
 
             calendarPopover.innerHTML = `
                 <div class="res-calendar-header">
-                    <button type="button" class="res-calendar-nav" data-nav="-1" aria-label="${prevMonthLabel}">&lsaquo;</button>
+                    <button type="button" class="res-calendar-nav" data-nav="-1" aria-label="${prevMonthLabel}" ${mesJaPassou ? 'disabled' : ''}>&lsaquo;</button>
                     <span class="res-calendar-title">${nomeMesCalendario(year, month)} ${year}</span>
                     <button type="button" class="res-calendar-nav" data-nav="1" aria-label="${nextMonthLabel}">&rsaquo;</button>
                 </div>
@@ -5393,7 +5429,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     ? activeReservationTour
                     : getTours().find(t => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(tour));
                 const modality = (matchedTour?.modalidade || 'free').toLowerCase();
-                const horariosDisponiveis = horariosParaData(matchedTour, date);
+                const horariosDoTour = horariosParaData(matchedTour, date);
+                const horariosDisponiveis = horariosAindaValidos(horariosDoTour, date);
                 const selectedTime = reservationTime ? reservationTime.value : '';
 
                 if (!tour || !clientName || !date || !quantity || !language || !phone || !email || !nationality) {
@@ -5413,7 +5450,18 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     return;
                 }
 
-                if (parseHorariosPorDia(matchedTour?.horarios_por_dia) && !horariosDisponiveis.length) {
+                // A mesma trava do calendário, repetida no envio: a data pode ter
+                // ficado preenchida de antes (modal aberto de um dia para o outro).
+                if (date < hojeLocal()) {
+                    showGlobalNotification('Essa data já passou. Escolha uma data a partir de hoje.', 'error');
+                    return;
+                }
+                if (horariosDoTour.length && !horariosDisponiveis.length) {
+                    showGlobalNotification('Os horários deste dia já passaram. Escolha outra data.', 'error');
+                    return;
+                }
+
+                if (parseHorariosPorDia(matchedTour?.horarios_por_dia) && !horariosDoTour.length) {
                     showGlobalNotification('Este tour não está disponível no dia da semana escolhido. Selecione outra data.', 'error');
                     return;
                 }
