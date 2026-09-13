@@ -4880,61 +4880,45 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const reservationSubmitLabel = document.getElementById('reservationSubmitLabel');
         let selectedMeetingPoint = '';
 
-        // Lista de países para a sugestão (datalist) do campo Nacionalidade do
-        // formulário de reserva — pedido mesmo em tours de canal WhatsApp,
-        // que usam este mesmo formulário (ver openReservationModal abaixo).
-        const RESERVATION_COUNTRY_LIST = [
-            'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan',
-            'Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi',
-            'Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia','Comoros','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic',
-            'Democratic Republic of the Congo','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia',
-            'Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana',
-            'Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Ivory Coast',
-            'Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Kosovo','Kuwait','Kyrgyzstan',
-            'Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg',
-            'Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar',
-            'Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway',
-            'Oman','Pakistan','Palau','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal',
-            'Qatar','Romania','Russia','Rwanda',
-            'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria',
-            'Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu',
-            'Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan',
-            'Vanuatu','Vatican City','Venezuela','Vietnam',
-            'Yemen','Zambia','Zimbabwe'
-        ];
+        // Nacionalidade da reserva. As sugestões aparecem no idioma da página,
+        // mas o campo aceita o nome em qualquer idioma — "Brasil", "Brazil",
+        // "Alemanha", "Germany" — e o que vai para o banco é sempre o nome em
+        // pt-BR (ver js/paises.js). Sem isso a coluna juntava "Brazil" e
+        // "Brasil" como se fossem países diferentes.
+        const idiomaDaPagina = () => window.rotaIdioma?.atual
+            || (typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : '')
+            || 'pt';
+
+        // Nome em pt-BR para gravar, ou '' se o texto não for um país da lista.
+        // Sem js/paises.js carregado não trava a reserva: devolve o texto.
+        const paisDaLista = (texto) => {
+            if (!window.Paises) return String(texto || '').trim();
+            return window.Paises.ptBR(window.Paises.codigo(texto));
+        };
+
+        // Nome para mostrar no campo, no idioma da página.
+        const paisParaMostrar = (texto) => {
+            const codigo = window.Paises?.codigo(texto);
+            return codigo ? window.Paises.nome(codigo, idiomaDaPagina()) : (texto || '');
+        };
+
         const reservationCountryList = document.getElementById('reservationCountryList');
-        if (reservationCountryList && !reservationCountryList.childElementCount) {
-            RESERVATION_COUNTRY_LIST.forEach((country) => {
+        if (reservationCountryList && window.Paises) {
+            reservationCountryList.innerHTML = '';
+            window.Paises.sugestoes(idiomaDaPagina()).forEach((nome) => {
                 const option = document.createElement('option');
-                option.value = country;
+                option.value = nome;
                 reservationCountryList.appendChild(option);
             });
         }
 
-        // O campo aceita texto livre (o visitante digita e o navegador filtra as
-        // sugestões), mas o valor enviado precisa ser um país da lista: sem isso
-        // entrava qualquer coisa digitada, e a coluna "nacionalidade" virava
-        // texto solto — impossível de somar por país depois.
-        // A comparação ignora maiúsculas, acentos e espaço sobrando, então
-        // "  brasil " e "BRAZIL" encontram "Brazil"; o que vai para o banco é
-        // sempre a grafia da lista, não a que a pessoa digitou.
-        const normalizarPais = (texto) => String(texto || '')
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-            .trim().replace(/\s+/g, ' ').toLowerCase();
-
-        const PAIS_POR_CHAVE = new Map(
-            RESERVATION_COUNTRY_LIST.map((pais) => [normalizarPais(pais), pais])
-        );
-
-        const paisDaLista = (texto) => PAIS_POR_CHAVE.get(normalizarPais(texto)) || '';
-
-        // Ao sair do campo, corrige a grafia para a da lista. É só um retoque:
-        // quem digitou certo não vê diferença, e quem digitou errado descobre
-        // ali, e não depois de apertar "Confirmar".
+        // Ao sair do campo, mostra o país na grafia do idioma da página: quem
+        // digitou "germany" numa página em português passa a ver "Alemanha".
         if (reservationNationality) {
             reservationNationality.addEventListener('blur', () => {
-                const certo = paisDaLista(reservationNationality.value);
-                if (certo) reservationNationality.value = certo;
+                if (window.Paises?.codigo(reservationNationality.value)) {
+                    reservationNationality.value = paisParaMostrar(reservationNationality.value);
+                }
             });
         }
 
@@ -5290,7 +5274,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             reservationQuantity.value = 1;
             reservationPhone.value = userPhone || '';
             reservationEmail.value = userEmail || '';
-            if (reservationNationality) reservationNationality.value = userPais || '';
+            if (reservationNationality) reservationNationality.value = paisParaMostrar(userPais || '');
             selectedMeetingPoint = (meetingPoint || '').trim();
 
             // Botão "Confirmar Reserva" avisa visualmente que essa reserva vai
