@@ -4821,8 +4821,9 @@ section,
     color: #0b3c6d !important;
   }
 
-  /* Tours mais clicados fica depois dos contadores, também em card */
+  /* Tours mais clicados não aparece no celular */
   #reservationsStatsSection .blurry-card > div:last-child {
+    display: none !important;
     order: 6;
     margin: 0 !important;
     padding: 0.7rem 0.8rem;

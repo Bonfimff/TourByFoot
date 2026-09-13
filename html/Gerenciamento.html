@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <link rel="stylesheet" href="../css/Gerenciamento.css?v=71">
+    <link rel="stylesheet" href="../css/Gerenciamento.css?v=72">
 </head>
 <body class="gerenciamento-page">
     <header class="gerenciamento-header">
@@ -84,7 +84,7 @@
                     <div id="nextTourCard" style="background:rgba(255,255,255,0.9); padding:1rem; border-radius:12px; min-width:220px;">
                         <strong>Próximo tour</strong>
                         <div id="statNext" style="font-size:1.2rem; font-weight:700;">-</div>
-                        <button id="nextTourToggle" type="button" class="next-tour-toggle" aria-expanded="false" aria-label="Detalhes do próximo tour"><span class="next-tour-toggle-rotulo">Confirmado</span><span class="next-tour-toggle-seta">▾</span></button>
+                        <button id="nextTourToggle" type="button" class="next-tour-toggle" aria-expanded="false" hidden aria-label="Detalhes do próximo tour"><span class="next-tour-toggle-rotulo">Confirmado</span><span class="next-tour-toggle-seta">▾</span></button>
                         <div id="nextTourDetails" class="next-tour-details-panel" style="margin-top:0.5rem; font-size:0.85rem; color:#374151;"></div>
                     </div>
                 </div>
@@ -110,10 +110,10 @@
         </section>
 
         <section id="reservationsTableSection" class="reservas-section" style="margin-top: 2rem;">
-            <div class="rio-notice-text filtros-card" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
+            <div class="rio-notice-text filtros-card filtros-recolhidos" style="background:rgba(255,255,255,0.9); border-radius:12px; padding:1rem; margin-bottom:1rem;">
                 <div class="filtros-cabecalho">
                     <strong>Filtros</strong>
-                    <button id="recolherFiltrosBtn" type="button" class="filtros-recolher" aria-expanded="true" aria-label="Mostrar ou esconder filtros">▴</button>
+                    <button id="recolherFiltrosBtn" type="button" class="filtros-recolher" aria-expanded="false" aria-label="Mostrar ou esconder filtros">▴</button>
                 </div>
                 <div class="filtro-reservas-grid" style="margin-top:0.75rem;">
                     <label style="display:flex; flex-direction:column; font-size:0.85rem;">
