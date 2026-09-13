@@ -223,7 +223,12 @@ def inserir_retrato(html, slug, idioma, retratos):
 
 def limpar_bloco(html):
     """Remove um bloco gerado anterior, para o script poder rodar de novo."""
-    return re.sub(re.escape(INICIO) + r'.*?' + re.escape(FIM) + r'\n?', '', html, flags=re.S)
+    # r'\r?\n?', e nao so r'\n?': no Windows a linha do marcador
+    # termina em CRLF, o \n? nao casava com o \r, e sobrava uma quebra de linha
+    # a cada bloco. A pagina gerada no Windows ganhava uma linha em branco que a
+    # gerada no Linux (a GitHub Action) nao tinha - cada lado desfazia o trabalho
+    # do outro, e a arvore local ficava suja, travando o git pull --rebase.
+    return re.sub(re.escape(INICIO) + r'.*?' + re.escape(FIM) + r'\r?\n?', '', html, flags=re.S)
 
 
 def traduzir_alts(html, idioma, alts):
