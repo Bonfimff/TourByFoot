@@ -4558,6 +4558,54 @@ section,
   overflow-wrap: anywhere;
 }
 
+/* Próximo tour em slides: desliza para o lado, com bolinhas embaixo */
+.next-tour-details-panel .next-tour-entries {
+  display: flex;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.next-tour-details-panel .next-tour-entries::-webkit-scrollbar {
+  display: none;
+}
+
+.next-tour-details-panel .next-tour-entries > .next-tour-entry {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  margin: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+.next-tour-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.55rem 0 0.1rem !important;
+}
+
+.next-tour-dot {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(11, 60, 109, 0.35);
+  background: rgba(11, 60, 109, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.next-tour-dot.active {
+  background: #0b3c6d;
+  transform: scale(1.25);
+}
+
 /* ==========================================================================
    Aba Reservas no celular · cards compactos na ordem: título, próximo tour,
    contadores, filtros (3 colunas) e tabela de verdade (não mais em cards).
@@ -4585,8 +4633,7 @@ section,
     order: 1;
     position: relative;
     margin: 0 !important;
-    padding: 0.85rem 0.9rem 0.35rem 3.6rem;
-    min-height: 2.9rem;
+    padding: 0.85rem 0.9rem 0.35rem;
     display: flex;
     align-items: center;
     font-size: 1.05rem;
@@ -4594,17 +4641,6 @@ section,
     letter-spacing: 0.01em;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 14px 14px 0 0;
-  }
-
-  #reservationsStatsSection .rio-notice-title::before {
-    content: "";
-    position: absolute;
-    left: 0.85rem;
-    top: 0.7rem;
-    width: 2.3rem;
-    height: 2.3rem;
-    border-radius: 50%;
-    background: rgba(11, 77, 139, 0.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b4d8b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 16c1.5 0 1.5 1 3 1s1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1'/%3E%3Cpath d='M2 20c1.5 0 1.5 1 3 1s1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1'/%3E%3Cpath d='M5 13a7 7 0 0 1 14 0'/%3E%3Ccircle cx='12' cy='8' r='2'/%3E%3C/svg%3E") center / 1.35rem no-repeat;
   }
 
   #reservationsStatsSection .rio-notice-title + div {
@@ -4621,7 +4657,7 @@ section,
   #importantInfoFeed {
     order: 3;
     margin: -0.6rem 0 0 !important;
-    padding: 0.2rem 0.9rem 0.85rem 3.6rem;
+    padding: 0.2rem 0.9rem 0.85rem;
     gap: 0.5rem !important;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 0 0 14px 14px;
@@ -5858,8 +5894,7 @@ section,
    Aba Reservas no celular · tabela só com Tour, Idioma e Data (dd/mm), com
    o texto na cor do status. O restante abre ao tocar na reserva.
    ========================================================================== */
-.data-curta,
-.reservas-legenda {
+.data-curta {
   display: none;
 }
 
@@ -5910,45 +5945,18 @@ section,
     white-space: nowrap;
   }
 
-  .reservas-legenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
-    margin: -0.2rem 0.2rem 0.55rem;
-    font-size: 0.66rem;
-    font-weight: 700;
-  }
-
-  .reservas-legenda span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .reservas-legenda span::before {
-    content: "";
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  .reserva-status-pendente,
   #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td {
     color: #d97706 !important;
   }
 
-  .reserva-status-confirmado,
   #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td {
     color: #059669 !important;
   }
 
-  .reserva-status-finalizado,
   #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td {
     color: #4f46e5 !important;
   }
 
-  .reserva-status-cancelado,
   #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td {
     color: #dc2626 !important;
   }

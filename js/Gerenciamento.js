@@ -4273,21 +4273,6 @@ const carregarAgendamentosDoBanco = async () => {
       )
       .sort((a, b) => a.dateTime - b.dateTime);
 
-    const nextDateTime = upcoming.length > 0 ? upcoming[0].dateTime : null;
-    const allNextDateTime = nextDateTime
-      ? upcoming.filter(ag => ag.dateTime && ag.dateTime.getTime() === nextDateTime.getTime())
-      : [];
-
-    if (statNext) {
-      if (!nextDateTime) {
-        statNext.textContent = '-';
-      } else {
-        const dateStr = nextDateTime.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeStr = nextDateTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        statNext.textContent = `${dateStr} ${timeStr} (${allNextDateTime.length} próximo${allNextDateTime.length !== 1 ? 's' : ''})`;
-      }
-    }
-
     // "Sem guia definido" não conta como guia em comum · precisa ser um nome
     // real pra valer a exceção abaixo.
     const GUIA_VAZIO = new Set(['', 'n/s', 'ns', '-', 'não definido', 'nao definido', 'sem guia']);
@@ -4296,8 +4281,12 @@ const carregarAgendamentosDoBanco = async () => {
       return norm && !GUIA_VAZIO.has(norm);
     };
 
+    // Cada saída (mesmo horário + tour/idioma/guia) vira um slide do card
+    // "Próximo tour", na ordem do horário · deslizando para o lado aparecem
+    // as próximas. Limite de slides pra as bolinhas caberem no card.
+    const MAX_SLIDES_PROXIMO_TOUR = 10;
     const grouped = {};
-    allNextDateTime.forEach(ag => {
+    upcoming.forEach(ag => {
       const tour = (ag.tour || '').trim();
       const idioma = (ag.idioma || '').trim();
       const modalidade = (ag.modalidade || '').trim();
@@ -4306,22 +4295,21 @@ const carregarAgendamentosDoBanco = async () => {
       // mesmo horário não é o mesmo grupo) · EXCETO quando o guia é o mesmo
       // (nome real, não "N/S"): aí é o mesmo guia tocando as duas modalidades
       // juntas, então continua sendo a mesma saída.
-      const key = guiaEhReal(guia)
+      const key = ag.dateTime.getTime() + '||' + (guiaEhReal(guia)
         ? `${tour}||${idioma}||${guia}`
-        : `${tour}||${idioma}||${modalidade}||${guia}`;
+        : `${tour}||${idioma}||${modalidade}||${guia}`);
       const qtd = Number(ag.qtd ?? ag.qtd_pessoas ?? 0) || 0;
       const nacionalidade = (ag.nacionalidade || '').trim();
       const origem = (ag.origem || '').trim();
       if (!grouped[key]) {
         grouped[key] = {
+          dateTime: ag.dateTime,
           tour: tour || '-',
           idioma: idioma || '-',
           modalidades: new Set([modalidade || '-']),
           nacionalidades: new Set(nacionalidade ? [nacionalidade] : []),
           origens: new Set(origem ? [origem] : []),
           guia: guia || '-',
-          data: ag.data || '-',
-          hora: ag.hora || '-',
           pessoas: qtd,
           count: 1
         };
@@ -4334,31 +4322,31 @@ const carregarAgendamentosDoBanco = async () => {
       }
     });
 
-    const nextTours = Object.values(grouped);
+    // Object.values mantém a ordem de inserção, que já é a do horário.
+    const nextTours = Object.values(grouped).slice(0, MAX_SLIDES_PROXIMO_TOUR);
 
-    // statNext já foi atualizado acima com allNextDateTime.length, garantindo contagem total de reservas.
+    const cabecalhoDoSlide = (group) => {
+      if (!group) return '-';
+      const dateStr = group.dateTime.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timeStr = group.dateTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return `${dateStr} ${timeStr} (${group.count} reserva${group.count !== 1 ? 's' : ''})`;
+    };
+    if (statNext) statNext.textContent = cabecalhoDoSlide(nextTours[0]);
+
     const nextTourDetails = document.getElementById('nextTourDetails');
 
     if (nextTourDetails) {
-      // Fecha só via classe (max-height/opacity no CSS) · nunca via display
-      // inline, senão a animação de abrir/fechar quebra e o botão "pula".
-      nextTourDetails.classList.remove('open');
-      nextTourDetails.setAttribute('aria-hidden', 'true');
-
       let tourListContainer = nextTourDetails.querySelector('.next-tour-entries');
       if (!tourListContainer) {
         tourListContainer = document.createElement('div');
         tourListContainer.className = 'next-tour-entries';
-        tourListContainer.style.marginTop = '0.5rem';
         nextTourDetails.appendChild(tourListContainer);
       }
+      nextTourDetails.querySelector('.next-tour-dots')?.remove();
 
       if (nextTours.length === 0) {
         tourListContainer.innerHTML = '<div style="color:#6b7280;">Nenhum próximo tour confirmado.</div>';
       } else {
-        const totalPeople = nextTours.reduce((sum, group) => sum + (group.pessoas || 0), 0);
-        const tourGuides = [...new Set(nextTours.map(group => group.guia || '-'))].join(', ');
-
         // Valores vêm de reservas gravadas pelo cliente · sempre escapados.
         const itemProximoTour = (icone, rotulo, valor) => `
           <div class="nt-item">
@@ -4384,7 +4372,37 @@ const carregarAgendamentosDoBanco = async () => {
                 ${itemProximoTour('origem', 'Origem', juntar(group.origens))}
               </div>
             </div>`).join('');
+        tourListContainer.scrollLeft = 0;
 
+        // Bolinhas: mesma lógica das fotos dos tours · a ativa fica maior,
+        // tocar numa leva ao slide e deslizar atualiza a ativa.
+        if (nextTours.length > 1) {
+          const dots = document.createElement('div');
+          dots.className = 'next-tour-dots';
+          nextTours.forEach((_group, i) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'next-tour-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Próximo tour ${i + 1} de ${nextTours.length}`);
+            dot.addEventListener('click', () => {
+              tourListContainer.scrollTo({ left: i * tourListContainer.clientWidth, behavior: 'smooth' });
+            });
+            dots.appendChild(dot);
+          });
+          nextTourDetails.appendChild(dots);
+
+          let slideAtual = 0;
+          tourListContainer.onscroll = () => {
+            const largura = tourListContainer.clientWidth || 1;
+            const i = Math.min(nextTours.length - 1, Math.max(0, Math.round(tourListContainer.scrollLeft / largura)));
+            if (i === slideAtual) return;
+            slideAtual = i;
+            dots.querySelectorAll('.next-tour-dot').forEach((d, j) => d.classList.toggle('active', j === i));
+            if (statNext) statNext.textContent = cabecalhoDoSlide(nextTours[i]);
+          };
+        } else {
+          tourListContainer.onscroll = null;
+        }
       }
     }
 
@@ -4400,8 +4418,8 @@ const carregarAgendamentosDoBanco = async () => {
         nextToggle.classList.toggle('open', aberto);
       }
     };
-    // No celular o card já abre com os detalhes, como no layout de referência.
-    abrirDetalhes(nextTours.length > 0 && window.matchMedia('(max-width: 768px)').matches);
+    // Começa recolhido · a etiqueta "Confirmado ▾" abre os detalhes.
+    abrirDetalhes(false);
     if (nextToggle) nextToggle.hidden = nextTours.length === 0;
 
     // onclick (e não addEventListener): esta função roda a cada filtro e
