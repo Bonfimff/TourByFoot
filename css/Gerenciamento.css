@@ -4650,7 +4650,7 @@ section,
     background: rgba(255, 255, 255, 0.95);
   }
 
-  #reservationsStatsSection .rio-notice-title + div:not(:has(button:not([style*="display:none"]))) {
+  #reservationsStatsSection .rio-notice-title + div:not(:has(button:not([style*="display:none"]):not([hidden]), p:not([hidden]))) {
     display: none !important;
   }
 
@@ -6176,4 +6176,48 @@ section,
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* Botão de notificações de reserva (aba Reservas) */
+.notificacoes-btn[hidden],
+.notificacoes-dica[hidden] {
+  display: none !important;
+}
+
+.notificacoes-btn {
+  border-radius: 999px !important;
+  background: #0b3c6d !important;
+  color: #fff !important;
+}
+
+.notificacoes-btn[data-estado="ativo"] {
+  background: #e7f6ee !important;
+  color: #047857 !important;
+  border: 1px solid rgba(4, 120, 87, 0.25) !important;
+}
+
+.notificacoes-btn[data-estado="bloqueado"] {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+}
+
+.notificacoes-dica {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  #reservationsStatsSection .rio-notice-title + div:has(#notificacoesBtn:not([hidden]), #notificacoesDica:not([hidden])) {
+    display: flex !important;
+    padding-bottom: 0.4rem !important;
+  }
+
+  #notificacoesBtn {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.78rem !important;
+  }
 }

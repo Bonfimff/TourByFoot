@@ -7801,7 +7801,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // seja permitida para este nível de acesso; senão cai em "reservas".
     let secaoInicial = 'reservas';
     try {
-      const salva = localStorage.getItem('gerenciamentoUltimaSecao');
+      const salva = window.location.hash === '#reservas'
+        ? 'reservas'
+        : localStorage.getItem('gerenciamentoUltimaSecao');
       const tabPorSecao = { reservas: 'Reservas', contas: 'Contas', gerenciamento: 'Gerenciamento', financeiro: 'Financeiro' };
       if (salva && tabPorSecao[salva] && (currentUserPermissions?.tabs || []).includes(tabPorSecao[salva])) {
         secaoInicial = salva;
@@ -8256,53 +8258,160 @@ const urlBase64ToUint8Array = (base64String) => {
   return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
 };
 
-const initWebPushForAdmin = async () => {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+// Notificações de reserva (push). O pedido de permissão só sai de um toque
+// no botão "Ativar notificações": o iPhone recusa pedidos sem toque do
+// usuário e o Chrome esconde os que aparecem sozinhos ao abrir a página.
+// Cada aparelho (celular, computador) se inscreve separado no servidor.
+const pushSuportado = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 
-  // Só ativa push para usuários com permissão de gestão
-  const email = typeof currentUserEmail !== 'undefined' ? currentUserEmail : null;
-  if (!email) return;
+const appInstalado = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+  window.navigator.standalone === true;
 
+const ehIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent || '') ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+const registroDoServiceWorker = async () => {
+  await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+  return navigator.serviceWorker.ready;
+};
+
+const chavePublicaPush = async () => {
   try {
-    // Regista o service worker na raiz para ter escopo total
-    const swPath = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
-      ? '/sw.js'
-      : '/sw.js';
-
-    const reg = await navigator.serviceWorker.register(swPath, { scope: '/' });
-    await navigator.serviceWorker.ready;
-
-    // Pede permissão de notificação
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return;
-
-    // Busca chave pública do servidor
-    let applicationServerKey = VAPID_PUBLIC_KEY;
-    try {
-      const keyResp = await fetchWithApiFallback('/get_vapid_public_key');
-      if (keyResp.ok) {
-        const keyData = await keyResp.json();
-        if (keyData.publicKey) applicationServerKey = keyData.publicKey;
-      }
-    } catch (_) { /* usa constante local */ }
-
-    // Cria ou reutiliza subscription existente
-    let subscription = await reg.pushManager.getSubscription();
-    if (!subscription) {
-      subscription = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
-      });
+    const resp = await fetchWithApiFallback('/get_vapid_public_key');
+    if (resp.ok) {
+      const dados = await resp.json();
+      if (dados.publicKey) return dados.publicKey;
     }
+  } catch (_err) { /* usa a constante local */ }
+  return VAPID_PUBLIC_KEY;
+};
 
-    // Envia subscription ao backend para ser notificado remotamente
-    await fetchWithApiFallback('/save_push_subscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, subscription: subscription.toJSON() })
+const salvarInscricaoPush = async (subscription) => {
+  const email = localStorage.getItem('userEmail') || '';
+  const resp = await fetchWithApiFallback('/save_push_subscription', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, subscription: subscription.toJSON() })
+  });
+  if (!resp.ok) throw new Error(`save_push_subscription ${resp.status}`);
+};
+
+const inscreverPush = async () => {
+  const reg = await registroDoServiceWorker();
+  let subscription = await reg.pushManager.getSubscription();
+  if (!subscription) {
+    subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(await chavePublicaPush())
     });
-  } catch (err) {
-    console.warn('[WebPush] Falha ao inicializar push:', err);
+  }
+  await salvarInscricaoPush(subscription);
+  return subscription;
+};
+
+const cancelarPush = async () => {
+  const reg = await registroDoServiceWorker();
+  const subscription = await reg.pushManager.getSubscription();
+  if (!subscription) return;
+  const endpoint = subscription.endpoint;
+  await subscription.unsubscribe().catch(() => {});
+  await fetchWithApiFallback('/delete_push_subscription', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: localStorage.getItem('userEmail') || '', endpoint })
+  }).catch(() => {});
+};
+
+const atualizarBotaoNotificacoes = async () => {
+  const botao = document.getElementById('notificacoesBtn');
+  const dica = document.getElementById('notificacoesDica');
+  if (!botao) return;
+  const esconder = () => { botao.hidden = true; if (dica) dica.hidden = true; };
+
+  if (!currentUserPermissions?.manageReservas) return esconder();
+
+  // No iPhone o push só existe no app instalado na Tela de Início.
+  if (ehIOS() && !appInstalado()) {
+    botao.hidden = true;
+    if (dica) {
+      dica.hidden = false;
+      dica.textContent = 'Para receber notificações no iPhone, instale o app: Compartilhar → Adicionar à Tela de Início.';
+    }
+    return;
+  }
+  if (!pushSuportado()) return esconder();
+  if (dica) dica.hidden = true;
+
+  botao.hidden = false;
+  botao.disabled = false;
+  if (Notification.permission === 'denied') {
+    botao.textContent = '🔕 Notificações bloqueadas';
+    botao.title = 'Libere as notificações deste site nas configurações do navegador ou do app.';
+    botao.dataset.estado = 'bloqueado';
+    return;
+  }
+
+  let inscrito = false;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('/');
+    inscrito = !!(reg && Notification.permission === 'granted' && await reg.pushManager.getSubscription());
+  } catch (_err) { inscrito = false; }
+
+  botao.dataset.estado = inscrito ? 'ativo' : 'inativo';
+  botao.textContent = inscrito ? '🔔 Notificações ativas' : '🔔 Ativar notificações';
+  botao.title = inscrito ? 'Toque para desativar neste aparelho' : 'Receber aviso de novas reservas neste aparelho';
+};
+
+const initWebPushForAdmin = async () => {
+  const botao = document.getElementById('notificacoesBtn');
+
+  if (botao && !botao.dataset.pronto) {
+    botao.dataset.pronto = '1';
+    botao.addEventListener('click', async () => {
+      const estado = botao.dataset.estado;
+      if (estado === 'bloqueado') {
+        alert('As notificações estão bloqueadas para este site. Libere nas configurações do navegador (ou do app) e toque de novo.');
+        return;
+      }
+      botao.disabled = true;
+      try {
+        if (estado === 'ativo') {
+          await cancelarPush();
+        } else {
+          const permissao = await Notification.requestPermission();
+          if (permissao === 'granted') await inscreverPush();
+        }
+      } catch (err) {
+        console.warn('[WebPush] Falha ao alterar notificações:', err);
+        alert('Não foi possível ativar as notificações neste aparelho. Tente de novo em instantes.');
+      }
+      await atualizarBotaoNotificacoes();
+    });
+  }
+
+  await atualizarBotaoNotificacoes();
+
+  // Já autorizado antes: renova a inscrição no servidor em silêncio (o
+  // navegador pode trocar o endpoint, e o servidor apaga os que expiram).
+  if (pushSuportado() && Notification.permission === 'granted' && currentUserPermissions?.manageReservas) {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration('/');
+      const subscription = reg && await reg.pushManager.getSubscription();
+      if (subscription) await salvarInscricaoPush(subscription);
+    } catch (err) {
+      console.warn('[WebPush] Falha ao renovar inscrição:', err);
+    }
+  }
+
+  // Toque numa notificação com o painel já aberto: o service worker foca a
+  // janela e pede pra ir para a aba Reservas.
+  if ('serviceWorker' in navigator && !window.__pushMensagensProntas) {
+    window.__pushMensagensProntas = true;
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.tipo !== 'abrir-reservas') return;
+      mostrarSecao('reservas');
+      carregarAgendamentosDoBanco();
+    });
   }
 };
 

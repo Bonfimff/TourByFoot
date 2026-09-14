@@ -55,7 +55,8 @@ self.addEventListener('push', (event) => {
     body: dados.body || '',
     icon: '/imagem/icones/gerenciamento-192.png',
     badge: '/imagem/icones/gerenciamento-192.png',
-    data: { url: dados.url || '/html/Gerenciamento.html' }
+    data: { url: dados.url || '/html/Gerenciamento.html#reservas' },
+    tag: dados.tag || undefined
   }));
 });
 
@@ -65,7 +66,11 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil((async () => {
     const janelas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const aberta = janelas.find((c) => c.url.split('#')[0] === destino.split('#')[0]);
-    if (aberta) return aberta.focus();
+    if (aberta) {
+      // Painel já aberto: traz pra frente e pede pra mostrar a aba Reservas.
+      if (destino.includes('#reservas')) aberta.postMessage({ tipo: 'abrir-reservas' });
+      return aberta.focus();
+    }
     return self.clients.openWindow(destino);
   })());
 });
