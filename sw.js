@@ -77,7 +77,7 @@ self.addEventListener('push', (event) => {
       await self.registration.showNotification(titulo, {
         body: dados.body || '',
         icon: '/imagem/icones/gerenciamento-192.png',
-        badge: '/imagem/icones/gerenciamento-192.png',
+        badge: '/imagem/icones/badge-96.png',
         data: { url: dados.url || '/html/Gerenciamento.html#reservas' },
         tag,
         // Aviso de reserva pendente vencida fica na tela até a pessoa agir.

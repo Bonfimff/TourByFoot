@@ -8539,6 +8539,7 @@ const testarNotificacoes = async () => {
       await reg.showNotification('Teste do aparelho', {
         body: 'Esta notificação foi criada no próprio aparelho, sem o servidor.',
         icon: '/imagem/icones/gerenciamento-192.png',
+        badge: '/imagem/icones/badge-96.png',
         tag: 'teste-local'
       });
       linhas.push('1) Teste do aparelho: enviado. Veja se apareceu "Teste do aparelho".');
