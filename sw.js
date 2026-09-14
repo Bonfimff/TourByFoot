@@ -43,6 +43,23 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Servidor da API: o aparelho confirma por aqui que recebeu cada push.
+const APIS = ['https://api-tour.exksvol.com', 'https://api.exksvol.com'];
+
+const avisarServidor = async (caminho, corpo) => {
+  for (const base of APIS) {
+    try {
+      const resp = await fetch(base + caminho, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+        keepalive: true
+      });
+      if (resp.ok || resp.status === 404) return;
+    } catch (_err) { /* tenta o próximo endereço */ }
+  }
+};
+
 self.addEventListener('push', (event) => {
   let dados = {};
   try {
@@ -51,15 +68,60 @@ self.addEventListener('push', (event) => {
     dados = { body: event.data ? event.data.text() : '' };
   }
   const titulo = dados.title || 'Tour by Foot';
-  event.waitUntil(self.registration.showNotification(titulo, {
-    body: dados.body || '',
-    icon: '/imagem/icones/gerenciamento-192.png',
-    badge: '/imagem/icones/gerenciamento-192.png',
-    data: { url: dados.url || '/html/Gerenciamento.html#reservas' },
-    tag: dados.tag || undefined,
-    // Aviso de reserva pendente vencida fica na tela até a pessoa agir.
-    requireInteraction: !!dados.requireInteraction
-  }));
+  const tag = dados.tag || `tbf-${dados.envio || Date.now()}`;
+
+  event.waitUntil((async () => {
+    let exibida = false;
+    let erro = '';
+    try {
+      await self.registration.showNotification(titulo, {
+        body: dados.body || '',
+        icon: '/imagem/icones/gerenciamento-192.png',
+        badge: '/imagem/icones/gerenciamento-192.png',
+        data: { url: dados.url || '/html/Gerenciamento.html#reservas' },
+        tag,
+        // Aviso de reserva pendente vencida fica na tela até a pessoa agir.
+        requireInteraction: !!dados.requireInteraction
+      });
+      // Se o sistema bloqueou (permissão do app no Android, canal desligado),
+      // a notificação não aparece na lista de exibidas.
+      const abertas = await self.registration.getNotifications({ tag });
+      exibida = abertas.length > 0;
+    } catch (err) {
+      erro = `${err && err.name ? err.name : 'Erro'}: ${err && err.message ? err.message : err}`;
+    }
+
+    // Confirma a entrega ao servidor (diagnóstico por aparelho).
+    try {
+      const sub = await self.registration.pushManager.getSubscription();
+      if (sub) {
+        await avisarServidor('/push_recebido', {
+          endpoint: sub.endpoint,
+          envio: dados.envio || '',
+          exibida,
+          permissao: (self.Notification && self.Notification.permission) || '',
+          erro
+        });
+      }
+    } catch (_err) { /* sem conexão: fica sem a confirmação */ }
+  })());
+});
+
+// O navegador pode renovar a inscrição por conta própria; sem avisar o
+// servidor, o aparelho deixaria de receber sem ninguém perceber.
+self.addEventListener('pushsubscriptionchange', (event) => {
+  event.waitUntil((async () => {
+    try {
+      const antiga = event.oldSubscription;
+      let nova = event.newSubscription;
+      if (!nova && antiga && antiga.options) {
+        nova = await self.registration.pushManager.subscribe(antiga.options);
+      }
+      if (antiga && nova) {
+        await avisarServidor('/push_trocar_inscricao', { antigo: antiga.endpoint, nova: nova.toJSON() });
+      }
+    } catch (_err) { /* o painel refaz a inscrição na próxima abertura */ }
+  })());
 });
 
 self.addEventListener('notificationclick', (event) => {

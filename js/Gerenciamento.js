@@ -8441,8 +8441,88 @@ const atualizarBotaoNotificacoes = async () => {
   botao.dataset.estado = inscrito ? 'ativo' : 'inativo';
   const botaoTeste = document.getElementById('notificacoesTesteBtn');
   if (botaoTeste) botaoTeste.hidden = !inscrito;
+  renderizarAparelhosPush();
   botao.textContent = inscrito ? '🔔 Notificações ativas' : '🔔 Ativar notificações';
   botao.title = inscrito ? 'Toque para desativar neste aparelho' : 'Receber aviso de novas reservas neste aparelho';
+};
+
+const listarAparelhosPush = async () => {
+  try {
+    const resp = await fetchWithApiFallback('/push_aparelhos');
+    const dados = resp.ok ? await resp.json() : {};
+    return Array.isArray(dados.aparelhos) ? dados.aparelhos : [];
+  } catch (_err) {
+    return [];
+  }
+};
+
+const dataHoraCurta = (iso) => {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+};
+
+const situacaoDoAparelho = (a) => {
+  if (!a.ultimo_envio) return { icone: '⏳', texto: 'Ainda não recebeu nenhum envio' };
+  if (a.recebido_envio_id && a.recebido_envio_id === a.ultimo_envio_id) {
+    return a.exibida
+      ? { icone: '✅', texto: 'Recebe e exibe' }
+      : { icone: '⚠️', texto: 'Recebe, mas o aparelho não exibe (permissão do app no Android)' };
+  }
+  if (a.ultimo_recebido) return { icone: '⚠️', texto: 'Não confirmou o último envio' };
+  return { icone: '❌', texto: 'Nunca confirmou recebimento (economia de bateria ou versão antiga do app)' };
+};
+
+// Lista "Aparelhos com notificações" no card do topo da aba Reservas, com a
+// situação de entrega de cada um e a opção de remover os que não usa mais.
+const renderizarAparelhosPush = async () => {
+  const caixa = document.getElementById('notificacoesAparelhos');
+  if (!caixa) return;
+  if (!currentUserPermissions?.manageReservas || !pushSuportado()) {
+    caixa.hidden = true;
+    return;
+  }
+  const aparelhos = await listarAparelhosPush();
+  if (!aparelhos.length) {
+    caixa.hidden = true;
+    return;
+  }
+  let meuEndpoint = '';
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('/');
+    meuEndpoint = (reg && (await reg.pushManager.getSubscription())?.endpoint) || '';
+  } catch (_err) { meuEndpoint = ''; }
+
+  const lista = caixa.querySelector('.notificacoes-aparelhos-lista');
+  const resumo = caixa.querySelector('summary');
+  if (resumo) resumo.textContent = `Aparelhos com notificações (${aparelhos.length})`;
+  lista.innerHTML = aparelhos.map((a, i) => {
+    const situacao = situacaoDoAparelho(a);
+    const esteAqui = a.endpoint === meuEndpoint;
+    return `
+      <li class="notificacoes-aparelho${esteAqui ? ' este-aparelho' : ''}">
+        <div class="notificacoes-aparelho-topo">
+          <strong>${escapeHtml(a.dispositivo || 'Aparelho sem nome')}${esteAqui ? ' · este aparelho' : ''}</strong>
+          ${esteAqui ? '' : `<button type="button" class="notificacoes-aparelho-remover" data-indice="${i}">Remover</button>`}
+        </div>
+        <span>${situacao.icone} ${escapeHtml(situacao.texto)}</span>
+        <small>Último envio: ${dataHoraCurta(a.ultimo_envio)} · Última confirmação: ${dataHoraCurta(a.ultimo_recebido)}</small>
+      </li>`;
+  }).join('');
+
+  lista.querySelectorAll('.notificacoes-aparelho-remover').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const alvo = aparelhos[Number(btn.dataset.indice)];
+      if (!alvo || !confirm(`Parar de enviar notificações para "${alvo.dispositivo || 'Aparelho sem nome'}"?`)) return;
+      await fetchWithApiFallback('/delete_push_subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail') || '', endpoint: alvo.endpoint })
+      }).catch(() => {});
+      renderizarAparelhosPush();
+    });
+  });
+  caixa.hidden = false;
 };
 
 // Diagnóstico em duas partes: 1) o aparelho mostra uma notificação criada
@@ -8476,15 +8556,41 @@ const testarNotificacoes = async () => {
         body: JSON.stringify({ endpoint: subscription.endpoint })
       });
       const dados = await resp.json().catch(() => ({}));
-      linhas.push(resp.ok
-        ? `2) Teste do servidor: aceito pelo serviço de push (${dados.status}). Deve aparecer "Teste do servidor" em alguns segundos.`
-        : `2) Teste do servidor: FALHOU (${resp.status}) · ${dados.message || ''}`);
+      if (!resp.ok) {
+        linhas.push(`2) Teste do servidor: FALHOU (${resp.status}) · ${dados.message || ''}`);
+      } else {
+        // Espera o service worker deste aparelho confirmar (até 25 s).
+        if (botaoTeste) botaoTeste.textContent = 'Aguardando o aparelho...';
+        let confirmacao = null;
+        for (let i = 0; i < 25 && !confirmacao; i += 1) {
+          await new Promise((r) => setTimeout(r, 1000));
+          const aparelho = (await listarAparelhosPush()).find((a) => a.endpoint === subscription.endpoint);
+          if (aparelho && aparelho.recebido_envio_id === dados.envio) confirmacao = aparelho;
+        }
+        if (!confirmacao) {
+          linhas.push('2) Teste do servidor: o Google aceitou, mas o aparelho NÃO confirmou o recebimento em 25 segundos. '
+            + 'Causa provável: economia de bateria do Android bloqueando o Chrome/app em segundo plano, '
+            + 'ou dados em segundo plano desativados. Veja Configurações → Apps → Chrome (e o app "Gerenciamento") → Bateria → Sem restrições.');
+        } else if (confirmacao.exibida) {
+          linhas.push('2) Teste do servidor: chegou ao aparelho e foi exibida. As notificações de reserva vão chegar aqui.');
+        } else {
+          linhas.push('2) Teste do servidor: chegou ao aparelho, mas o sistema NÃO exibiu a notificação'
+            + (confirmacao.erro_exibicao ? ` (${confirmacao.erro_exibicao})` : '')
+            + '. Causa provável: notificações desligadas para o app instalado "Gerenciamento" (Android 13+ tem permissão separada do Chrome) '
+            + 'ou a categoria de notificações de sites bloqueada. Veja Configurações → Apps → Gerenciamento → Notificações.');
+        }
+        if (botaoTeste) botaoTeste.textContent = 'Testar notificação';
+      }
     }
   } catch (err) {
     linhas.push(`Erro no teste: ${err?.name || 'Erro'} · ${err?.message || err}`);
   }
-  if (botaoTeste) botaoTeste.disabled = false;
+  if (botaoTeste) {
+    botaoTeste.disabled = false;
+    botaoTeste.textContent = 'Testar notificação';
+  }
   alert(`${nomeDoAparelho()}\n\n${linhas.join('\n\n')}`);
+  renderizarAparelhosPush();
 };
 
 const initWebPushForAdmin = async () => {
