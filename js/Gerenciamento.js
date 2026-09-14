@@ -3823,6 +3823,29 @@ const DEFAULT_ROLE_PERMISSIONS = {
   }
 };
 
+// Deixa só os primeiros itens de um gráfico à vista e põe um botão
+// "Ver mais N ▾" / "Ver menos ▴" logo depois deles.
+const GRAFICO_ITENS_VISIVEIS = 3;
+const aplicarVerMaisNoGrafico = (container, seletorItens, singular, plural) => {
+  const itens = [...container.querySelectorAll(seletorItens)];
+  const extras = itens.slice(GRAFICO_ITENS_VISIVEIS);
+  if (!extras.length) return;
+  extras.forEach((el) => el.classList.add('grafico-extra-oculto'));
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'grafico-ver-mais';
+  const rotuloFechado = `Ver mais ${extras.length} ${extras.length > 1 ? plural : singular} ▾`;
+  botao.textContent = rotuloFechado;
+  botao.setAttribute('aria-expanded', 'false');
+  botao.addEventListener('click', () => {
+    const abrir = extras[0].classList.contains('grafico-extra-oculto');
+    extras.forEach((el) => el.classList.toggle('grafico-extra-oculto', !abrir));
+    botao.textContent = abrir ? 'Ver menos ▴' : rotuloFechado;
+    botao.setAttribute('aria-expanded', String(abrir));
+  });
+  container.appendChild(botao);
+};
+
 const CORES_GRAFICO_PAISES = ['#e53e3e', '#3182ce', '#38a169', '#dd6b20', '#805ad5', '#0f766e', '#d69e2e', '#db2777', '#1e3a8a', '#65a30d'];
 const COR_OUTROS_PAISES = '#94a3b8';
 
@@ -3890,6 +3913,7 @@ const updateCountryPie = (agendamentos) => {
         <span class="country-legend-nome">${escapeHtml(f.country)}</span>
         <strong class="country-pct">${f.targetPct.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</strong>
       </div>`).join('');
+  aplicarVerMaisNoGrafico(legend, '.country-legend-item', 'país', 'países');
 };
 
 const populateRoleSelect = (roles) => {
@@ -5655,6 +5679,7 @@ const renderToursMaisClicadosBarChart = (ranking, agendamentos) => {
         </div>
       </div>`).join('')}
   `;
+  aplicarVerMaisNoGrafico(container, '.tours-bar-linha', 'tour', 'tours');
 };
 
 // Os dois gráficos da aba Contas usam as reservas · busca uma vez só.

@@ -5291,7 +5291,11 @@ section,
     transform: rotate(180deg);
   }
 
-  .card-mobile-recolhido > :not(.card-mobile-cabecalho) {
+  /* Seletor com os ids das seções: precisa vencer regras como
+     #roleCheckboxes { display:grid !important }, senão o card "recolhido"
+     continuava mostrando as permissões. */
+  #accountsSection .card-mobile.card-mobile-recolhido > :not(.card-mobile-cabecalho),
+  #pageManagementSection .card-mobile.card-mobile-recolhido > :not(.card-mobile-cabecalho) {
     display: none !important;
   }
 
@@ -6153,4 +6157,23 @@ section,
   #accountsSection #toursMaisClicadosBarChart.tours-bar-chart {
     min-height: 0;
   }
+}
+
+/* Gráficos da aba Contas: só os 3 primeiros itens à vista; o resto abre em
+   "Ver mais". */
+.grafico-extra-oculto {
+  display: none !important;
+}
+
+.grafico-ver-mais {
+  justify-self: start;
+  margin-top: 0.15rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid rgba(11, 60, 109, 0.2);
+  border-radius: 999px;
+  background: #fff;
+  color: #0b3c6d;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
 }
