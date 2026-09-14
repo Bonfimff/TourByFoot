@@ -6221,3 +6221,11 @@ section,
     font-size: 0.78rem !important;
   }
 }
+
+/* Campo Status destacado ao abrir a reserva por uma notificação */
+#modalStatus.campo-destaque {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25);
+  transition: box-shadow 0.3s ease;
+}

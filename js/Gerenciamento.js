@@ -6268,6 +6268,41 @@ const openEditModalFromBackend = (ag) => {
   modal.classList.remove('hidden');
 };
 
+// Abre o formulário de edição de uma reserva pelo id, com o foco no campo
+// Status · usado pela notificação "reserva pendente passou do horário".
+// Busca a reserva direto no servidor: ela já passou da data e costuma estar
+// fora do filtro padrão da tabela (de hoje até 31 dias).
+const abrirReservaPorId = async (id) => {
+  if (!id || !currentUserPermissions?.manageReservas) return;
+  mostrarSecao('reservas');
+
+  const email = localStorage.getItem('userEmail') || '';
+  let reserva = null;
+  try {
+    const resp = await fetchWithApiFallback(`/get_agendamentos?email=${encodeURIComponent(email)}`);
+    const lista = resp.ok ? await resp.json() : [];
+    reserva = (Array.isArray(lista) ? lista : []).find((ag) => String(ag.id) === String(id)) || null;
+  } catch (err) {
+    console.warn('Falha ao buscar a reserva da notificação:', err);
+  }
+
+  if (!reserva) {
+    alert('Não foi possível abrir essa reserva. Ela pode ter sido removida ou você não tem acesso a ela.');
+    return;
+  }
+
+  openEditModalFromBackend(reserva);
+  const status = document.getElementById('modalStatus');
+  if (!status) return;
+  // Espera o modal aparecer antes de rolar até o campo e focar.
+  setTimeout(() => {
+    status.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    status.focus({ preventScroll: true });
+    status.classList.add('campo-destaque');
+    setTimeout(() => status.classList.remove('campo-destaque'), 4000);
+  }, 150);
+};
+
 let guiaOptionsCache = null;
 
 const carregarOpcoesGuiaReserva = async () => {
@@ -7805,7 +7840,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // seja permitida para este nível de acesso; senão cai em "reservas".
     let secaoInicial = 'reservas';
     try {
-      const salva = window.location.hash === '#reservas'
+      const salva = (window.location.hash === '#reservas' || new URLSearchParams(window.location.search).has('reserva'))
         ? 'reservas'
         : localStorage.getItem('gerenciamentoUltimaSecao');
       const tabPorSecao = { reservas: 'Reservas', contas: 'Contas', gerenciamento: 'Gerenciamento', financeiro: 'Financeiro' };
@@ -7817,6 +7852,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     mostrarSecao(secaoInicial);
+
+    const reservaDaNotificacao = new URLSearchParams(window.location.search).get('reserva');
+    if (reservaDaNotificacao) {
+      // Tira o ?reserva da URL pra um recarregar não reabrir o formulário.
+      history.replaceState(null, '', window.location.pathname);
+      abrirReservaPorId(reservaDaNotificacao);
+    }
+
     if (secaoInicial === 'contas') {
       carregarContasDoBanco();
       carregarNiveisDeAcesso();
@@ -8437,9 +8480,13 @@ const initWebPushForAdmin = async () => {
   if ('serviceWorker' in navigator && !window.__pushMensagensProntas) {
     window.__pushMensagensProntas = true;
     navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.tipo !== 'abrir-reservas') return;
-      mostrarSecao('reservas');
-      carregarAgendamentosDoBanco();
+      if (event.data?.tipo === 'abrir-reserva') {
+        abrirReservaPorId(event.data.id);
+        carregarAgendamentosDoBanco();
+      } else if (event.data?.tipo === 'abrir-reservas') {
+        mostrarSecao('reservas');
+        carregarAgendamentosDoBanco();
+      }
     });
   }
 };

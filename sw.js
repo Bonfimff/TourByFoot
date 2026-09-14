@@ -56,21 +56,28 @@ self.addEventListener('push', (event) => {
     icon: '/imagem/icones/gerenciamento-192.png',
     badge: '/imagem/icones/gerenciamento-192.png',
     data: { url: dados.url || '/html/Gerenciamento.html#reservas' },
-    tag: dados.tag || undefined
+    tag: dados.tag || undefined,
+    // Aviso de reserva pendente vencida fica na tela até a pessoa agir.
+    requireInteraction: !!dados.requireInteraction
   }));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const destino = new URL(event.notification.data?.url || '/html/Gerenciamento.html', self.location.origin).href;
+  const destino = new URL(event.notification.data?.url || '/html/Gerenciamento.html', self.location.origin);
+  const reservaId = destino.searchParams.get('reserva');
   event.waitUntil((async () => {
     const janelas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    const aberta = janelas.find((c) => c.url.split('#')[0] === destino.split('#')[0]);
+    // Compara só o caminho: a URL da notificação traz ?reserva=ID e #reservas.
+    const aberta = janelas.find((c) => new URL(c.url).pathname === destino.pathname);
     if (aberta) {
-      // Painel já aberto: traz pra frente e pede pra mostrar a aba Reservas.
-      if (destino.includes('#reservas')) aberta.postMessage({ tipo: 'abrir-reservas' });
+      // Painel já aberto: traz pra frente e pede a aba Reservas (e, se for o
+      // caso, o formulário da reserva com foco no Status).
+      aberta.postMessage(reservaId
+        ? { tipo: 'abrir-reserva', id: reservaId }
+        : { tipo: 'abrir-reservas' });
       return aberta.focus();
     }
-    return self.clients.openWindow(destino);
+    return self.clients.openWindow(destino.href);
   })());
 });
