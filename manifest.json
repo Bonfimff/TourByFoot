@@ -1,27 +1,31 @@
 {
-  "name": "Tour no Rio de Janeiro",
-  "short_name": "Rio Tour",
-  "start_url": "./index.html",
+  "id": "/",
+  "name": "Tour by Foot",
+  "short_name": "Tour by Foot",
+  "description": "Passeios guiados a pé no Brasil",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#02415a",
-  "background_color": "#02415a",
+  "background_color": "#ffffff",
   "icons": [
     {
-      "src": "imagem/Logo.png",
+      "src": "/imagem/icones/principal-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "imagem/Logo.png",
+      "src": "/imagem/icones/principal-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "imagem/Logo.png",
-      "sizes": "192x192",
+      "src": "/imagem/icones/principal-maskable-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }

@@ -1,0 +1,33 @@
+{
+  "id": "/sao-luis/",
+  "name": "Tour by Foot · São Luís",
+  "short_name": "São Luís",
+  "description": "Free walking tours em São Luís",
+  "lang": "pt-BR",
+  "start_url": "/sao-luis/",
+  "scope": "/sao-luis/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#02415a",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/imagem/icones/sao-luis-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/imagem/icones/sao-luis-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/imagem/icones/sao-luis-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

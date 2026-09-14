@@ -1,27 +1,31 @@
 {
-  "name": "Tour no Rio de Janeiro",
-  "short_name": "Rio Tour",
-  "start_url": "/",
+  "id": "/rio-de-janeiro/",
+  "name": "Tour by Foot · Rio de Janeiro",
+  "short_name": "Rio de Janeiro",
+  "description": "Free walking tours no Rio de Janeiro",
+  "lang": "pt-BR",
+  "start_url": "/rio-de-janeiro/",
+  "scope": "/rio-de-janeiro/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#02415a",
-  "background_color": "#02415a",
+  "background_color": "#ffffff",
   "icons": [
     {
-      "src": "/imagem/assets/Logo.png",
+      "src": "/imagem/icones/rio-de-janeiro-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/imagem/assets/Logo.png",
+      "src": "/imagem/icones/rio-de-janeiro-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/imagem/assets/Logo.png",
-      "sizes": "192x192",
+      "src": "/imagem/icones/rio-de-janeiro-maskable-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
