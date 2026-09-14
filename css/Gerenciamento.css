@@ -6180,8 +6180,6 @@ section,
 
 /* Botão de notificações de reserva (aba Reservas) */
 .notificacoes-btn[hidden],
-.notificacoes-teste-btn[hidden],
-.notificacoes-aparelhos[hidden],
 .notificacoes-dica[hidden] {
   display: none !important;
 }
@@ -6211,7 +6209,7 @@ section,
 }
 
 @media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
-  #reservationsStatsSection .rio-notice-title + div:has(#notificacoesBtn:not([hidden]), #notificacoesDica:not([hidden]), #notificacoesAparelhos:not([hidden])) {
+  #reservationsStatsSection .rio-notice-title + div:has(#notificacoesBtn:not([hidden]), #notificacoesDica:not([hidden])) {
     display: flex !important;
     padding-bottom: 0.4rem !important;
   }
@@ -6230,74 +6228,4 @@ section,
   outline-offset: 2px;
   box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25);
   transition: box-shadow 0.3s ease;
-}
-
-.notificacoes-teste-btn {
-  border-radius: 999px !important;
-  background: #fff !important;
-  color: #0b3c6d !important;
-  border: 1px solid rgba(11, 60, 109, 0.3) !important;
-}
-
-@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
-  #notificacoesTesteBtn {
-    width: auto !important;
-    min-width: 0 !important;
-    padding: 0.4rem 0.85rem !important;
-    font-size: 0.78rem !important;
-  }
-}
-
-/* Lista de aparelhos inscritos nas notificações */
-.notificacoes-aparelhos {
-  flex: 1 1 100%;
-  font-size: 0.8rem;
-  color: #374151;
-}
-
-.notificacoes-aparelhos summary {
-  cursor: pointer;
-  font-weight: 700;
-  color: #0b3c6d;
-}
-
-.notificacoes-aparelhos-lista {
-  list-style: none;
-  margin: 0.4rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.notificacoes-aparelho {
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.45rem 0.6rem;
-  border-radius: 10px;
-  background: rgba(11, 77, 139, 0.05);
-}
-
-.notificacoes-aparelho.este-aparelho {
-  background: rgba(16, 185, 129, 0.08);
-}
-
-.notificacoes-aparelho-topo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.notificacoes-aparelho small {
-  color: #6b7280;
-}
-
-.notificacoes-aparelho-remover {
-  border: 1px solid rgba(185, 28, 28, 0.3);
-  background: #fff;
-  color: #b91c1c;
-  border-radius: 999px;
-  padding: 0.15rem 0.6rem;
-  font-size: 0.72rem;
-  cursor: pointer;
 }
