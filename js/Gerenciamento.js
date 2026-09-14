@@ -8349,12 +8349,24 @@ const mesmaChave = (buffer, bytes) => {
   return atual.length === bytes.length && atual.every((v, i) => v === bytes[i]);
 };
 
+// "Android · Chrome", "Windows · Edge"... só pra identificar o aparelho.
+const nomeDoAparelho = () => {
+  const ua = navigator.userAgent || '';
+  const sistema = /android/i.test(ua) ? (/mobile/i.test(ua) ? 'Android' : 'Android tablet')
+    : /iphone|ipod/i.test(ua) ? 'iPhone' : /ipad/i.test(ua) ? 'iPad'
+    : /windows/i.test(ua) ? 'Windows' : /mac os/i.test(ua) ? 'Mac' : /linux/i.test(ua) ? 'Linux' : 'Outro';
+  const navegador = /edg\//i.test(ua) ? 'Edge' : /samsungbrowser/i.test(ua) ? 'Samsung Internet'
+    : /opr\//i.test(ua) ? 'Opera' : /firefox|fxios/i.test(ua) ? 'Firefox'
+    : /chrome|crios/i.test(ua) ? 'Chrome' : /safari/i.test(ua) ? 'Safari' : 'Navegador';
+  return `${sistema} · ${navegador}${appInstalado() ? ' (app)' : ''}`;
+};
+
 const salvarInscricaoPush = async (subscription) => {
   const email = localStorage.getItem('userEmail') || '';
   const resp = await fetchWithApiFallback('/save_push_subscription', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, subscription: subscription.toJSON() })
+    body: JSON.stringify({ email, subscription: subscription.toJSON(), dispositivo: nomeDoAparelho() })
   });
   if (!resp.ok) throw new Error(`save_push_subscription ${resp.status}`);
 };
@@ -8427,8 +8439,52 @@ const atualizarBotaoNotificacoes = async () => {
   } catch (_err) { inscrito = false; }
 
   botao.dataset.estado = inscrito ? 'ativo' : 'inativo';
+  const botaoTeste = document.getElementById('notificacoesTesteBtn');
+  if (botaoTeste) botaoTeste.hidden = !inscrito;
   botao.textContent = inscrito ? '🔔 Notificações ativas' : '🔔 Ativar notificações';
   botao.title = inscrito ? 'Toque para desativar neste aparelho' : 'Receber aviso de novas reservas neste aparelho';
+};
+
+// Diagnóstico em duas partes: 1) o aparelho mostra uma notificação criada
+// aqui mesmo (sem servidor)? 2) o servidor consegue entregar neste aparelho?
+// Se a 1 aparece e a 2 não, o problema é a entrega (Google / economia de
+// bateria do Android); se nem a 1 aparece, é a exibição no aparelho.
+const testarNotificacoes = async () => {
+  const botaoTeste = document.getElementById('notificacoesTesteBtn');
+  if (botaoTeste) botaoTeste.disabled = true;
+  const linhas = [];
+  try {
+    const reg = await registroDoServiceWorker();
+    try {
+      await reg.showNotification('Teste do aparelho', {
+        body: 'Esta notificação foi criada no próprio aparelho, sem o servidor.',
+        icon: '/imagem/icones/gerenciamento-192.png',
+        tag: 'teste-local'
+      });
+      linhas.push('1) Teste do aparelho: enviado. Veja se apareceu "Teste do aparelho".');
+    } catch (err) {
+      linhas.push(`1) Teste do aparelho: FALHOU (${err?.name || 'Erro'} · ${err?.message || err}).`);
+    }
+
+    const subscription = await reg.pushManager.getSubscription();
+    if (!subscription) {
+      linhas.push('2) Teste do servidor: este aparelho não tem inscrição. Toque em Ativar notificações.');
+    } else {
+      const resp = await fetchWithApiFallback('/testar_push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: subscription.endpoint })
+      });
+      const dados = await resp.json().catch(() => ({}));
+      linhas.push(resp.ok
+        ? `2) Teste do servidor: aceito pelo serviço de push (${dados.status}). Deve aparecer "Teste do servidor" em alguns segundos.`
+        : `2) Teste do servidor: FALHOU (${resp.status}) · ${dados.message || ''}`);
+    }
+  } catch (err) {
+    linhas.push(`Erro no teste: ${err?.name || 'Erro'} · ${err?.message || err}`);
+  }
+  if (botaoTeste) botaoTeste.disabled = false;
+  alert(`${nomeDoAparelho()}\n\n${linhas.join('\n\n')}`);
 };
 
 const initWebPushForAdmin = async () => {
@@ -8459,6 +8515,12 @@ const initWebPushForAdmin = async () => {
       }
       await atualizarBotaoNotificacoes();
     });
+  }
+
+  const botaoTeste = document.getElementById('notificacoesTesteBtn');
+  if (botaoTeste && !botaoTeste.dataset.pronto) {
+    botaoTeste.dataset.pronto = '1';
+    botaoTeste.addEventListener('click', testarNotificacoes);
   }
 
   await atualizarBotaoNotificacoes();

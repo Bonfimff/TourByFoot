@@ -6180,6 +6180,7 @@ section,
 
 /* Botão de notificações de reserva (aba Reservas) */
 .notificacoes-btn[hidden],
+.notificacoes-teste-btn[hidden],
 .notificacoes-dica[hidden] {
   display: none !important;
 }
@@ -6228,4 +6229,20 @@ section,
   outline-offset: 2px;
   box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25);
   transition: box-shadow 0.3s ease;
+}
+
+.notificacoes-teste-btn {
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #0b3c6d !important;
+  border: 1px solid rgba(11, 60, 109, 0.3) !important;
+}
+
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
+  #notificacoesTesteBtn {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.78rem !important;
+  }
 }
