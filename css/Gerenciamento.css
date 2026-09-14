@@ -335,7 +335,7 @@ body {
   align-self: end;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   .filtro-reservas-grid > label {
     min-height: 60px;
   }
@@ -741,13 +741,13 @@ body {
   min-width: 220px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   .profile-menu .profile-dropdown {
     display: none !important;
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1367px), (min-width: 1025px) and (hover: hover) and (pointer: fine) {
   .profile-menu .profile-dropdown {
     display: none;
   }
@@ -1011,7 +1011,7 @@ tr.tours-mais-clicados-extra.hidden {
   letter-spacing: 0.05em;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   html, body, .rio-page, .gerenciamento-page {
     background: transparent !important;
   }
@@ -2036,7 +2036,7 @@ tr.tours-mais-clicados-extra.hidden {
   min-width: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   .modal-actions-spacer {
     display: none;
   }
@@ -2120,7 +2120,7 @@ tr.tours-mais-clicados-extra.hidden {
 }
 
 /* Tablet pequeno e mobile grande */
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   html, body {
     background: transparent !important;
     color: #0b3c6d !important;
@@ -3264,7 +3264,7 @@ section,
   grid-column: span 2;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1367px), (min-width: 1025px) and (hover: hover) and (pointer: fine) {
   .floating-tools-backdrop {
     display: none;
   }
@@ -3356,13 +3356,13 @@ section,
   opacity: 1 !important;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   .profile-menu .profile-dropdown {
     display: none !important;
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1367px), (min-width: 1025px) and (hover: hover) and (pointer: fine) {
   .profile-menu .profile-dropdown {
     display: none;
   }
@@ -4281,7 +4281,7 @@ section,
   margin-top: 0.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   .contas-charts-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -4354,7 +4354,7 @@ section,
 
 /* Sem largura pra caber ao lado (celular / card estreito): volta pra cima da
    pizza, senão a legenda sai do card. */
-@media (max-width: 900px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   /* Coluna estreita (grid empilhado no celular): sem espaço ao lado, a
      legenda volta a abrir por cima da pizza, centralizada. */
   .country-chart {
@@ -4611,7 +4611,7 @@ section,
    contadores, filtros (3 colunas) e tabela de verdade (não mais em cards).
    Vários estilos inline do HTML exigem !important.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   #reservationsStatsSection {
     padding-top: 0.75rem !important;
   }
@@ -5191,7 +5191,7 @@ section,
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   /* ---- Cards ---- */
   #accountsSection,
   #pageManagementSection {
@@ -5902,7 +5902,7 @@ section,
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   /* Linhas em flex (e não tabela) só pra poder reordenar as colunas:
      Tour, Idioma, Data primeiro; o resto segue com rolagem lateral. */
   #reservationsTableSection .reservas-tabela {
@@ -6139,7 +6139,7 @@ section,
   color: #374151;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   #accountsSection .contas-charts-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -6208,7 +6208,7 @@ section,
   color: #4b5563;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px) {
   #reservationsStatsSection .rio-notice-title + div:has(#notificacoesBtn:not([hidden]), #notificacoesDica:not([hidden])) {
     display: flex !important;
     padding-bottom: 0.4rem !important;

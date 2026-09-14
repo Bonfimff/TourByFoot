@@ -7467,9 +7467,13 @@ const normalizeTranslatedPunctuation = (text) => {
   return normalized.trim();
 };
 
+// Tablet (até 1024px, ou tela de toque até 1366px) usa o layout de celular
+// do painel · o mesmo critério das media queries do Gerenciamento.css.
+const MQ_TELA_PEQUENA = '(max-width: 1024px), (hover: none) and (pointer: coarse) and (max-width: 1366px)';
+
 const TRANSLATION_HISTORY_KEY = 'translationHistory';
 
-const isSmallFloatingToolsViewport = () => window.matchMedia('(max-width: 900px)').matches;
+const isSmallFloatingToolsViewport = () => window.matchMedia(MQ_TELA_PEQUENA).matches;
 
 const updateFloatingToolsBackdropState = () => {
   const translatePanel = document.getElementById('translateFloatingPanel');
@@ -8101,7 +8105,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (hamburger && nav) {
     hamburger.addEventListener('click', (event) => {
       event.stopPropagation();
-      if (window.matchMedia('(max-width: 900px)').matches) {
+      if (window.matchMedia(MQ_TELA_PEQUENA).matches) {
         toggleMobileMenu();
         return;
       }
@@ -8121,7 +8125,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     let profileMenuHoverTimeout = null;
 
-    const isDesktopProfileMode = () => window.matchMedia('(min-width: 901px)').matches;
+    const isDesktopProfileMode = () => !window.matchMedia(MQ_TELA_PEQUENA).matches;
 
     const openProfileMenu = () => {
       profileMenu.classList.add('open');
@@ -8147,7 +8151,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     profileBtn.addEventListener('click', (event) => {
       event.stopPropagation();
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const isMobile = window.matchMedia(MQ_TELA_PEQUENA).matches;
       if (isMobile) {
         closeProfileMenu();
         mobileMenuState.open = true;
