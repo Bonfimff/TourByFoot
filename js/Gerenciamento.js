@@ -8558,6 +8558,15 @@ const testarNotificacoes = async () => {
       const dados = await resp.json().catch(() => ({}));
       if (!resp.ok) {
         linhas.push(`2) Teste do servidor: FALHOU (${resp.status}) · ${dados.message || ''}`);
+      } else if (dados.success === false) {
+        if (dados.expirada) {
+          // O Google recusou a inscrição deste aparelho: cria uma nova.
+          await subscription.unsubscribe().catch(() => {});
+          await inscreverPush().catch(() => {});
+          linhas.push('2) Teste do servidor: a inscrição deste aparelho tinha expirado. Uma nova foi criada agora · toque em "Testar notificação" de novo.');
+        } else {
+          linhas.push(`2) Teste do servidor: o serviço de push recusou (${dados.status || 'sem resposta'}) · ${dados.message || ''}`);
+        }
       } else {
         // Espera o service worker deste aparelho confirmar (até 25 s).
         if (botaoTeste) botaoTeste.textContent = 'Aguardando o aparelho...';
