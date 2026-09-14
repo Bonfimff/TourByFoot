@@ -5984,3 +5984,173 @@ section,
     color: #dc2626 !important;
   }
 }
+
+/* ==========================================================================
+   Aba Contas · gráficos: pizza com os 10 países que mais reservam (legenda
+   sempre visível ao lado) e barras horizontais dos 10 tours com cliques e
+   reservas.
+   ========================================================================== */
+#accountsSection .contas-charts-grid {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+
+#countryChartContainer.country-chart {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.9rem 1.1rem;
+}
+
+#countryChartContainer .country-pie {
+  width: 150px;
+  height: 150px;
+  cursor: default;
+}
+
+#countryChartContainer .country-legend {
+  position: static;
+  flex: 1 1 170px;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+  background: none;
+  color: #374151;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  box-shadow: none;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none !important;
+}
+
+.country-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.country-legend-cor {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.country-legend-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#countryChartContainer .country-legend .country-pct {
+  flex: 0 0 auto;
+  color: #0b3c6d;
+  font-weight: 700;
+}
+
+.country-legend-vazio {
+  color: #6b7280;
+}
+
+/* Barras horizontais */
+#toursMaisClicadosBarChart.tours-bar-chart {
+  display: grid;
+  gap: 0.45rem;
+  min-height: 0;
+  padding: 0;
+  align-items: stretch;
+}
+
+.tours-bar-legenda {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.tours-bar-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tours-bar-legenda span::before {
+  content: "";
+  width: 12px;
+  height: 8px;
+  border-radius: 3px;
+}
+
+.tours-bar-legenda-cliques::before,
+.tours-bar-barra-cliques {
+  background: linear-gradient(90deg, #1da194, #0f766e);
+}
+
+.tours-bar-legenda-reservas::before,
+.tours-bar-barra-reservas {
+  background: linear-gradient(90deg, #3b82f6, #0b3c6d);
+}
+
+.tours-bar-linha {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.tours-bar-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.tours-bar-trilho {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.tours-bar-barra {
+  display: block;
+  height: 8px;
+  max-width: calc(100% - 2.5rem);
+  border-radius: 0 4px 4px 0;
+}
+
+.tours-bar-numero {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  #accountsSection .contas-charts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #countryChartContainer .country-pie {
+    width: 120px;
+    height: 120px;
+  }
+
+  #countryChartContainer .country-legend {
+    flex-basis: 150px;
+    font-size: 0.74rem;
+  }
+
+  #accountsSection #toursMaisClicadosBarChart.tours-bar-chart {
+    min-height: 0;
+  }
+}

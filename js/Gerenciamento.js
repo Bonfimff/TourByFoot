@@ -3823,93 +3823,73 @@ const DEFAULT_ROLE_PERMISSIONS = {
   }
 };
 
-const updateCountryPie = (accounts) => {
+const CORES_GRAFICO_PAISES = ['#e53e3e', '#3182ce', '#38a169', '#dd6b20', '#805ad5', '#0f766e', '#d69e2e', '#db2777', '#1e3a8a', '#65a30d'];
+const COR_OUTROS_PAISES = '#94a3b8';
+
+// Pizza "Reservas por país": os 10 países (nacionalidade da reserva) com mais
+// reservas, em porcentagem do total. Canceladas não contam. Países além dos
+// 10 somam numa fatia "Outros" pra a pizza fechar 100%.
+const updateCountryPie = (agendamentos) => {
   const pie = document.getElementById('countryPie');
   const legend = document.getElementById('countryLegend');
   if (!pie || !legend) return;
 
-  const clientAccounts = accounts.filter(user => (user.role || '').trim() === 'cliente_user');
+  const nomeDoPais = (valor) => {
+    const texto = String(valor || '').trim();
+    if (!texto || texto === '-') return '';
+    // Registros antigos têm o país em inglês ("Germany"); agrupa com o pt-BR.
+    const codigo = window.Paises?.codigo?.(texto);
+    return (codigo && window.Paises.ptBR(codigo)) || texto;
+  };
 
-  // Sem nenhum cliente cadastrado ainda: mostra um estado vazio explícito em
-  // vez de deixar o círculo com o gradiente degenerado do HTML inicial
-  // (todos os stops em "0deg 0deg" colapsam e o navegador pinta um círculo
-  // sólido na última cor · parecia dado de verdade sem ser).
-  if (!clientAccounts.length) {
+  const counts = {};
+  (Array.isArray(agendamentos) ? agendamentos : []).forEach((ag) => {
+    if ((ag.status || 'Pendente') === 'Cancelado') return;
+    const pais = nomeDoPais(ag.nacionalidade);
+    if (pais) counts[pais] = (counts[pais] || 0) + 1;
+  });
+
+  const ordenados = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const total = ordenados.reduce((sum, [, v]) => sum + v, 0);
+
+  if (!total) {
     pie.style.background = '#e5e7eb';
-    legend.innerHTML = '<div style="color:#6b7280;">Nenhum cliente cadastrado ainda.</div>';
+    legend.innerHTML = '<div class="country-legend-vazio">Nenhuma reserva com país informado.</div>';
     return;
   }
 
-  const counts = clientAccounts.reduce((acc, user) => {
-    const country = (user.pais_origem || 'Desconhecido').trim() || 'Desconhecido';
-    acc[country] = (acc[country] || 0) + 1;
-    return acc;
-  }, {});
-
-  const total = Object.values(counts).reduce((sum, v) => sum + v, 0) || 1;
-  const colors = ['#e53e3e', '#3182ce', '#38a169', '#dd6b20', '#805ad5', '#2b6cb0', '#d69e2e', '#9f7aea', '#3182ce', '#f6ad55'];
-
-  const gradients = Object.entries(counts).map(([country, count], index) => {
-    const targetPct = (count / total) * 100;
-    return {
-      country,
-      color: colors[index % colors.length],
-      targetPct,
-      value: 0
-    };
-  });
+  const fatias = ordenados.slice(0, 10).map(([country, count], index) => ({
+    country, count, color: CORES_GRAFICO_PAISES[index]
+  }));
+  const restante = ordenados.slice(10).reduce((sum, [, v]) => sum + v, 0);
+  if (restante) fatias.push({ country: 'Outros', count: restante, color: COR_OUTROS_PAISES });
+  fatias.forEach((f) => { f.targetPct = (f.count / total) * 100; });
 
   const pieDuration = 1200;
   const startTime = performance.now();
-
   const animate = (time) => {
     const progress = Math.min((time - startTime) / pieDuration, 1);
     let currentOffset = 0;
-
-    const parts = gradients.map((entry) => {
-      entry.value = entry.targetPct * progress;
+    const parts = fatias.map((entry) => {
+      const value = entry.targetPct * progress;
       const startAngle = (currentOffset / 100) * 360;
-      const endAngle = ((currentOffset + entry.value) / 100) * 360;
-      currentOffset += entry.value;
+      const endAngle = ((currentOffset + value) / 100) * 360;
+      currentOffset += value;
       return `${entry.color} ${startAngle}deg ${endAngle}deg`;
     });
-
+    // Durante a animação o resto do círculo fica cinza.
+    parts.push(`#e5e7eb ${(currentOffset / 100) * 360}deg 360deg`);
     pie.style.background = `conic-gradient(${parts.join(', ')})`;
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    }
+    if (progress < 1) requestAnimationFrame(animate);
   };
-
   requestAnimationFrame(animate);
 
-  legend.innerHTML = Object.entries(counts)
-    .map(([country, count], index) => {
-      const pct = ((count / total) * 100).toFixed(1);
-      const color = colors[index % colors.length];
-      return `<div style="display:flex;align-items:center;margin-bottom:0.25rem;"><span style="width:12px;height:12px;border-radius:50%;background:${color};display:inline-block;margin-right:0.5rem;"></span><strong>${country}</strong>: <span class="country-pct" data-target="${pct}">0.0</span>% (${count})</div>`;
-    })
-    .join('');
-
-  const duration = 900;
-  const start = performance.now();
-  const pctElems = Array.from(legend.querySelectorAll('.country-pct'));
-
-  const step = (timestamp) => {
-    const elapsed = timestamp - start;
-    const progress = Math.min(elapsed / duration, 1);
-
-    pctElems.forEach((el) => {
-      const target = parseFloat(el.getAttribute('data-target')) || 0;
-      const value = (target * progress).toFixed(1);
-      el.textContent = value;
-    });
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    }
-  };
-  requestAnimationFrame(step);
+  legend.innerHTML = fatias.map((f) => `
+      <div class="country-legend-item" title="${f.count} reserva${f.count !== 1 ? 's' : ''}">
+        <span class="country-legend-cor" style="background:${f.color};"></span>
+        <span class="country-legend-nome">${escapeHtml(f.country)}</span>
+        <strong class="country-pct">${f.targetPct.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</strong>
+      </div>`).join('');
 };
 
 const populateRoleSelect = (roles) => {
@@ -4745,9 +4725,8 @@ const carregarContasDoBanco = async () => {
     }
     setAccountsFilterTab(accountsFilterTab);
 
-    // Atualiza gráfico de países com base no cadastro de contas
-    updateCountryPie(accounts);
-    carregarToursMaisClicadosBarChart();
+    // Pizza de países e barras de tours (a partir das reservas e cliques)
+    carregarGraficosContas();
 
     // Apenas quem pode gerenciar perfis deve visualizar/editar níveis de acesso.
     if (currentUserPermissions.managePerfis) {
@@ -5620,54 +5599,98 @@ const carregarToursMaisClicados = async () => {
   }
 };
 
-// Gráfico de colunas com o top 5 (Contas) · mesma fonte de dados da tabela
-// completa em Reservas, só que resumida e em formato visual. Barra em CSS
-// puro (altura em %, sem lib de gráfico) · só 5 colunas, não precisa de mais.
-const renderToursMaisClicadosBarChart = (ranking) => {
+// Gráfico de barras (Contas): os 10 tours com mais cliques + reservas.
+// Cliques = visualizações + cliques em "Reservar" (ranking do servidor, já
+// sem colaboradores); reservas = reservas não canceladas do tour. Barras
+// horizontais pra o nome do tour caber inteiro, inclusive no celular.
+const renderToursMaisClicadosBarChart = (ranking, agendamentos) => {
   const container = document.getElementById('toursMaisClicadosBarChart');
   if (!container) return;
 
-  const lista = (Array.isArray(ranking) ? ranking : []).slice(0, 5);
+  const porTour = {};
+  const entrada = (nome) => {
+    const chave = String(nome || '').trim().toLowerCase();
+    if (!chave) return null;
+    if (!porTour[chave]) porTour[chave] = { tour: String(nome).trim(), cliques: 0, reservas: 0 };
+    return porTour[chave];
+  };
+  (Array.isArray(ranking) ? ranking : []).forEach((item) => {
+    const e = entrada(item.tour);
+    if (e) e.cliques += (Number(item.visualizacoes) || 0) + (Number(item.cliquesReservar) || 0);
+  });
+  (Array.isArray(agendamentos) ? agendamentos : []).forEach((ag) => {
+    if ((ag.status || 'Pendente') === 'Cancelado') return;
+    const e = entrada(ag.tour);
+    if (e) e.reservas += 1;
+  });
+
+  const lista = Object.values(porTour)
+    .filter((e) => e.cliques || e.reservas)
+    .sort((a, b) => (b.cliques + b.reservas) - (a.cliques + a.reservas) || b.reservas - a.reservas)
+    .slice(0, 10);
+
   if (!lista.length) {
-    container.innerHTML = '<span class="tours-bar-empty">Nenhum clique registrado ainda.</span>';
+    container.innerHTML = '<span class="tours-bar-empty">Nenhum clique ou reserva registrado ainda.</span>';
     return;
   }
 
-  const maxTotal = Math.max(...lista.map((item) => (item.visualizacoes || 0) + (item.cliquesReservar || 0)), 1);
+  const maximo = Math.max(...lista.map((e) => Math.max(e.cliques, e.reservas)), 1);
+  const largura = (valor) => (valor ? Math.max((valor / maximo) * 100, 2) : 0);
 
-  // O nome do tour saiu de baixo da barra e virou tooltip (.tours-bar-label):
-  // com a pizza ao lado, sobra pouca largura por coluna. O número total
-  // continua sempre visível em cima da barra.
-  container.innerHTML = lista.map((item) => {
-    const total = (item.visualizacoes || 0) + (item.cliquesReservar || 0);
-    const alturaPct = Math.max((total / maxTotal) * 100, 4); // barra mínima visível mesmo com total baixo
-    return `
-      <div class="tours-bar-item" tabindex="0">
-        <span class="tours-bar-label">${escapeHtml(item.tour)}<br>${escapeHtml(item.visualizacoes)} visualizações · ${escapeHtml(item.cliquesReservar)} cliques em reservar</span>
-        <strong class="tours-bar-value">${escapeHtml(total)}</strong>
-        <div class="tours-bar-fill" style="height:${alturaPct}px; max-height:110px;"></div>
-      </div>
-    `;
-  }).join('');
+  container.innerHTML = `
+    <div class="tours-bar-legenda">
+      <span class="tours-bar-legenda-cliques">Cliques</span>
+      <span class="tours-bar-legenda-reservas">Reservas</span>
+    </div>
+    ${lista.map((e, i) => `
+      <div class="tours-bar-linha">
+        <span class="tours-bar-nome" title="${escapeHtml(e.tour)}">${i + 1}. ${escapeHtml(e.tour)}</span>
+        <div class="tours-bar-trilho">
+          <span class="tours-bar-barra tours-bar-barra-cliques" style="width:${largura(e.cliques)}%;"></span>
+          <strong class="tours-bar-numero">${e.cliques}</strong>
+        </div>
+        <div class="tours-bar-trilho">
+          <span class="tours-bar-barra tours-bar-barra-reservas" style="width:${largura(e.reservas)}%;"></span>
+          <strong class="tours-bar-numero">${e.reservas}</strong>
+        </div>
+      </div>`).join('')}
+  `;
 };
 
-const carregarToursMaisClicadosBarChart = async () => {
+// Os dois gráficos da aba Contas usam as reservas · busca uma vez só.
+const carregarGraficosContas = async () => {
   const container = document.getElementById('toursMaisClicadosBarChart');
-  if (!container || !currentUserPermissions?.manageContas) return;
-
+  const legend = document.getElementById('countryLegend');
   const email = localStorage.getItem('userEmail') || '';
-  try {
-    const response = await fetchWithApiFallback(`/get_tours_mais_clicados?email=${encodeURIComponent(email)}&limite=5`);
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success) {
-      container.innerHTML = `<span class="tours-bar-empty">${escapeHtml(result.message || 'Erro ao carregar.')}</span>`;
-      return;
+
+  const buscarJson = async (caminho) => {
+    try {
+      const response = await fetchWithApiFallback(caminho);
+      if (!response.ok) return null;
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao carregar dados dos gráficos:', caminho, error);
+      return null;
     }
-    renderToursMaisClicadosBarChart(result.ranking);
-  } catch (error) {
-    console.error('Erro ao carregar gráfico de tours mais clicados:', error);
-    container.innerHTML = '<span class="tours-bar-empty">Não foi possível conectar ao servidor.</span>';
+  };
+
+  const [agendamentos, ranking] = await Promise.all([
+    buscarJson(`/get_agendamentos?email=${encodeURIComponent(email)}`),
+    buscarJson(`/get_tours_mais_clicados?email=${encodeURIComponent(email)}&limite=50`)
+  ]);
+
+  if (Array.isArray(agendamentos)) {
+    updateCountryPie(agendamentos);
+  } else if (legend) {
+    legend.innerHTML = '<div class="country-legend-vazio">Não foi possível carregar as reservas.</div>';
   }
+
+  if (!container) return;
+  if (!Array.isArray(agendamentos) && !ranking?.success) {
+    container.innerHTML = '<span class="tours-bar-empty">Não foi possível carregar os dados.</span>';
+    return;
+  }
+  renderToursMaisClicadosBarChart(ranking?.success ? ranking.ranking : [], Array.isArray(agendamentos) ? agendamentos : []);
 };
 
 const setupAtividadeClientesFilterEvents = () => {

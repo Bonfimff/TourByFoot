@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <link rel="stylesheet" href="../css/Gerenciamento.css?v=77">
+    <link rel="stylesheet" href="../css/Gerenciamento.css?v=78">
 </head>
 <body class="gerenciamento-page">
     <header class="gerenciamento-header">
@@ -204,15 +204,15 @@
                      metade da largura. -->
                 <div class="contas-charts-grid">
                     <div class="contas-chart-card">
-                        <strong class="contas-chart-title">Clientes por país</strong>
+                        <strong class="contas-chart-title">Reservas por país (10 países que mais reservam)</strong>
                         <div id="countryChartContainer" class="country-chart">
-                            <div id="countryPie" class="country-pie" tabindex="0" aria-describedby="countryLegend"></div>
-                            <div id="countryLegend" class="country-legend" role="tooltip">Carregando dados do país...</div>
+                            <div id="countryPie" class="country-pie" aria-describedby="countryLegend"></div>
+                            <div id="countryLegend" class="country-legend">Carregando...</div>
                         </div>
                     </div>
 
                     <div class="contas-chart-card">
-                        <strong class="contas-chart-title">Top 5 tours mais clicados</strong>
+                        <strong class="contas-chart-title">Top 10 tours: cliques e reservas</strong>
                         <div id="toursMaisClicadosBarChart" class="tours-bar-chart">
                             <span class="tours-bar-empty">Carregando...</span>
                         </div>
@@ -1545,7 +1545,8 @@
     <script src="../js/Translation.js?v=8"></script>
     <script src="../js/Riodejaneiro.js?v=107"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=125"></script>
+    <script src="../js/paises.js?v=1"></script>
+    <script src="../js/Gerenciamento.js?v=126"></script>
 </body>
 </html>
 
