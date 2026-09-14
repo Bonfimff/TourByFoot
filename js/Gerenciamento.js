@@ -8279,15 +8279,31 @@ const registroDoServiceWorker = async () => {
   return navigator.serviceWorker.ready;
 };
 
+// A chave tem que ser a do servidor (par da chave privada que assina os
+// envios) · uma constante local diferente geraria inscrições que nunca
+// recebem nada. Chave P-256 válida: 65 bytes começando em 0x04.
 const chavePublicaPush = async () => {
+  const resp = await fetchWithApiFallback('/get_vapid_public_key');
+  const dados = resp.ok ? await resp.json().catch(() => ({})) : {};
+  const chave = String(dados.publicKey || '').trim();
+  let bytes = null;
   try {
-    const resp = await fetchWithApiFallback('/get_vapid_public_key');
-    if (resp.ok) {
-      const dados = await resp.json();
-      if (dados.publicKey) return dados.publicKey;
-    }
-  } catch (_err) { /* usa a constante local */ }
-  return VAPID_PUBLIC_KEY;
+    bytes = urlBase64ToUint8Array(chave);
+  } catch (_err) {
+    bytes = null;
+  }
+  if (!bytes || bytes.length !== 65 || bytes[0] !== 4) {
+    const erro = new Error('Chave de notificação do servidor inválida ou ausente (VAPID_PUBLIC_KEY).');
+    erro.codigo = 'chave-invalida';
+    throw erro;
+  }
+  return bytes;
+};
+
+const mesmaChave = (buffer, bytes) => {
+  if (!buffer) return false;
+  const atual = new Uint8Array(buffer);
+  return atual.length === bytes.length && atual.every((v, i) => v === bytes[i]);
 };
 
 const salvarInscricaoPush = async (subscription) => {
@@ -8302,11 +8318,17 @@ const salvarInscricaoPush = async (subscription) => {
 
 const inscreverPush = async () => {
   const reg = await registroDoServiceWorker();
+  const chave = await chavePublicaPush();
   let subscription = await reg.pushManager.getSubscription();
+  // Inscrição feita com outra chave (a do servidor mudou): refaz.
+  if (subscription && !mesmaChave(subscription.options?.applicationServerKey, chave)) {
+    await subscription.unsubscribe().catch(() => {});
+    subscription = null;
+  }
   if (!subscription) {
     subscription = await reg.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(await chavePublicaPush())
+      applicationServerKey: chave
     });
   }
   await salvarInscricaoPush(subscription);
@@ -8387,7 +8409,10 @@ const initWebPushForAdmin = async () => {
         }
       } catch (err) {
         console.warn('[WebPush] Falha ao alterar notificações:', err);
-        alert('Não foi possível ativar as notificações neste aparelho. Tente de novo em instantes.');
+        const detalhe = err?.codigo === 'chave-invalida'
+          ? 'A configuração de notificações do servidor está incompleta (chave VAPID). Avise o administrador.'
+          : `Não foi possível ativar as notificações neste aparelho. Tente de novo em instantes.\n\nDetalhe: ${err?.name || 'Erro'} · ${err?.message || err}`;
+        alert(detalhe);
       }
       await atualizarBotaoNotificacoes();
     });
@@ -8401,7 +8426,7 @@ const initWebPushForAdmin = async () => {
     try {
       const reg = await navigator.serviceWorker.getRegistration('/');
       const subscription = reg && await reg.pushManager.getSubscription();
-      if (subscription) await salvarInscricaoPush(subscription);
+      if (subscription) await inscreverPush();
     } catch (err) {
       console.warn('[WebPush] Falha ao renovar inscrição:', err);
     }
