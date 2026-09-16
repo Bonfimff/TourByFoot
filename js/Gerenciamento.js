@@ -4077,7 +4077,7 @@ const carregarAgendamentosDoBanco = async () => {
 
   const userEmail = localStorage.getItem('userEmail');
   if (!userEmail) {
-    tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Sessao expirada. Faca login novamente.</td></tr>';
+    tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Sessao expirada. Faca login novamente.</td></tr>';
     return;
   }
 
@@ -4085,19 +4085,19 @@ const carregarAgendamentosDoBanco = async () => {
   currentUserPermissions = currentUserPermissions || currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
 
   if (!currentUserPermissions.manageReservas) {
-    tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Verificando permissão no servidor...</td></tr>';
+    tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Verificando permissão no servidor...</td></tr>';
 
     try {
       const response = await fetchWithApiFallback(`/check_permission?email=${encodeURIComponent(userEmail)}&permission=manageReservas`);
       if (!response.ok) {
         const reasonData = await response.json().catch(() => ({}));
-        tableBodyElement.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Acesso negado no servidor: ${escapeHtml(reasonData.reason || reasonData.message || 'sem razão')}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="12" style="padding:0.75rem;">Acesso negado no servidor: ${escapeHtml(reasonData.reason || reasonData.message || 'sem razão')}.</td></tr>`;
         return;
       }
 
       const result = await response.json();
       if (!result.allowed) {
-        tableBodyElement.innerHTML = `<tr><td colspan="10" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${escapeHtml(result.reason || 'não autorizado')}.</td></tr>`;
+        tableBodyElement.innerHTML = `<tr><td colspan="12" style="padding:0.75rem;">Acesso negado ao Gerenciamento de reservas: ${escapeHtml(result.reason || 'não autorizado')}.</td></tr>`;
         return;
       }
 
@@ -4105,7 +4105,7 @@ const carregarAgendamentosDoBanco = async () => {
       currentUserPermissions.manageReservas = true;
     } catch (error) {
       console.warn('Falha ao verificar permissão no servidor:', error);
-      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Erro de verificação de permissões. Tente novamente mais tarde.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Erro de verificação de permissões. Tente novamente mais tarde.</td></tr>';
       return;
     }
   }
@@ -4134,7 +4134,7 @@ const carregarAgendamentosDoBanco = async () => {
 
     if (response.status === 403) {
       alert('Erro: Você não tem permissão de Administrador para ver esta página.');
-      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Sem permissão para visualizar reservas.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Sem permissão para visualizar reservas.</td></tr>';
       return;
     }
 
@@ -4146,7 +4146,7 @@ const carregarAgendamentosDoBanco = async () => {
         detail: errorText
       });
       alert(`Falha ao carregar reservas (${response.status}).`);
-      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Falha ao carregar reservas do banco de dados.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Falha ao carregar reservas do banco de dados.</td></tr>';
       return;
     }
 
@@ -4176,7 +4176,7 @@ const carregarAgendamentosDoBanco = async () => {
     });
 
     if (!filtered.length) {
-      tableBodyElement.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Nenhuma reserva encontrada.</td></tr>';
+      tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Nenhuma reserva encontrada.</td></tr>';
     }
 
     // Salva reservas para uso na aba Gerenciamento da página
@@ -4211,6 +4211,7 @@ const carregarAgendamentosDoBanco = async () => {
       // <img onerror=...> executava no navegador de todo admin que abrisse
       // esta aba, com acesso ao localStorage da sessão.
       row.innerHTML = `
+        <td data-label="ID">${escapeHtml(ag.id)}</td>
         <td data-label="Tour">${escapeHtml(ag.tour)}</td>
         <td data-label="Idioma">${escapeHtml(idiomaValue)}</td>
         <td data-label="Modalidade">${escapeHtml(modalidadeValue)}</td>
@@ -4221,6 +4222,7 @@ const carregarAgendamentosDoBanco = async () => {
         <td data-label="Status"><span class="status-badge ${escapeHtml(statusClass)}">${escapeHtml(statusValue)}</span></td>
         <td data-label="Nacionalidade">${escapeHtml(nacionalidadeValue)}</td>
         <td data-label="Origem">${escapeHtml(origemValue)}</td>
+        <td data-label="Reserva feita em">${escapeHtml(ag.criado_em || '-')}</td>
       `;
 
       if (currentUserPermissions?.manageReservas) {
@@ -4436,7 +4438,7 @@ const carregarAgendamentosDoBanco = async () => {
   } catch (error) {
     console.error('Erro de conexão ao carregar tabela:', error);
     const detail = (error && error.message) ? ` Detalhe: ${error.message}` : '';
-    tableBodyElement.innerHTML = `<tr><td colspan="9" style="padding:0.75rem;">Erro de conexão com a API ao carregar reservas.${escapeHtml(detail)}</td></tr>`;
+    tableBodyElement.innerHTML = `<tr><td colspan="12" style="padding:0.75rem;">Erro de conexão com a API ao carregar reservas.${escapeHtml(detail)}</td></tr>`;
   }
 };
 

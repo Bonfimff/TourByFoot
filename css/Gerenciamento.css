@@ -5933,16 +5933,19 @@ section,
     max-width: none !important;
   }
 
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(1) { order: 1; width: 8.5rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(2) { order: 2; width: 5.2rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(5) { order: 3; width: 3.4rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(6) { order: 4; width: 3.2rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(7) { order: 5; width: 3.9rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(3) { order: 6; width: 5.2rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(4) { order: 7; width: 5rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(8) { order: 8; width: 5.6rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(9) { order: 9; width: 6.4rem; }
-  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(10) { order: 10; width: 5.6rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(2) { order: 1; width: 8.5rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(3) { order: 2; width: 5.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(6) { order: 3; width: 3.4rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(7) { order: 4; width: 3.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(8) { order: 5; width: 3.9rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(4) { order: 6; width: 5.2rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(5) { order: 7; width: 5rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(9) { order: 8; width: 5.6rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(10) { order: 9; width: 6.4rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(11) { order: 10; width: 5.6rem; }
+  /* ID e "Reserva feita em" no fim: o que menos se consulta no celular. */
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(1) { order: 11; width: 3rem; }
+  #reservationsTableSection .reservas-tabela :is(th, td):nth-child(12) { order: 12; width: 7rem; }
 
   /* "Carregando" / "Nenhuma reserva" ocupa a largura visível */
   #reservationsTableSection .reservas-tabela td[colspan] {
@@ -5959,7 +5962,7 @@ section,
     font-size: 0.58rem !important;
   }
 
-  #reservationsTableSection .reservas-tabela td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+  #reservationsTableSection .reservas-tabela td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     font-weight: 600;
   }
 
@@ -5972,19 +5975,19 @@ section,
     white-space: nowrap;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-pendente td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     color: #d97706 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-confirmado td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     color: #059669 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-finalizado td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     color: #4f46e5 !important;
   }
 
-  #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td:is(:nth-child(1), :nth-child(2), :nth-child(5)) {
+  #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     color: #dc2626 !important;
   }
 }
