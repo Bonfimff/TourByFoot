@@ -2999,6 +2999,28 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             }
         };
 
+        // As duas etapas do cadastro moram no mesmo <form>. Ao enviar, o
+        // navegador tambem valida os campos da etapa escondida e para no aviso
+        // "An invalid form control with name='' is not focusable": campo
+        // invisivel nao pode receber foco, entao ele nao consegue nem apontar o
+        // erro nem deixar o envio seguir. Required passa a valer so para o que
+        // esta na tela · o resto ja e conferido em JS (botao Avancar e submit).
+        const sincronizarCamposObrigatorios = () => {
+            overlay.querySelectorAll('.register-step').forEach((etapa) => {
+                const naTela = etapa.classList.contains('active');
+                etapa.querySelectorAll('input, select').forEach((campo) => {
+                    if (typeof campo.dataset.obrigatorio === 'undefined') {
+                        campo.dataset.obrigatorio = campo.required ? '1' : '0';
+                    }
+                    if (campo.dataset.obrigatorio !== '1') return;
+                    // No fluxo de e-mail liberado pelo suporte nao existe
+                    // codigo pra digitar e o campo fica escondido.
+                    const eCodigo = campo.classList.contains('register-code-input');
+                    campo.required = naTela && !(eCodigo && isLiberadoFlow);
+                });
+            });
+        };
+
         const applyLiberadoState = (liberado) => {
             isLiberadoFlow = liberado;
             const codeField = overlay.querySelector('.register-code-field');
@@ -3016,6 +3038,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 stopResendCountdown();
             }
             updateSubmitButtonState();
+            sincronizarCamposObrigatorios();
         };
 
         const setNextButtonLoading = (isLoading) => {
@@ -3273,6 +3296,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const showStep = (step) => {
             if (step1) step1.classList.toggle('active', step === 1);
             if (step2) step2.classList.toggle('active', step === 2);
+            sincronizarCamposObrigatorios();
 
             if (step === 2) {
                 isCodeVerified = false;
@@ -3286,6 +3310,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         };
 
         setupCodeInputs();
+        sincronizarCamposObrigatorios();
 
         nextBtn?.addEventListener('click', async () => {
             const firstName = overlay.querySelector('#registerFirstName');
