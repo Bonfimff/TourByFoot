@@ -1251,6 +1251,19 @@
                 }
                 alert(result.payload.message || 'Cadastro concluído com sucesso!');
                 closeModal();
+                // Entra direto com o que a pessoa acabou de cadastrar. Sem isto ela
+                // concluia o cadastro e continuava deslogada, tendo que digitar
+                // e-mail e senha de novo no minuto seguinte. Em vez de repetir aqui
+                // o que o login faz (sessao, permissoes, painel do admin, recarregar
+                // a pagina), reaproveita o proprio formulario de login.
+                const loginEmailEl = document.getElementById('loginEmail');
+                const loginSenhaEl = document.getElementById('loginPassword');
+                const loginFormEl = document.getElementById('loginForm');
+                if (loginEmailEl && loginSenhaEl && loginFormEl) {
+                    loginEmailEl.value = pendingRegisterEmail;
+                    loginSenhaEl.value = password?.value || '';
+                    loginFormEl.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                }
             } catch (err) {
                 alert(strings.register_complete_error || 'Erro ao concluir cadastro. Tente novamente.');
             }
@@ -1366,6 +1379,11 @@
                 localStorage.setItem('userName', data.name || email);
                 localStorage.setItem('userPhoto', data.foto_perfil || await getGravatarUrl(email));
                 if (data.phone || data.celular) localStorage.setItem('userPhone', data.phone || data.celular);
+                // Pais de origem do cadastro: pre-preenche a nacionalidade no
+                // formulario de reserva das paginas de cidade (site-shell.js e
+                // Riodejaneiro.js ja gravavam; aqui faltava, entao quem entrava
+                // pela home ficava sem).
+                localStorage.setItem('userPais', data.pais_origem || '');
                 if (data.token) localStorage.setItem('authToken', data.token);
                 if (data.role_permissions && typeof data.role_permissions === 'object') {
                     localStorage.setItem('currentRolePermissions', JSON.stringify(data.role_permissions));

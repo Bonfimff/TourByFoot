@@ -2350,6 +2350,19 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     alert(successMessage);
                 }
                 closeModal();
+                // Entra direto com o que a pessoa acabou de cadastrar. Sem isto ela
+                // concluia o cadastro e continuava deslogada, tendo que digitar
+                // e-mail e senha de novo no minuto seguinte. Em vez de repetir aqui
+                // o que o login faz (sessao, permissoes, painel do admin, recarregar
+                // a pagina), reaproveita o proprio formulario de login.
+                const loginEmailEl = document.getElementById('loginEmail');
+                const loginSenhaEl = document.getElementById('loginPassword');
+                const loginFormEl = document.getElementById('loginForm');
+                if (loginEmailEl && loginSenhaEl && loginFormEl) {
+                    loginEmailEl.value = pendingRegisterEmail;
+                    loginSenhaEl.value = password?.value || '';
+                    loginFormEl.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                }
             } catch (err) {
                 console.error('Erro no cadastro:', err);
                 alert(strings.register_complete_error || 'Erro ao concluir cadastro. Tente novamente.');
