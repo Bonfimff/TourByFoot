@@ -4071,6 +4071,57 @@ const setupRoleCheckboxHandlers = () => {
 // ********************************************************************
 // função get_agendamentos (fetch do backend)
 // ********************************************************************
+// Filtro "Tour" da aba Reservas: lista os tours do cadastro, agrupados por
+// cidade (a mesma fonte do formulário de reserva). Respeita o filtro de
+// Cidade quando ele está marcado e mantém o tour já escolhido.
+const preencherFiltroDeTours = async () => {
+  const filterTour = document.getElementById('filterTour');
+  if (!filterTour) return;
+
+  const cidadeSelecionada = document.getElementById('filterCity')?.value || '';
+  const escolhido = filterTour.value || 'all';
+  // Roda a cada recarga da tabela: só refaz a lista quando ela ainda não
+  // existe ou quando a cidade mudou, pra não buscar os tours a cada filtro.
+  if (filterTour.dataset.cidadePreenchida === cidadeSelecionada && filterTour.options.length > 1) return;
+  filterTour.dataset.cidadePreenchida = cidadeSelecionada;
+
+  const remotos = await fetchPageToursFromBackend();
+  const tours = (Array.isArray(remotos) ? remotos : getPageTours())
+    .map((t) => ({ nome: String(t.name || '').trim(), cidade: String(t.cidade || '').trim() }))
+    .filter((t) => t.nome && (!cidadeSelecionada || t.cidade === cidadeSelecionada));
+
+  const porCidade = new Map();
+  tours.forEach(({ nome, cidade }) => {
+    const chave = cidade || 'Outros';
+    if (!porCidade.has(chave)) porCidade.set(chave, new Set());
+    porCidade.get(chave).add(nome);
+  });
+
+  // Tour que só existe em reserva antiga (saiu do cadastro ou veio de fora)
+  // continua na lista: sem ele não dá para filtrar essas reservas.
+  const cadastrados = new Set(tours.map((t) => t.nome));
+  const soEmReservas = [...new Set(currentReservations
+    .map((r) => String(r.tour || '').trim())
+    .filter((nome) => nome && !cadastrados.has(nome)))];
+
+  const opcao = (nome) => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`;
+  const grupos = [...porCidade.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'))
+    .map(([cidade, nomes]) => `<optgroup label="${escapeHtml(cidade)}">${[...nomes]
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(opcao).join('')}</optgroup>`).join('');
+  const antigos = soEmReservas.length
+    ? `<optgroup label="Fora do cadastro">${soEmReservas
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(opcao).join('')}</optgroup>`
+    : '';
+
+  filterTour.innerHTML = '<option value="all">Todos</option>' + grupos + antigos;
+  // O innerHTML recria as opções: repõe a escolha, se o tour ainda existir.
+  filterTour.value = escolhido;
+  if (!filterTour.value) filterTour.value = 'all';
+};
+
 const carregarAgendamentosDoBanco = async () => {
   const tableBodyElement = document.getElementById('reservationsBody');
   if (!tableBodyElement) return;
@@ -4112,6 +4163,7 @@ const carregarAgendamentosDoBanco = async () => {
 
   applyReservasRestrictions();
   carregarToursMaisClicados();
+  preencherFiltroDeTours();
 
   // filtros aplicados na própria tabela de backend
   const filterFrom = document.getElementById('filterFrom');
@@ -7094,6 +7146,9 @@ const initReservationManagement = () => {
       if (!el) return;
       el.addEventListener('change', carregarAgendamentosDoBanco);
     });
+
+    // Trocar a cidade reduz a lista de tours do filtro à cidade escolhida.
+    filterCity?.addEventListener('change', preencherFiltroDeTours);
 
     // Botão "Filtrar" e seta de recolher (só aparecem no celular).
     document.getElementById('aplicarFiltrosBtn')?.addEventListener('click', carregarAgendamentosDoBanco);
