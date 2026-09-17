@@ -384,6 +384,7 @@
                             </button>
                         </div>
                     </div>
+                    <p class="login-modal__password-hint" data-i18n="password_rule_hint" style="font-size:0.8rem; color:#374151; background:#f3f4f6; border:1px solid #d1d5db; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.password_rule_hint || 'A senha deve ter pelo menos 6 caracteres, com ao menos uma letra e um número.'}</p>
                     <div class="login-modal__field login-modal__field--password">
                         <label for="resetConfirmPassword">${strings.reset_confirm_password_label || 'Confirmar nova senha'}</label>
                         <div class="login-modal__password-wrapper">
@@ -595,8 +596,11 @@
                     return;
                 }
             }
-            if (newPassword.length < 6) {
-                alert(strings.reset_password_min_length || 'A nova senha deve ter no mínimo 6 caracteres.');
+            // Mesma regra do servidor (_validar_senha): 6 caracteres com ao
+            // menos uma letra e um numero. Conferir aqui evita um 400 que o
+            // visitante so veria como "erro ao redefinir".
+            if (!/^(?=.*[A-Za-z])(?=.*[0-9]).{6,}$/.test(newPassword)) {
+                alert(strings.password_rule_hint || 'A senha deve ter pelo menos 6 caracteres, com ao menos uma letra e um número.');
                 return;
             }
             if (newPassword !== confirmPassword) {
@@ -770,6 +774,7 @@
                                 </button>
                             </div>
                         </div>
+                        <p class="login-modal__password-hint" data-i18n="password_rule_hint" style="font-size:0.8rem; color:#374151; background:#f3f4f6; border:1px solid #d1d5db; border-radius:8px; padding:0.5rem 0.75rem; margin:0 0 0.75rem;">${strings.password_rule_hint || 'A senha deve ter pelo menos 6 caracteres, com ao menos uma letra e um número.'}</p>
                         <div class="login-modal__field login-modal__field--password">
                             <label for="registerConfirm">${strings.register_confirm || 'Confirmar senha'}</label>
                             <div class="login-modal__password-wrapper">
@@ -1192,6 +1197,11 @@
 
             if (!isLiberadoFlow && !/^[0-9]{6}$/.test(code)) {
                 alert(strings.register_invalid_code || 'Código inválido.');
+                return;
+            }
+            // Mesma regra do servidor (_validar_senha).
+            if (!/^(?=.*[A-Za-z])(?=.*[0-9]).{6,}$/.test(password?.value || '')) {
+                alert(strings.password_rule_hint || 'A senha deve ter pelo menos 6 caracteres, com ao menos uma letra e um número.');
                 return;
             }
             if (password && confirm && password.value !== confirm.value) {
