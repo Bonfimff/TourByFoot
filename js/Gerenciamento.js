@@ -530,6 +530,26 @@ const normalizeRoleName = (role) => {
   return normalized === 'user' ? 'cliente_user' : normalized;
 };
 
+// Mesmo critério do servidor (_chave_role): o nome do nível é salvo como foi
+// digitado ("gerente_Lençóis_Maranhenses") e o papel do usuário vem em
+// minúsculas · sem acento, minúsculo e com "_" os dois lados batem.
+const chaveDaRole = (role) => {
+  const texto = String(role || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return !texto || texto === 'user' ? 'cliente_user' : texto;
+};
+
+const configDaRole = (role) => {
+  const chave = chaveDaRole(role);
+  const achar = (mapa) => {
+    if (!mapa || typeof mapa !== 'object') return null;
+    const nome = Object.keys(mapa).find((k) => chaveDaRole(k) === chave);
+    return nome ? mapa[nome] : null;
+  };
+  return achar(currentRolesConfig) || achar(DEFAULT_ROLE_PERMISSIONS) || null;
+};
+
 const getStoredCurrentRolePermissions = () => {
   try {
     const raw = localStorage.getItem('currentRolePermissions');
@@ -543,7 +563,7 @@ const getStoredCurrentRolePermissions = () => {
 const getEffectivePermissionsForRole = (roleName) => {
   const role = normalizeRoleName(roleName || localStorage.getItem('userRole') || 'cliente_user');
   const stored = getStoredCurrentRolePermissions();
-  const fresh = currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+  const fresh = configDaRole(role) || DEFAULT_ROLE_PERMISSIONS.cliente_user;
   // O cache em localStorage (gravado no login) pode ser mais antigo que
   // permissões granulares adicionadas depois (ex: manageFinanceiro,
   // managePageContent, manageComentarios) · mesclar com "fresh" como base
@@ -4133,7 +4153,7 @@ const carregarAgendamentosDoBanco = async () => {
   }
 
   const role = normalizeRoleName(localStorage.getItem('userRole'));
-  currentUserPermissions = currentUserPermissions || currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+  currentUserPermissions = currentUserPermissions || configDaRole(role) || DEFAULT_ROLE_PERMISSIONS.cliente_user;
 
   if (!currentUserPermissions.manageReservas) {
     tableBodyElement.innerHTML = '<tr><td colspan="12" style="padding:0.75rem;">Verificando permissão no servidor...</td></tr>';
@@ -4735,7 +4755,7 @@ const carregarContasDoBanco = async () => {
   if (!tableBody) return;
 
   const role = normalizeRoleName(localStorage.getItem('userRole') || 'cliente_user');
-  currentUserPermissions = currentUserPermissions || currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+  currentUserPermissions = currentUserPermissions || configDaRole(role) || DEFAULT_ROLE_PERMISSIONS.cliente_user;
 
   if (!currentUserPermissions.manageContas) {
     tableBody.innerHTML = '<tr><td colspan="10" style="padding:0.75rem;">Sem permissão para visualizar tabela de acessos.</td></tr>';
@@ -4853,7 +4873,7 @@ const carregarNiveisDeAcesso = async () => {
 
     populateRoleSelect(Object.keys(currentRolesConfig));
     const role = normalizeRoleName(localStorage.getItem('userRole') || 'cliente_user');
-  currentUserPermissions = currentRolesConfig[role] || DEFAULT_ROLE_PERMISSIONS[role] || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+  currentUserPermissions = configDaRole(role) || DEFAULT_ROLE_PERMISSIONS.cliente_user;
 
   applyAccessControls(currentUserPermissions);
 
