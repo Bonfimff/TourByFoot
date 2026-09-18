@@ -7866,7 +7866,7 @@ const prepararCardsRecolhiveisCelular = () => {
   });
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   prepararCardsRecolhiveisCelular();
 
   const userEmail = localStorage.getItem('userEmail');
@@ -7888,6 +7888,22 @@ window.addEventListener('DOMContentLoaded', () => {
       window.location.href = '/';
     }
     return;
+  }
+
+  // Permissões frescas do servidor antes de decidir o acesso: o que ficou
+  // guardado no login pode estar vazio ou desatualizado (nível alterado
+  // depois, ou login feito antes de uma correção). Sem resposta, segue com
+  // o que está guardado.
+  try {
+    const resp = await fetchWithApiFallback('/minhas_permissoes');
+    if (resp.ok) {
+      const dados = await resp.json();
+      if (dados && dados.permissoes && typeof dados.permissoes === 'object') {
+        localStorage.setItem('currentRolePermissions', JSON.stringify(dados.permissoes));
+      }
+    }
+  } catch (err) {
+    console.warn('Não foi possível atualizar as permissões:', err);
   }
 
   currentUserPermissions = getEffectivePermissionsForRole(role);
