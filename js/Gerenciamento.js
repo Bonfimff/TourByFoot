@@ -2790,14 +2790,14 @@ const sortToursForTable = (tours) => {
 };
 
 // Cidades em que o usuário pode editar o conteúdo da página (tours, contato,
-// aviso, premiação, textos, identidade visual) · "Restrições do conteúdo da
-// página" do nível de acesso. admin/super_admin: todas. O servidor recusa as
-// outras de qualquer forma; isto só evita mostrar o que não pode ser salvo.
+// aviso, premiação, textos, identidade visual): as mesmas de "Restrições do
+// financeiro" do nível de acesso. A página inicial não é de cidade nenhuma,
+// então fica só para admin/super_admin, que podem tudo. O servidor recusa o
+// resto de qualquer forma; isto só evita mostrar o que não pode ser salvo.
 const conteudoLiberado = (cidade) => {
   const role = chaveDaRole(localStorage.getItem('userRole'));
   if (role === 'admin' || role === 'super_admin') return true;
-  const alvo = cidade === 'Principal' ? 'Inicio' : cidade;
-  return (currentUserPermissions?.conteudoCidades || []).includes(alvo);
+  return (currentUserPermissions?.financeiroCidades || []).includes(cidade);
 };
 
 const aplicarRestricaoDeConteudo = () => {
@@ -4027,10 +4027,6 @@ const selectRole = (role) => {
     el.checked = (perms.reservasCidades || []).includes(el.dataset.cidade);
   });
 
-  Array.from(document.querySelectorAll('.conteudo-city-perm')).forEach((el) => {
-    el.checked = (perms.conteudoCidades || []).includes(el.dataset.cidade);
-  });
-
   Array.from(document.querySelectorAll('.page-perm')).forEach((el) => {
     el.checked = (perms.pages || []).includes(el.dataset.page);
   });
@@ -4063,13 +4059,11 @@ const updateSelectedRoleConfig = () => {
   const tabChecks = Array.from(document.querySelectorAll('.tab-perm'));
   const financeCityChecks = Array.from(document.querySelectorAll('.finance-city-perm'));
   const reservasCityChecks = Array.from(document.querySelectorAll('.reservas-city-perm'));
-  const conteudoCityChecks = Array.from(document.querySelectorAll('.conteudo-city-perm'));
 
   const pages = pageChecks.filter(c => c.checked).map(c => c.dataset.page);
   const tabs = tabChecks.filter(c => c.checked).map(c => c.dataset.tab);
   const financeiroCidades = financeCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
   const reservasCidades = reservasCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
-  const conteudoCidades = conteudoCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
 
   currentRolesConfig[selectedRoleName] = {
     manageReservas,
@@ -4087,7 +4081,6 @@ const updateSelectedRoleConfig = () => {
     financeiroCidades,
     financeiroSomenteVisualizar,
     reservasCidades,
-    conteudoCidades,
     pages,
     tabs
   };
@@ -4132,9 +4125,6 @@ const setupRoleCheckboxHandlers = () => {
     el.addEventListener('change', updateSelectedRoleConfig);
   });
 
-  Array.from(document.querySelectorAll('.conteudo-city-perm')).forEach((el) => {
-    el.addEventListener('change', updateSelectedRoleConfig);
-  });
 };
 
 // ********************************************************************
