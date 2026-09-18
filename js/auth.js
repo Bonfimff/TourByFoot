@@ -33,6 +33,24 @@
     };
     window.normalizeRole = window.normalizeRole || normalizeRole;
 
+    // Quem pode abrir o Gerenciamento: admin e super_admin sempre; os demais
+    // níveis (ex: gerente_Salvador) quando o nível tem "Gerenciar Reservas" e
+    // a página "Gerenciamento" liberada · permissões gravadas no login a
+    // partir do nível salvo no servidor. Antes só admin/super_admin viam o
+    // menu e eram levados ao painel no login.
+    window.podeAbrirGerenciamento = window.podeAbrirGerenciamento || (() => {
+        const role = String(localStorage.getItem('userRole') || '').trim().toLowerCase();
+        if (role === 'admin' || role === 'super_admin') return true;
+        if (!role || role === 'cliente_user' || role === 'user') return false;
+        let perms = {};
+        try {
+            perms = JSON.parse(localStorage.getItem('currentRolePermissions') || '{}') || {};
+        } catch (_err) {
+            perms = {};
+        }
+        return !!perms.manageReservas && Array.isArray(perms.pages) && perms.pages.includes('Gerenciamento');
+    });
+
     // Foto de perfil padrão do usuário: usa o Gravatar associado ao email
     // (hash SHA-256, sem precisar de nenhuma API/consentimento do provedor
     // de email). Se o usuário nunca configurou um Gravatar, cai num avatar
@@ -82,7 +100,7 @@
 
         if (userRole) {
             const strings = translations[getCurrentLang()] || translations.pt || {};
-            const showManagement = userRole === 'admin' || userRole === 'super_admin';
+            const showManagement = window.podeAbrirGerenciamento();
             dropdown.innerHTML = `
                 <div class="profile-user-info" style="padding:8px 12px; font-weight: 600; border-bottom: 1px solid #e0e0e0;"><span data-i18n="profile_hello">Olá</span>, ${escapeHtml(userName)}</div>
                 ${showManagement ? `<a href="#" class="profile-item profile-item--admin" data-profile-action="manage">${strings.profile_manage || 'Gerenciamento'}</a>` : ''}
@@ -1391,7 +1409,7 @@
                     localStorage.removeItem('currentRolePermissions');
                 }
 
-                if (role === 'admin' || role === 'super_admin') {
+                if (window.podeAbrirGerenciamento()) {
                     redirectToManagementPage();
                 } else {
                     document.querySelector('.login-modal-overlay')?.classList.remove('open');

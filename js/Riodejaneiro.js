@@ -176,9 +176,26 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     window.getCurrentRolePermissions = getCurrentRolePermissions;
     window.redirectToManagementPage = redirectToManagementPage;
 
+    // Quem pode abrir o Gerenciamento: admin e super_admin sempre; os demais
+    // níveis (ex: gerente_Salvador) quando o nível tem "Gerenciar Reservas" e
+    // a página "Gerenciamento" liberada · permissões gravadas no login a
+    // partir do nível salvo no servidor. Antes só admin/super_admin viam o
+    // menu e eram levados ao painel no login.
+    window.podeAbrirGerenciamento = window.podeAbrirGerenciamento || (() => {
+        const role = String(localStorage.getItem('userRole') || '').trim().toLowerCase();
+        if (role === 'admin' || role === 'super_admin') return true;
+        if (!role || role === 'cliente_user' || role === 'user') return false;
+        let perms = {};
+        try {
+            perms = JSON.parse(localStorage.getItem('currentRolePermissions') || '{}') || {};
+        } catch (_err) {
+            perms = {};
+        }
+        return !!perms.manageReservas && Array.isArray(perms.pages) && perms.pages.includes('Gerenciamento');
+    });
+
     const canAccessManagement = () => {
-        const role = getCurrentUserRole();
-        return role !== 'cliente_user';
+        return window.podeAbrirGerenciamento();
     };
 
     const applyRoleBasedControls = () => {
@@ -3762,7 +3779,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         window.applyRoleBasedControls();
                     }
 
-                    if (role === 'admin' || role === 'super_admin') {
+                    if (window.podeAbrirGerenciamento()) {
                         window.redirectToManagementPage();
                     } else {
                         const loginOverlay = document.querySelector('.login-modal-overlay');
