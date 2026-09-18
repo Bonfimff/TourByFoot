@@ -1346,7 +1346,8 @@
             </label>
             <label>
               País de Origem
-              <input type="text" id="accountPaisOrigem" placeholder="Brasil" />
+              <input type="text" id="accountPaisOrigem" placeholder="Brasil" list="accountPaisLista" />
+              <datalist id="accountPaisLista"></datalist>
             </label>
             <label>
               Gênero
@@ -1354,6 +1355,8 @@
                 <option value="">Não informado</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
+                <option value="Não-binário">Não-binário</option>
+                <option value="Prefiro não informar">Prefiro não informar</option>
                 <option value="Outro">Outro</option>
               </select>
             </label>
@@ -1410,7 +1413,8 @@
             </label>
             <label>
               País de Origem
-              <input type="text" id="newAccountPaisOrigem" placeholder="Brasil" />
+              <input type="text" id="newAccountPaisOrigem" placeholder="Brasil" list="newAccountPaisLista" />
+              <datalist id="newAccountPaisLista"></datalist>
             </label>
             <label>
               Gênero
@@ -1418,6 +1422,8 @@
                 <option value="">Não informado</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
+                <option value="Não-binário">Não-binário</option>
+                <option value="Prefiro não informar">Prefiro não informar</option>
                 <option value="Outro">Outro</option>
               </select>
             </label>
@@ -1554,9 +1560,9 @@
     <script src="../js/api-auth.js?v=1"></script>
     <script src="../js/Translation.js?v=9"></script>
     <script src="../js/paises.js?v=2"></script>
-    <script src="../js/Riodejaneiro.js?v=113"></script>
+    <script src="../js/Riodejaneiro.js?v=114"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=143"></script>
+    <script src="../js/Gerenciamento.js?v=144"></script>
     <script src="/js/pwa.js?v=1" data-sugerir-instalacao></script>
 </body>
 </html>

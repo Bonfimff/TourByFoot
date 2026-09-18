@@ -169,7 +169,20 @@ const iniciarPresenca = () => {
   });
 };
 
+// País e gênero das contas no mesmo padrão do cadastro: país pela lista do
+// js/paises.js, gravado em pt-BR; gênero com as mesmas 5 opções em pt-BR.
+const paisEmPtBR = (valor) => (window.Paises && window.Paises.paraGravar(valor)) || (valor || '');
+const generoEmPtBR = (valor) => ({ male: 'Masculino', female: 'Feminino', nonbinary: 'Não-binário',
+  prefer_not: 'Prefiro não informar', other: 'Outro' }[String(valor || '').trim().toLowerCase()]
+  || String(valor || '').trim());
+const ligarCamposDePaisDasContas = () => {
+  if (!window.Paises) return;
+  window.Paises.ligarCampo(document.getElementById('accountPaisOrigem'), document.getElementById('accountPaisLista'), 'pt');
+  window.Paises.ligarCampo(document.getElementById('newAccountPaisOrigem'), document.getElementById('newAccountPaisLista'), 'pt');
+};
+
 const renderAccountsTable = (accounts) => {
+  ligarCamposDePaisDasContas();
   const tableBody = document.getElementById('accountsBody');
   if (!tableBody) return;
 
@@ -193,8 +206,8 @@ const renderAccountsTable = (accounts) => {
       <td data-label="Sobrenome">${escapeHtml(account.sobrenome)}</td>
       <td data-label="Celular">${escapeHtml(account.celular)}</td>
       <td data-label="Role">${escapeHtml(account.role)}</td>
-      <td data-label="País">${escapeHtml(account.pais_origem)}</td>
-      <td data-label="Gênero">${escapeHtml(account.genero)}</td>
+      <td data-label="País">${escapeHtml(paisEmPtBR(account.pais_origem))}</td>
+      <td data-label="Gênero">${escapeHtml(generoEmPtBR(account.genero))}</td>
       <td data-label="Última página">${escapeHtml(account.ultimaPagina || '-')}</td>
       <td data-label="Último acesso" title="${escapeHtml(tituloPresenca(account))}">${estaOnline(account) ? 'Online agora' : formatarTempoDesde(account.segundosDesdeUltimoVisto)}</td>
     `;
@@ -5074,8 +5087,8 @@ const openAccountModal = (account) => {
   sobrenomeInput.value = account.sobrenome || '';
   celularInput.value = account.celular || '';
   const paisOrigemInput = document.getElementById('accountPaisOrigem');
-  if (paisOrigemInput) paisOrigemInput.value = account.pais_origem || '';
-  if (generoInput) generoInput.value = account.genero || '';
+  if (paisOrigemInput) paisOrigemInput.value = paisEmPtBR(account.pais_origem);
+  if (generoInput) generoInput.value = generoEmPtBR(account.genero);
   if (senhaInput) senhaInput.value = '';
   if (whatsappAlertaInput) whatsappAlertaInput.checked = !!account.whatsappAlertaAtivo;
   accountWhatsAppPausadoState = !!account.whatsappAlertaPausado;
@@ -5160,7 +5173,7 @@ const setupAccountModalEvents = () => {
         return;
       }
 
-      const paisOrigem = document.getElementById('accountPaisOrigem')?.value.trim();
+      const paisOrigem = paisEmPtBR(document.getElementById('accountPaisOrigem')?.value.trim());
       const currentUserEmail = localStorage.getItem('userEmail');
       const payload = {
         email,
@@ -5260,7 +5273,7 @@ const setupAccountModalEvents = () => {
       const nome = document.getElementById('newAccountNome')?.value.trim();
       const sobrenome = document.getElementById('newAccountSobrenome')?.value.trim();
       const celular = document.getElementById('newAccountCelular')?.value.trim();
-      const paisOrigem = document.getElementById('newAccountPaisOrigem')?.value.trim();
+      const paisOrigem = paisEmPtBR(document.getElementById('newAccountPaisOrigem')?.value.trim());
       const genero = document.getElementById('newAccountGenero')?.value || '';
       const role = document.getElementById('newAccountRole')?.value || 'cliente_user';
       const whatsappAlertaAtivo = document.getElementById('newAccountWhatsAppAlerta')?.checked ?? false;

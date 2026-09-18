@@ -2914,11 +2914,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                             <label for="registerGender" data-i18n="register_gender">${strings.register_gender}</label>
                             <select id="registerGender" required>
                                 <option value="" selected disabled>·</option>
-                                <option value="male" data-i18n="register_gender_male">${strings.register_gender_male}</option>
-                                <option value="female" data-i18n="register_gender_female">${strings.register_gender_female}</option>
-                                <option value="nonbinary" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary}</option>
-                                <option value="prefer_not" data-i18n="register_gender_prefer_not">${strings.register_gender_prefer_not}</option>
-                                <option value="other" data-i18n="register_gender_other">${strings.register_gender_other}</option>
+                                <option value="Masculino" data-i18n="register_gender_male">${strings.register_gender_male}</option>
+                                <option value="Feminino" data-i18n="register_gender_female">${strings.register_gender_female}</option>
+                                <option value="Não-binário" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary}</option>
+                                <option value="Prefiro não informar" data-i18n="register_gender_prefer_not">${strings.register_gender_prefer_not}</option>
+                                <option value="Outro" data-i18n="register_gender_other">${strings.register_gender_other}</option>
                             </select>
                         </div>
                         <div class="login-modal__actions">
@@ -4902,6 +4902,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     window.openMyReservationsModal = openMyReservationsModal;
     window.openMyFavoritesModal = openMyFavoritesModal;
 
+    // Valor antigo gravado em inglês ("male") ainda aparece selecionado.
+    const generoPt = (valor) => ({ male: 'Masculino', female: 'Feminino', nonbinary: 'Não-binário',
+        prefer_not: 'Prefiro não informar', other: 'Outro' }[String(valor || '').trim().toLowerCase()]
+        || String(valor || '').trim());
+
     const openUserDataModal = async () => {
         const tabs = (getCurrentRolePermissions()?.tabs || []).map(tab => String(tab).toUpperCase());
         if (!tabs.includes('MEUS DADOS')) {
@@ -4940,11 +4945,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                         <label><span data-i18n="user_data_gender">${strings.user_data_gender || 'Gênero'}</span>
                             <select name="genero">
                                 <option value="">·</option>
-                                <option value="male" data-i18n="register_gender_male">${strings.register_gender_male || 'Masculino'}</option>
-                                <option value="female" data-i18n="register_gender_female">${strings.register_gender_female || 'Feminino'}</option>
-                                <option value="nonbinary" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary || 'Não binário'}</option>
-                                <option value="prefer_not" data-i18n="register_gender_prefer_not">${strings.register_gender_prefer_not || 'Prefiro não informar'}</option>
-                                <option value="other" data-i18n="register_gender_other">${strings.register_gender_other || 'Outro'}</option>
+                                <option value="Masculino" data-i18n="register_gender_male">${strings.register_gender_male || 'Masculino'}</option>
+                                <option value="Feminino" data-i18n="register_gender_female">${strings.register_gender_female || 'Feminino'}</option>
+                                <option value="Não-binário" data-i18n="register_gender_nonbinary">${strings.register_gender_nonbinary || 'Não binário'}</option>
+                                <option value="Prefiro não informar" data-i18n="register_gender_prefer_not">${strings.register_gender_prefer_not || 'Prefiro não informar'}</option>
+                                <option value="Outro" data-i18n="register_gender_other">${strings.register_gender_other || 'Outro'}</option>
                             </select>
                         </label>
                         <div class="user-data-actions">
@@ -5019,7 +5024,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     nome: form.elements.nome.value.trim(),
                     sobrenome: form.elements.sobrenome.value.trim(),
                     celular: form.elements.celular.value.trim(),
-                    pais_origem: form.elements.pais_origem.value.trim(),
+                    pais_origem: ((valor) => (window.Paises && window.Paises.paraGravar(valor)) || valor)(form.elements.pais_origem.value.trim()),
                     genero: form.elements.genero.value.trim()
                 };
 
@@ -5094,7 +5099,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         form.elements.sobrenome.value = localStorage.getItem('userSobrenome') || '';
         form.elements.celular.value = localStorage.getItem('userPhone') || '';
         form.elements.pais_origem.value = localStorage.getItem('userPais') || '';
-        form.elements.genero.value = localStorage.getItem('userGenero') || '';
+        form.elements.genero.value = generoPt(localStorage.getItem('userGenero'));
         const previewImg = modal.querySelector('.user-data-photo-preview');
         if (previewImg) previewImg.src = localStorage.getItem('userPhoto') || '';
 
@@ -5117,7 +5122,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     form.elements.sobrenome.value = data.sobrenome || '';
                     form.elements.celular.value = data.celular || '';
                     form.elements.pais_origem.value = data.pais_origem || '';
-                    form.elements.genero.value = data.genero || '';
+                    form.elements.genero.value = generoPt(data.genero);
                     if (data.foto_perfil && previewImg) previewImg.src = data.foto_perfil;
 
                     localStorage.setItem('userName', data.nome || email);

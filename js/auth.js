@@ -750,11 +750,11 @@
                             <label for="registerGender">${strings.register_gender || 'Gênero'}</label>
                             <select id="registerGender" required>
                                 <option value="" selected disabled>·</option>
-                                <option value="male">${strings.register_gender_male || 'Masculino'}</option>
-                                <option value="female">${strings.register_gender_female || 'Feminino'}</option>
-                                <option value="nonbinary">${strings.register_gender_nonbinary || 'Não-binário'}</option>
-                                <option value="prefer_not">${strings.register_gender_prefer_not || 'Prefiro não informar'}</option>
-                                <option value="other">${strings.register_gender_other || 'Outro'}</option>
+                                <option value="Masculino">${strings.register_gender_male || 'Masculino'}</option>
+                                <option value="Feminino">${strings.register_gender_female || 'Feminino'}</option>
+                                <option value="Não-binário">${strings.register_gender_nonbinary || 'Não-binário'}</option>
+                                <option value="Prefiro não informar">${strings.register_gender_prefer_not || 'Prefiro não informar'}</option>
+                                <option value="Outro">${strings.register_gender_other || 'Outro'}</option>
                             </select>
                         </div>
                         <div class="login-modal__actions">
