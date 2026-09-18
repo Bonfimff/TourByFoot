@@ -283,5 +283,34 @@
       const nomes = LISTA.map(([codigo]) => this.nome(codigo, idioma)).filter(Boolean);
       return nomes.sort((a, b) => a.localeCompare(b, idioma || 'pt-BR'));
     },
+    // Nome em pt-BR para gravar no banco, ou '' se o texto não for um país da
+    // lista. É a regra de todo campo de país do site (reserva e cadastro).
+    paraGravar(texto) {
+      return this.ptBR(this.codigo(texto));
+    },
+    // Liga um campo de texto + datalist à lista: sugestões no idioma da
+    // página e, ao sair do campo, o país na grafia desse idioma (quem digita
+    // "germany" numa página em português passa a ver "Alemanha").
+    ligarCampo(campo, lista, idioma) {
+      const idiomaAtual = () => (typeof idioma === 'function' ? idioma() : idioma)
+        || window.rotaIdioma?.atual
+        || (typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : '')
+        || 'pt';
+      if (lista) {
+        lista.innerHTML = '';
+        this.sugestoes(idiomaAtual()).forEach((nome) => {
+          const opcao = document.createElement('option');
+          opcao.value = nome;
+          lista.appendChild(opcao);
+        });
+      }
+      if (campo && !campo.dataset.paisesLigado) {
+        campo.dataset.paisesLigado = '1';
+        campo.addEventListener('blur', () => {
+          const codigo = this.codigo(campo.value);
+          if (codigo) campo.value = this.nome(codigo, idiomaAtual());
+        });
+      }
+    },
   };
 })();

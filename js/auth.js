@@ -1105,6 +1105,15 @@
                 alert(strings.register_fill_all || 'Preencha todos os campos.');
                 return;
             }
+
+            // Mesma regra do campo Nacionalidade da reserva: o país precisa
+            // ser um da lista de sugestões (em qualquer idioma) e vai para o
+            // banco sempre em pt-BR (ver js/paises.js).
+            if (window.Paises && !window.Paises.codigo(country.value)) {
+                alert(strings.register_country_invalid || 'Escolha um país da lista de sugestões no campo País de origem.');
+                country.focus();
+                return;
+            }
             if (!isValidEmail(email.value)) {
                 alert(strings.register_invalid_email || 'Email inválido.');
                 return;
@@ -1170,7 +1179,7 @@
                         email: pendingRegisterEmail,
                         nome,
                         celular: overlay.querySelector('#registerPhone')?.value.trim() || '',
-                        pais: overlay.querySelector('#registerCountry')?.value.trim() || ''
+                        pais: ((valor) => (window.Paises && window.Paises.paraGravar(valor)) || valor)(overlay.querySelector('#registerCountry')?.value.trim() || '')
                     })
                 });
                 const result = await response.json().catch(() => ({}));
@@ -1255,7 +1264,7 @@
                     senha: password?.value || '',
                     data_nascimento: overlay.querySelector('#registerDob')?.value || '',
                     celular: overlay.querySelector('#registerPhone')?.value.trim() || '',
-                    pais_origem: overlay.querySelector('#registerCountry')?.value.trim() || '',
+                    pais_origem: ((valor) => (window.Paises && window.Paises.paraGravar(valor)) || valor)(overlay.querySelector('#registerCountry')?.value.trim() || ''),
                     genero: overlay.querySelector('#registerGender')?.value.trim() || ''
                 };
 
@@ -1308,7 +1317,10 @@
         });
 
         const datalist = overlay.querySelector('#countryList');
-        if (datalist) {
+        if (window.Paises) {
+            // Mesma lista e mesma regra do campo Nacionalidade da reserva.
+            window.Paises.ligarCampo(overlay.querySelector('#registerCountry'), datalist);
+        } else if (datalist) {
             COUNTRY_LIST.forEach((country) => {
                 const option = document.createElement('option');
                 option.value = country;
