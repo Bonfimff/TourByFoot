@@ -4873,7 +4873,10 @@ const carregarNiveisDeAcesso = async () => {
 
     populateRoleSelect(Object.keys(currentRolesConfig));
     const role = normalizeRoleName(localStorage.getItem('userRole') || 'cliente_user');
-  currentUserPermissions = configDaRole(role) || DEFAULT_ROLE_PERMISSIONS.cliente_user;
+  // Mescla com as permissões do servidor guardadas ao abrir o painel: quem
+  // não pode ver os níveis (sem "Gerenciar Perfis") recebe só a lista padrão,
+  // e ler só ela tratava um gerente como cliente e o mandava embora.
+  currentUserPermissions = getEffectivePermissionsForRole(role);
 
   applyAccessControls(currentUserPermissions);
 
@@ -7907,9 +7910,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   currentUserPermissions = getEffectivePermissionsForRole(role);
+  // Menus e controles do Riodejaneiro.js passam a usar as permissões novas.
+  window.loadRolePermissions?.();
 
-  if (!currentUserPermissions?.manageReservas) {
-    alert('Acesso negado: sua conta não possui permissão para gerenciar reservas.');
+  const paginasPermitidas = Array.isArray(currentUserPermissions?.pages) ? currentUserPermissions.pages : [];
+  const ehAdmin = ['admin', 'super_admin'].includes(normalizeRoleName(role));
+  if (!currentUserPermissions?.manageReservas || (!ehAdmin && !paginasPermitidas.includes('Gerenciamento'))) {
+    alert(!currentUserPermissions?.manageReservas
+      ? 'Acesso negado: sua conta não possui permissão para gerenciar reservas.'
+      : 'Acesso negado: o seu nível de acesso não tem a página "Gerenciamento" liberada.');
     window.location.href = '/';
     return;
   }

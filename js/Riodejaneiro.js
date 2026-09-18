@@ -263,7 +263,11 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         // mostrar o overlay em vez de expulsar direto pra "/".
         const isManagementPage = window.location.pathname.endsWith('/html/Gerenciamento.html') || window.location.pathname.endsWith('Gerenciamento.html');
         const hasSession = !!localStorage.getItem('userRole');
-        if (isManagementPage && !allowed && hasSession) {
+        // No painel quem decide é o Gerenciamento.js, depois de buscar as
+        // permissões atuais no servidor (/minhas_permissoes). Decidir aqui, com
+        // o que ficou guardado no login, expulsava sem aviso quem tinha um
+        // login antigo ou um nível alterado depois.
+        if (isManagementPage && !allowed && hasSession && !window.PAINEL_DECIDE_ACESSO) {
             window.location.href = window.location.origin + '/';
         }
 
@@ -272,7 +276,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             document.querySelectorAll('.rio-btn-reserve, .btn-book').forEach(el => { if (el) el.style.display = 'none'; });
         }
 
-        if (!pages.includes('Gerenciamento') && isManagementPage && hasSession) {
+        if (!pages.includes('Gerenciamento') && isManagementPage && hasSession && !window.PAINEL_DECIDE_ACESSO) {
             window.location.href = window.location.origin + '/';
         }
     };
