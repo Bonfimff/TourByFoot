@@ -2789,7 +2789,45 @@ const sortToursForTable = (tours) => {
   });
 };
 
-const renderTourManagementTable = (tours) => {
+// Cidades em que o usuário pode editar o conteúdo da página (tours, contato,
+// aviso, premiação, textos, identidade visual) · "Restrições do conteúdo da
+// página" do nível de acesso. admin/super_admin: todas. O servidor recusa as
+// outras de qualquer forma; isto só evita mostrar o que não pode ser salvo.
+const conteudoLiberado = (cidade) => {
+  const role = chaveDaRole(localStorage.getItem('userRole'));
+  if (role === 'admin' || role === 'super_admin') return true;
+  const alvo = cidade === 'Principal' ? 'Inicio' : cidade;
+  return (currentUserPermissions?.conteudoCidades || []).includes(alvo);
+};
+
+const aplicarRestricaoDeConteudo = () => {
+  // "" = opção "Todas as cidades"/"Selecione", sempre visível.
+  ['cidadeContatoSelect', 'cidadeAvisoSelect', 'cidadeAwardSelect', 'paginaSecaoPagina',
+    'cidadeVisualSelect', 'filterTourManagementCidade', 'tourModalCidade'].forEach((id) => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    let algumaLiberada = false;
+    Array.from(select.options).forEach((opcao) => {
+      const liberada = opcao.value === '' || conteudoLiberado(opcao.value);
+      opcao.hidden = !liberada;
+      opcao.disabled = !liberada;
+      if (liberada && opcao.value !== '') algumaLiberada = true;
+    });
+    if (select.selectedOptions[0]?.disabled) {
+      const primeira = Array.from(select.options).find((o) => !o.disabled);
+      if (primeira) select.value = primeira.value;
+    }
+    // Sem nenhuma cidade liberada, o card inteiro some.
+    const card = select.closest('.cidade-contato-card');
+    if (card && id !== 'filterTourManagementCidade' && id !== 'tourModalCidade') {
+      card.parentElement.style.display = algumaLiberada ? '' : 'none';
+    }
+  });
+};
+
+const renderTourManagementTable = (toursRecebidos) => {
+  // Só os tours das cidades liberadas para edição.
+  const tours = (toursRecebidos || []).filter((t) => conteudoLiberado(t.cidade));
   const tableBody = document.getElementById('tourManagementBody');
   if (!tableBody) return;
 
@@ -3989,6 +4027,10 @@ const selectRole = (role) => {
     el.checked = (perms.reservasCidades || []).includes(el.dataset.cidade);
   });
 
+  Array.from(document.querySelectorAll('.conteudo-city-perm')).forEach((el) => {
+    el.checked = (perms.conteudoCidades || []).includes(el.dataset.cidade);
+  });
+
   Array.from(document.querySelectorAll('.page-perm')).forEach((el) => {
     el.checked = (perms.pages || []).includes(el.dataset.page);
   });
@@ -4021,11 +4063,13 @@ const updateSelectedRoleConfig = () => {
   const tabChecks = Array.from(document.querySelectorAll('.tab-perm'));
   const financeCityChecks = Array.from(document.querySelectorAll('.finance-city-perm'));
   const reservasCityChecks = Array.from(document.querySelectorAll('.reservas-city-perm'));
+  const conteudoCityChecks = Array.from(document.querySelectorAll('.conteudo-city-perm'));
 
   const pages = pageChecks.filter(c => c.checked).map(c => c.dataset.page);
   const tabs = tabChecks.filter(c => c.checked).map(c => c.dataset.tab);
   const financeiroCidades = financeCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
   const reservasCidades = reservasCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
+  const conteudoCidades = conteudoCityChecks.filter(c => c.checked).map(c => c.dataset.cidade);
 
   currentRolesConfig[selectedRoleName] = {
     manageReservas,
@@ -4043,6 +4087,7 @@ const updateSelectedRoleConfig = () => {
     financeiroCidades,
     financeiroSomenteVisualizar,
     reservasCidades,
+    conteudoCidades,
     pages,
     tabs
   };
@@ -4084,6 +4129,10 @@ const setupRoleCheckboxHandlers = () => {
   });
 
   Array.from(document.querySelectorAll('.reservas-city-perm')).forEach((el) => {
+    el.addEventListener('change', updateSelectedRoleConfig);
+  });
+
+  Array.from(document.querySelectorAll('.conteudo-city-perm')).forEach((el) => {
     el.addEventListener('change', updateSelectedRoleConfig);
   });
 };
@@ -4673,6 +4722,7 @@ const mostrarSecao = (secao) => {
   });
 
   if (secao === 'gerenciamento' && canManagePageContent) {
+    aplicarRestricaoDeConteudo();
     initMaintenanceModeToggle();
     carregarToursGerenciamento();
     carregarCidadeContatoGerenciamento();
@@ -7904,6 +7954,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (dados && dados.permissoes && typeof dados.permissoes === 'object') {
         localStorage.setItem('currentRolePermissions', JSON.stringify(dados.permissoes));
       }
+      // A conta pode ter trocado de nível desde o login.
+      if (dados && dados.role) localStorage.setItem('userRole', dados.role);
     }
   } catch (err) {
     console.warn('Não foi possível atualizar as permissões:', err);

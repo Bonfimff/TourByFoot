@@ -5615,8 +5615,9 @@ section,
   #roleCheckboxes,
   #reservasRestricoes,
   #financeiroRestricoes,
-  #rolesManager > div:nth-of-type(6),
-  #rolesManager > div:nth-of-type(7) {
+  #conteudoRestricoes,
+  #rolesManager > div:nth-of-type(7),
+  #rolesManager > div:nth-of-type(8) {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr);
     gap: 0.1rem 0.6rem;
@@ -5628,18 +5629,21 @@ section,
 
   #reservasRestricoes,
   #financeiroRestricoes,
-  #rolesManager > div:nth-of-type(6),
-  #rolesManager > div:nth-of-type(7) {
+  #conteudoRestricoes,
+  #rolesManager > div:nth-of-type(7),
+  #rolesManager > div:nth-of-type(8) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #roleCheckboxes > strong,
   #reservasRestricoes > strong,
   #financeiroRestricoes > strong,
-  #rolesManager > div:nth-of-type(6) > strong,
+  #conteudoRestricoes > strong,
   #rolesManager > div:nth-of-type(7) > strong,
+  #rolesManager > div:nth-of-type(8) > strong,
   #reservasRestricoes > span,
   #financeiroRestricoes > span,
+  #conteudoRestricoes > span,
   #financeiroRestricoes > label:last-child {
     grid-column: 1 / -1;
   }
@@ -5647,8 +5651,9 @@ section,
   #roleCheckboxes > strong,
   #reservasRestricoes > strong,
   #financeiroRestricoes > strong,
-  #rolesManager > div:nth-of-type(6) > strong,
-  #rolesManager > div:nth-of-type(7) > strong {
+  #conteudoRestricoes > strong,
+  #rolesManager > div:nth-of-type(7) > strong,
+  #rolesManager > div:nth-of-type(8) > strong {
     margin-bottom: 0.2rem;
     font-size: 0.72rem;
     letter-spacing: 0.04em;
@@ -5657,7 +5662,8 @@ section,
   }
 
   #reservasRestricoes > span,
-  #financeiroRestricoes > span {
+  #financeiroRestricoes > span,
+  #conteudoRestricoes > span {
     margin-bottom: 0.2rem;
     font-size: 0.68rem !important;
   }
@@ -5665,8 +5671,9 @@ section,
   #roleCheckboxes label,
   #reservasRestricoes label,
   #financeiroRestricoes label,
-  #rolesManager > div:nth-of-type(6) label,
-  #rolesManager > div:nth-of-type(7) label {
+  #conteudoRestricoes label,
+  #rolesManager > div:nth-of-type(7) label,
+  #rolesManager > div:nth-of-type(8) label {
     display: flex !important;
     align-items: flex-start;
     gap: 0.4rem;
@@ -5683,7 +5690,7 @@ section,
     margin: 0.05rem 0 0;
   }
 
-  #rolesManager > div:nth-of-type(8) {
+  #rolesManager > div:nth-of-type(9) {
     display: flex;
     justify-content: flex-end;
   }

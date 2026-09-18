@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <link rel="stylesheet" href="../css/Gerenciamento.css?v=86">
+    <link rel="stylesheet" href="../css/Gerenciamento.css?v=87">
 </head>
 <body class="gerenciamento-page">
     <header class="gerenciamento-header">
@@ -434,6 +434,16 @@
                     <label><input type="checkbox" class="finance-city-perm" data-cidade="Sao Luis" /> São Luís do Maranhão</label><br />
                     <label><input type="checkbox" class="finance-city-perm" data-cidade="Salvador" /> Salvador</label><br />
                     <label style="margin-top:0.4rem; display:inline-block;"><input type="checkbox" id="roleCheckFinanceiroSomenteView" /> Somente visualizar (não pode lançar, editar ou excluir entradas/retiradas/despesas)</label>
+                </div>
+
+                <div id="conteudoRestricoes" style="margin-top:1rem; color:#1f2937;">
+                    <strong>Restrições do conteúdo da página</strong><br />
+                    <span style="font-size:0.85rem; color:#6b7280;">Só valem para quem tem "Gerenciar conteúdo da página" marcado acima: tours, contato, aviso, premiação, textos e identidade visual.</span><br />
+                    <label><input type="checkbox" class="conteudo-city-perm" data-cidade="Inicio" /> Página Inicial</label><br />
+                    <label><input type="checkbox" class="conteudo-city-perm" data-cidade="Rio de Janeiro" /> Rio de Janeiro</label><br />
+                    <label><input type="checkbox" class="conteudo-city-perm" data-cidade="Lencois" /> Lençóis Maranhenses</label><br />
+                    <label><input type="checkbox" class="conteudo-city-perm" data-cidade="Sao Luis" /> São Luís do Maranhão</label><br />
+                    <label><input type="checkbox" class="conteudo-city-perm" data-cidade="Salvador" /> Salvador</label><br />
                 </div>
 
                 <div style="margin-top:1rem; color:#1f2937;">
@@ -1555,7 +1565,7 @@
     <script src="../js/Riodejaneiro.js?v=112"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
     <script src="../js/paises.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=141"></script>
+    <script src="../js/Gerenciamento.js?v=142"></script>
     <script src="/js/pwa.js?v=1" data-sugerir-instalacao></script>
 </body>
 </html>
