@@ -306,7 +306,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>Saída:</strong> São Luís',
 '<i class="fa fa-check-circle"></i> <strong>Inclui:</strong> Transporte, hospedagem, guia e refeições'
 ],
-shared_section_title: 'Expedições Compartilhadas',
+shared_section_title: 'Experiências Compartilhadas',
 shared_tours: [
 { name: 'Manhã na Lagoa Azul', details: [
 '<i class="fa fa-clock"></i> <strong>Duração:</strong> 8:00 - 14:00',
@@ -333,7 +333,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Valor:</strong> R$300 por pessoa'
 ]}
 ],
-private_section_title: 'Expedições Privativas',
+private_section_title: 'Experiências Privativas',
 private_tours: [
 { name: 'Quadriciclo Adventure', sub: '(Combo lancha + quadri)', details: [
 '<i class="fa fa-clock"></i> <strong>Duração:</strong> 7:00 - 18:30',
@@ -407,7 +407,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>Departure:</strong> São Luís',
 '<i class="fa fa-check-circle"></i> <strong>Includes:</strong> Transportation, lodging, guide and meals'
 ],
-shared_section_title: 'Shared Expeditions',
+shared_section_title: 'Shared Experiences',
 shared_tours: [
 { name: 'Morning at Blue Lagoon', details: [
 '<i class="fa fa-clock"></i> <strong>Duration:</strong> 8:00 AM - 2:00 PM',
@@ -434,7 +434,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Price:</strong> R$300 per person'
 ]}
 ],
-private_section_title: 'Private Expeditions',
+private_section_title: 'Private Experiences',
 private_tours: [
 { name: 'Quad Bike Adventure', sub: '(Boat + quad bike combo)', details: [
 '<i class="fa fa-clock"></i> <strong>Duration:</strong> 7:00 AM - 6:30 PM',
@@ -508,7 +508,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>Salida:</strong> São Luís',
 '<i class="fa fa-check-circle"></i> <strong>Incluye:</strong> Transporte, alojamiento, guía y comidas'
 ],
-shared_section_title: 'Expediciones Compartidas',
+shared_section_title: 'Experiencias Compartidas',
 shared_tours: [
 { name: 'Mañana en la Laguna Azul', details: [
 '<i class="fa fa-clock"></i> <strong>Duración:</strong> 8:00 - 14:00',
@@ -535,7 +535,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Precio:</strong> R$300 por persona'
 ]}
 ],
-private_section_title: 'Expediciones Privadas',
+private_section_title: 'Experiencias Privadas',
 private_tours: [
 { name: 'Quadriciclo Adventure', sub: '(Combo lancha + cuatrimoto)', details: [
 '<i class="fa fa-clock"></i> <strong>Duración:</strong> 7:00 - 18:30',
@@ -609,7 +609,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>Départ:</strong> São Luís',
 '<i class="fa fa-check-circle"></i> <strong>Inclus:</strong> Transport, hébergement, guide et repas'
 ],
-shared_section_title: 'Expéditions Partagées',
+shared_section_title: 'Expériences Partagées',
 shared_tours: [
 { name: 'Matinée au Lagon Bleu', details: [
 '<i class="fa fa-clock"></i> <strong>Durée:</strong> 8h00 - 14h00',
@@ -636,7 +636,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Prix:</strong> R$300 par personne'
 ]}
 ],
-private_section_title: 'Expéditions Privées',
+private_section_title: 'Expériences Privées',
 private_tours: [
 { name: 'Quad Adventure', sub: '(Combo bateau + quad)', details: [
 '<i class="fa fa-clock"></i> <strong>Durée:</strong> 7h00 - 18h30',
@@ -710,7 +710,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>Partenza:</strong> São Luís',
 '<i class="fa fa-check-circle"></i> <strong>Include:</strong> Trasporto, alloggio, guida e pasti'
 ],
-shared_section_title: 'Spedizioni Condivise',
+shared_section_title: 'Esperienze Condivise',
 shared_tours: [
 { name: 'Mattina alla Laguna Azul', details: [
 '<i class="fa fa-clock"></i> <strong>Durata:</strong> 8:00 - 14:00',
@@ -737,7 +737,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Prezzo:</strong> R$300 a persona'
 ]}
 ],
-private_section_title: 'Spedizioni Private',
+private_section_title: 'Esperienze Private',
 private_tours: [
 { name: 'Quad Adventure', sub: '(Combo barca + quad)', details: [
 '<i class="fa fa-clock"></i> <strong>Durata:</strong> 7:00 - 18:30',
@@ -811,7 +811,7 @@ card2_details: [
 '<i class="fa fa-map-marker-alt"></i> <strong>出发地:</strong> 圣路易斯',
 '<i class="fa fa-check-circle"></i> <strong>包含:</strong> 交通、住宿、向导及餐食'
 ],
-shared_section_title: '共享探险',
+shared_section_title: '共享体验',
 shared_tours: [
 { name: '蓝湖清晨之旅', details: [
 '<i class="fa fa-clock"></i> <strong>时长:</strong> 8:00 - 14:00',
@@ -838,7 +838,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>价格:</strong> 每人300雷亚尔'
 ]}
 ],
-private_section_title: '私人探险',
+private_section_title: '私人体验',
 private_tours: [
 { name: '沙滩摩托车探险', sub: '(快艇+沙滩摩托组合)', details: [
 '<i class="fa fa-clock"></i> <strong>时长:</strong> 7:00 - 18:30',
