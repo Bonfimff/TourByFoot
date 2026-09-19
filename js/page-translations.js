@@ -20,7 +20,7 @@ notice_lines: [
 'Em caso de nao poder comparecer ao tour, cancele sua reserva pelo WhatsApp.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Nossas Experiencias',
+section_title: 'Experiências Free tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Outros Tours',
 paid_subtitle: 'Tours Pagos',
@@ -100,7 +100,7 @@ notice_lines: [
 'Sua contribuição é a remuneração do guia, seja consciente.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Nossas Experiências',
+section_title: 'Experiências Free tour',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -131,7 +131,7 @@ notice_lines: [
 'Your contribution is the guide\'s payment, please be conscious.'
 ],
 proceed: 'Proceed',
-section_title: 'Our Experiences',
+section_title: 'Free Tour Experiences',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -162,7 +162,7 @@ notice_lines: [
 'Tu contribución es la remuneración del guía, sé consciente.'
 ],
 proceed: 'Continuar',
-section_title: 'Nuestras Experiencias',
+section_title: 'Experiencias Free Tour',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -193,7 +193,7 @@ notice_lines: [
 'Votre contribution est la rémunération du guide, soyez conscient(e).'
 ],
 proceed: 'Continuer',
-section_title: 'Nos Expériences',
+section_title: 'Expériences Free Tour',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -224,7 +224,7 @@ notice_lines: [
 'Il tuo contributo è il compenso della guida, sii consapevole.'
 ],
 proceed: 'Continua',
-section_title: 'Le Nostre Esperienze',
+section_title: 'Esperienze Free Tour',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -255,7 +255,7 @@ notice_lines: [
 '您的捐赠是导游的报酬，请自觉支付。'
 ],
 proceed: '继续',
-section_title: '我们的体验',
+section_title: '免费导览体验',
 section_subtitle: '免费游览',
 tour_name: '佩罗林纽',
 details: [
@@ -289,7 +289,7 @@ notice_lines: [
 'Recomendamos protetor solar, roupas leves, chapéu e calçados confortáveis.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Nossas Experiências',
+section_title: 'Experiências Free tour',
 section_subtitle: 'Passeios',
 reserve: 'Reservar Agora',
 names: ['Lagoas de Santo Amaro', 'Circuito Completo Lençóis'],
@@ -390,7 +390,7 @@ notice_lines: [
 'We recommend sunscreen, light clothing, a hat and comfortable footwear.'
 ],
 proceed: 'Continue',
-section_title: 'Our Experiences',
+section_title: 'Free Tour Experiences',
 section_subtitle: 'Tours',
 reserve: 'Book Now',
 names: ['Santo Amaro Lagoons', 'Full Lençóis Circuit'],
@@ -491,7 +491,7 @@ notice_lines: [
 'Recomendamos protector solar, ropa ligera, sombrero y calzado cómodo.'
 ],
 proceed: 'Continuar',
-section_title: 'Nuestras Experiencias',
+section_title: 'Experiencias Free Tour',
 section_subtitle: 'Paseos',
 reserve: 'Reservar Ahora',
 names: ['Lagunas de Santo Amaro', 'Circuito Completo Lençóis'],
@@ -592,7 +592,7 @@ notice_lines: [
 'Nous recommandons crème solaire, vêtements légers, chapeau et chaussures confortables.'
 ],
 proceed: 'Continuer',
-section_title: 'Nos Expériences',
+section_title: 'Expériences Free Tour',
 section_subtitle: 'Excursions',
 reserve: 'Réserver',
 names: ['Lagunes de Santo Amaro', 'Circuit Complet des Lençóis'],
@@ -693,7 +693,7 @@ notice_lines: [
 'Consigliamo crema solare, abiti leggeri, cappello e scarpe comode.'
 ],
 proceed: 'Continua',
-section_title: 'Le Nostre Esperienze',
+section_title: 'Esperienze Free Tour',
 section_subtitle: 'Tour',
 reserve: 'Prenota Ora',
 names: ['Lagune di Santo Amaro', 'Circuito Completo Lençóis'],
@@ -794,7 +794,7 @@ notice_lines: [
 '建议携带防晒霜、轻便衣物、帽子及舒适的鞋子。'
 ],
 proceed: '继续',
-section_title: '我们的行程',
+section_title: '免费导览体验',
 section_subtitle: '游览项目',
 reserve: '立即预订',
 names: ['圣阿马罗泻湖', '莱恩索伊斯完整环线'],
@@ -896,7 +896,7 @@ notice_lines: [
 'Sua contribuição é a remuneração do guia, seja consciente.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Nossas Experiências',
+section_title: 'Experiências Free tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Outros Tours',
 paid_subtitle: 'Tours Privados',
@@ -939,7 +939,7 @@ notice_lines: [
 'Your contribution is the guide\'s payment, please be conscious.'
 ],
 proceed: 'Proceed',
-section_title: 'Our Experiences',
+section_title: 'Free Tour Experiences',
 free_subtitle: 'Free Tours',
 paid_title: 'Other Tours',
 paid_subtitle: 'Private Tours',
@@ -982,7 +982,7 @@ notice_lines: [
 'Tu contribución es la remuneración del guía, sé consciente.'
 ],
 proceed: 'Continuar',
-section_title: 'Nuestras Experiencias',
+section_title: 'Experiencias Free Tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Otros Tours',
 paid_subtitle: 'Tours Privados',
@@ -1025,7 +1025,7 @@ notice_lines: [
 'Votre contribution est la rémunération du guide, soyez conscient(e).'
 ],
 proceed: 'Continuer',
-section_title: 'Nos Expériences',
+section_title: 'Expériences Free Tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Autres Tours',
 paid_subtitle: 'Tours Privés',
@@ -1068,7 +1068,7 @@ notice_lines: [
 'Il tuo contributo è il compenso della guida, sii consapevole.'
 ],
 proceed: 'Continua',
-section_title: 'Le Nostre Esperienze',
+section_title: 'Esperienze Free Tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Altri Tour',
 paid_subtitle: 'Tour Privati',
@@ -1111,7 +1111,7 @@ notice_lines: [
 '您的捐赠是导游的报酬，请自觉支付。'
 ],
 proceed: '继续',
-section_title: '我们的体验',
+section_title: '免费导览体验',
 free_subtitle: '免费游览',
 paid_title: '其他行程',
 paid_subtitle: '私人行程',
@@ -1150,7 +1150,7 @@ relatos_like_label: '点赞照片'
     const phraseMap = {
         en: {
             'Informações Importantes': 'Important Information',
-            'Nossas Experiências': 'Our Experiences',
+            'Experiências Free tour': 'Free Tour Experiences',
             'Outros Tours': 'Other Tours',
             'Tours Pagos': 'Paid Tours',
             'Tours Privados': 'Private Tours',
@@ -1174,7 +1174,7 @@ relatos_like_label: '点赞照片'
         },
         fr: {
             'Informações Importantes': 'Informations importantes',
-            'Nossas Experiências': 'Nos experiences',
+            'Experiências Free tour': 'Expériences Free Tour',
             'Outros Tours': 'Autres tours',
             'Tours Pagos': 'Tours payants',
             'Tours Privados': 'Tours prives',
@@ -1198,7 +1198,7 @@ relatos_like_label: '点赞照片'
         },
         es: {
             'Informações Importantes': 'Informacion importante',
-            'Nossas Experiências': 'Nuestras experiencias',
+            'Experiências Free tour': 'Experiencias Free Tour',
             'Outros Tours': 'Otros tours',
             'Tours Pagos': 'Tours pagados',
             'Tours Privados': 'Tours privados',
@@ -1222,7 +1222,7 @@ relatos_like_label: '点赞照片'
         },
         it: {
             'Informações Importantes': 'Informazioni importanti',
-            'Nossas Experiências': 'Le nostre esperienze',
+            'Experiências Free tour': 'Esperienze Free Tour',
             'Outros Tours': 'Altri tours',
             'Tours Pagos': 'Tours a pagamento',
             'Tours Privados': 'Tours privati',
@@ -1246,7 +1246,7 @@ relatos_like_label: '点赞照片'
         },
         zh: {
             'Informações Importantes': '重要信息',
-            'Nossas Experiências': '我们的行程',
+            'Experiências Free tour': '免费导览体验',
             'Outros Tours': '其他行程',
             'Tours Pagos': '付费行程',
             'Tours Privados': '私人行程',
