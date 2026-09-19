@@ -20,7 +20,7 @@ notice_lines: [
 'Em caso de nao poder comparecer ao tour, cancele sua reserva pelo WhatsApp.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Experiências Free tour',
+section_title: 'Experiências Free Tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Outros Tours',
 paid_subtitle: 'Tours Pagos',
@@ -100,7 +100,7 @@ notice_lines: [
 'Sua contribuição é a remuneração do guia, seja consciente.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Experiências Free tour',
+section_title: 'Experiências Free Tour',
 section_subtitle: 'Free Tours',
 tour_name: 'Pelourinho',
 details: [
@@ -255,7 +255,7 @@ notice_lines: [
 '您的捐赠是导游的报酬，请自觉支付。'
 ],
 proceed: '继续',
-section_title: '免费导览体验',
+section_title: 'Free Tour 体验',
 section_subtitle: '免费游览',
 tour_name: '佩罗林纽',
 details: [
@@ -289,7 +289,7 @@ notice_lines: [
 'Recomendamos protetor solar, roupas leves, chapéu e calçados confortáveis.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Experiências Free tour',
+section_title: 'Experiências Free Tour',
 section_subtitle: 'Passeios',
 reserve: 'Reservar Agora',
 names: ['Lagoas de Santo Amaro', 'Circuito Completo Lençóis'],
@@ -333,7 +333,7 @@ shared_tours: [
 '<i class="fa fa-tag"></i> <strong>Valor:</strong> R$300 por pessoa'
 ]}
 ],
-private_section_title: 'Experiências Privativas',
+private_section_title: 'Experiências Privadas',
 private_tours: [
 { name: 'Quadriciclo Adventure', sub: '(Combo lancha + quadri)', details: [
 '<i class="fa fa-clock"></i> <strong>Duração:</strong> 7:00 - 18:30',
@@ -794,7 +794,7 @@ notice_lines: [
 '建议携带防晒霜、轻便衣物、帽子及舒适的鞋子。'
 ],
 proceed: '继续',
-section_title: '免费导览体验',
+section_title: 'Free Tour 体验',
 section_subtitle: '游览项目',
 reserve: '立即预订',
 names: ['圣阿马罗泻湖', '莱恩索伊斯完整环线'],
@@ -896,7 +896,7 @@ notice_lines: [
 'Sua contribuição é a remuneração do guia, seja consciente.'
 ],
 proceed: 'Prosseguir',
-section_title: 'Experiências Free tour',
+section_title: 'Experiências Free Tour',
 free_subtitle: 'Free Tours',
 paid_title: 'Outros Tours',
 paid_subtitle: 'Tours Privados',
@@ -1111,7 +1111,7 @@ notice_lines: [
 '您的捐赠是导游的报酬，请自觉支付。'
 ],
 proceed: '继续',
-section_title: '免费导览体验',
+section_title: 'Free Tour 体验',
 free_subtitle: '免费游览',
 paid_title: '其他行程',
 paid_subtitle: '私人行程',
@@ -1150,7 +1150,7 @@ relatos_like_label: '点赞照片'
     const phraseMap = {
         en: {
             'Informações Importantes': 'Important Information',
-            'Experiências Free tour': 'Free Tour Experiences',
+            'Experiências Free Tour': 'Free Tour Experiences',
             'Outros Tours': 'Other Tours',
             'Tours Pagos': 'Paid Tours',
             'Tours Privados': 'Private Tours',
@@ -1174,7 +1174,7 @@ relatos_like_label: '点赞照片'
         },
         fr: {
             'Informações Importantes': 'Informations importantes',
-            'Experiências Free tour': 'Expériences Free Tour',
+            'Experiências Free Tour': 'Expériences Free Tour',
             'Outros Tours': 'Autres tours',
             'Tours Pagos': 'Tours payants',
             'Tours Privados': 'Tours prives',
@@ -1198,7 +1198,7 @@ relatos_like_label: '点赞照片'
         },
         es: {
             'Informações Importantes': 'Informacion importante',
-            'Experiências Free tour': 'Experiencias Free Tour',
+            'Experiências Free Tour': 'Experiencias Free Tour',
             'Outros Tours': 'Otros tours',
             'Tours Pagos': 'Tours pagados',
             'Tours Privados': 'Tours privados',
@@ -1222,7 +1222,7 @@ relatos_like_label: '点赞照片'
         },
         it: {
             'Informações Importantes': 'Informazioni importanti',
-            'Experiências Free tour': 'Esperienze Free Tour',
+            'Experiências Free Tour': 'Esperienze Free Tour',
             'Outros Tours': 'Altri tours',
             'Tours Pagos': 'Tours a pagamento',
             'Tours Privados': 'Tours privati',
@@ -1246,7 +1246,7 @@ relatos_like_label: '点赞照片'
         },
         zh: {
             'Informações Importantes': '重要信息',
-            'Experiências Free tour': '免费导览体验',
+            'Experiências Free Tour': 'Free Tour 体验',
             'Outros Tours': '其他行程',
             'Tours Pagos': '付费行程',
             'Tours Privados': '私人行程',
