@@ -895,6 +895,7 @@ let currentTourHorariosPorDia = {};
 // não muda com o idioma, então tem um valor só, compartilhado por todas as
 // abas · ver .tour-lang-only-pt / updateTourLangFieldVisibility.
 const TOUR_LANG_FIELD_IDS = {
+  nome: 'tourModalNomeIdioma',
   periodo: 'tourModalPeriodo',
   saida: 'tourModalSaida',
   grupo: 'tourModalGrupo',
@@ -906,6 +907,29 @@ const TOUR_LANG_FIELD_IDS = {
   roteiro: 'tourModalRoteiro'
 };
 const TOUR_TRANSLATE_LANGS = ['en', 'fr', 'es', 'it', 'zh'];
+
+// O nome do tour tem uma caixa em cada aba de idioma. Na aba Portugues ela
+// mostra o mesmo nome do topo do formulario: aquele e o nome "oficial"
+// (nome_tour), por onde o tour e identificado em reservas e favoritos, entao
+// os dois campos andam juntos em vez de divergirem.
+const espelharNomeDoTourParaAbaPt = () => {
+  const principal = document.getElementById('tourModalName');
+  const porIdioma = document.getElementById('tourModalNomeIdioma');
+  if (principal && porIdioma) porIdioma.value = principal.value;
+};
+
+const initTourNomePorIdiomaSync = () => {
+  const principal = document.getElementById('tourModalName');
+  const porIdioma = document.getElementById('tourModalNomeIdioma');
+  if (!principal || !porIdioma || porIdioma.dataset.bound) return;
+  porIdioma.dataset.bound = '1';
+  porIdioma.addEventListener('input', () => {
+    if (tourEditCurrentLang === 'pt') principal.value = porIdioma.value;
+  });
+  principal.addEventListener('input', () => {
+    if (tourEditCurrentLang === 'pt') porIdioma.value = principal.value;
+  });
+};
 let tourEditLangValues = {};
 let tourEditCurrentLang = 'pt';
 
@@ -2316,6 +2340,7 @@ const openTourEditModal = (tourData) => {
   document.getElementById('tourModalCanalReserva').value = (tourData.canal_reserva || tourData.canalReserva || 'web').toLowerCase();
 
   const traducoesExistentes = tourData.traducoes || {};
+  espelharNomeDoTourParaAbaPt();
   tourEditLangValues = { pt: readTourLangFieldsFromInputs() };
   TOUR_TRANSLATE_LANGS.forEach((lang) => {
     tourEditLangValues[lang] = { ...(traducoesExistentes[lang] || {}) };
@@ -2447,6 +2472,7 @@ const applyTourJsonToModal = (tourData) => {
   document.getElementById('tourModalCanalReserva').value = (tourData.canal_reserva || tourData.canalReserva || 'web').toLowerCase();
 
   const traducoesExistentes = tourData.traducoes || {};
+  espelharNomeDoTourParaAbaPt();
   tourEditLangValues = { pt: readTourLangFieldsFromInputs() };
   TOUR_TRANSLATE_LANGS.forEach((lang) => {
     tourEditLangValues[lang] = { ...(traducoesExistentes[lang] || {}) };
@@ -5411,6 +5437,7 @@ const setupAccountModalEvents = () => {
 
   initTourHorariosPorDiaEvents();
   initTourDuracaoSelects();
+  initTourNomePorIdiomaSync();
   initTourModalJsonButtons();
 };
 
