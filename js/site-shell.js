@@ -3411,7 +3411,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     // quanto na troca de idioma (senão a troca de idioma reintroduz o texto
     // estático de demonstração por cima do conteúdo real cadastrado no admin).
     const findTourForCard = (card) => {
-        const cardName = (card.querySelector('.rio-tour-name')?.textContent || '').trim();
+        const cardName = window.tourNomeOficialDoCard(card);
         if (!cardName) return null;
         return getTours().find(t => normalizeTourKey(t.name) === normalizeTourKey(cardName)) || null;
     };
@@ -3545,7 +3545,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
         const nameEl = document.createElement('h4');
         nameEl.className = 'rio-tour-name';
-        nameEl.textContent = tour.name || '';
+        card.dataset.tourNome = tour.name || '';
+        nameEl.textContent = window.tourNomeNoIdioma(tour, lang);
 
         const detailsEl = document.createElement('ul');
         detailsEl.className = 'rio-tour-details';
@@ -3650,7 +3651,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
         const detailsEl = card.querySelector('.rio-tour-details');
         if (detailsEl) setTourDetailsHtml(detailsEl, tour, lang);
         const nameEl = card.querySelector('.rio-tour-name');
-        if (nameEl && tour.name) nameEl.textContent = tour.name;
+        if (nameEl && tour.name) {
+            card.dataset.tourNome = tour.name;
+            nameEl.textContent = window.tourNomeNoIdioma(tour, lang);
+        }
         return true;
     };
     window.buildTourDetailsHtml = buildTourDetailsHtml;
@@ -3720,7 +3724,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 const currentLangForNewCards = typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'pt';
                 Array.from(document.querySelectorAll('.rio-tour-card')).forEach((card, originalIndex) => {
                     const folder = card.querySelector('.rio-tour-slider')?.dataset.folder;
-                    const cardName = card.querySelector('.rio-tour-name')?.textContent?.trim();
+                    const cardName = window.tourNomeOficialDoCard(card);
                     if (!cardName) return;
                     const matchedTour = tours.find(t => normalizeTourKey(t.name) === normalizeTourKey(cardName));
                     if (!matchedTour) return;
@@ -3799,7 +3803,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     const syncToursFromIndex = () => {
         const cards = document.querySelectorAll('.rio-tour-card');
         const tours = Array.from(cards).map((card, idx) => {
-            const name = card.querySelector('.rio-tour-name')?.textContent?.trim() || '';
+            const name = window.tourNomeOficialDoCard(card);
             const idiomas = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Idiomas/i.test(li.textContent))?.textContent?.replace(/Idiomas?:/i, '').trim() || '';
             const encontro = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Encontro/i.test(li.textContent))?.textContent?.replace(/Encontro:/i, '').trim() || '';
             const identificacao = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Identificação/i.test(li.textContent))?.textContent?.replace(/Identificação:/i, '').trim() || '';
@@ -5421,7 +5425,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                     return;
                 }
                 const card = button.closest('.rio-tour-card');
-                const tourName = card?.querySelector('.rio-tour-name')?.textContent?.trim() || '';
+                const tourName = window.tourNomeOficialDoCard(card);
                 if (!tourName) {
                     // Not a per-tour card (eg. a combined "reserve" CTA that sits outside any
                     // single .rio-tour-card) · nothing to name in the modal, so let the link

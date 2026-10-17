@@ -41,7 +41,7 @@
     document.addEventListener('click', (event) => {
         const card = event.target.closest?.('.rio-tour-card');
         if (!card) return;
-        const tourNome = card.querySelector('.rio-tour-name')?.textContent?.trim();
+        const tourNome = window.tourNomeOficialDoCard(card);
         if (!tourNome) return;
 
         if (event.target.closest('.rio-btn-reserve')) {
@@ -73,7 +73,7 @@
         const tentar = () => {
             if (registrado) return true;
             const card = document.querySelector(`.rio-tour-card[data-tour-id="${CSS.escape(tourId)}"]`);
-            const tourNome = card?.querySelector('.rio-tour-name')?.textContent?.trim();
+            const tourNome = window.tourNomeOficialDoCard(card);
             if (!tourNome) return false;
             registrado = true;
             registrar('tour_acesso_link', tourNome);

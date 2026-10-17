@@ -499,7 +499,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
     const matchRioTourForCard = (card, matchers) => {
         const cardFolder = (card.querySelector('.rio-tour-slider')?.dataset.folder || '').trim();
-        const cardNameKey = tourNameKey(card.querySelector('.rio-tour-name')?.textContent);
+        const cardNameKey = tourNameKey(window.tourNomeOficialDoCard(card));
         return matchers.tourByFolder.get(cardFolder) || matchers.tourByName.get(cardNameKey) || null;
     };
 
@@ -642,7 +642,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 cardsByParent.set(card.parentElement, parentEntries);
 
                 if (nameEl) {
-                    nameEl.textContent = tour.nome_tour || tour.name || nameEl.textContent;
+                    const nomeOficial = tour.nome_tour || tour.name;
+                    if (nomeOficial) card.dataset.tourNome = nomeOficial;
+                    const langDoNome = (typeof window.getCurrentLang === 'function') ? window.getCurrentLang() : 'pt';
+                    nameEl.textContent = window.tourNomeNoIdioma(tour, langDoNome) || nameEl.textContent;
                 }
 
                 const detailsEl = card.querySelector('.rio-tour-details');
@@ -1330,7 +1333,8 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
 
         const nameEl = document.createElement('h4');
         nameEl.className = 'rio-tour-name';
-        nameEl.textContent = tour.nome_tour || tour.name || '';
+        card.dataset.tourNome = tour.nome_tour || tour.name || '';
+        nameEl.textContent = window.tourNomeNoIdioma(tour, lang);
 
         const detailsEl = document.createElement('ul');
         detailsEl.className = 'rio-tour-details';
@@ -1488,7 +1492,10 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 applyTourVisibility(card, dbTour);
 
                 const nameEl = card.querySelector('.rio-tour-name');
-                if (nameEl) nameEl.textContent = dbTour.nome_tour || dbTour.name || '-';
+                if (nameEl) {
+                    card.dataset.tourNome = dbTour.nome_tour || dbTour.name || '';
+                    nameEl.textContent = window.tourNomeNoIdioma(dbTour, lang) || '-';
+                }
 
                 const detailList = card.querySelector('.rio-tour-details');
                 if (detailList) {
@@ -4066,7 +4073,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
     const syncToursFromIndex = () => {
         const cards = document.querySelectorAll('.rio-tour-card');
         const tours = Array.from(cards).map((card, idx) => {
-            const name = card.querySelector('.rio-tour-name')?.textContent?.trim() || '';
+            const name = window.tourNomeOficialDoCard(card);
             const idiomas = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Idiomas/i.test(li.textContent))?.textContent?.replace(/Idiomas?:/i, '').trim() || '';
             const encontro = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Encontro/i.test(li.textContent))?.textContent?.replace(/Encontro:/i, '').trim() || '';
             const identificacao = Array.from(card.querySelectorAll('.rio-tour-details li')).find(li => /Identificação/i.test(li.textContent))?.textContent?.replace(/Identificação:/i, '').trim() || '';
@@ -5687,7 +5694,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
                 }
                 event.preventDefault();
                 const card = button.closest('.rio-tour-card');
-                const tourName = card?.querySelector('.rio-tour-name')?.textContent?.trim() || '';
+                const tourName = window.tourNomeOficialDoCard(card);
                 // Lê o valor pelo .rio-tour-detail-value (e pelo texto original
                 // guardado em dataset.fullText quando a linha foi truncada em 3
                 // linhas), nunca pelo textContent da linha inteira: esse último
