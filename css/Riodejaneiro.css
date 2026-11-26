@@ -247,7 +247,9 @@ body {
 }
 
 .rio-page .lang-list li:hover {
-    background: rgba(0, 0, 0, 0.40);
+    /* Era preto a 40% com texto quase preto por cima · o item sob o cursor
+       ficava o mais dificil de ler da lista. Realce claro, como nas demais. */
+    background: rgba(11, 58, 102, 0.10);
     color: #072041;
 }
 
@@ -2574,6 +2576,11 @@ header {
 .flag.flag-it { background-image: url("https://flagcdn.com/w40/it.png"); }
 .flag.flag-zh { background-image: url("https://flagcdn.com/w40/cn.png"); }
 .lang-selector .lang-list {
+  /* Cor no proprio painel, nao so nos itens: dentro do cabecalho tudo herda
+     branco (header { color: #fff }), entao qualquer item que escape da regra
+     dos filhos aparece branco sobre o fundo branco do painel · texto
+     invisivel. Com a cor aqui, o pior caso herdado ja e escuro. */
+  color: #0b3a66;
   display: none;
   position: absolute;
   left: 0;
@@ -2696,6 +2703,11 @@ header {
   .nav-left nav.open,
   .lang-selector .lang-list,
   .profile-dropdown {
+  /* Cor no proprio painel, nao so nos itens: dentro do cabecalho tudo herda
+     branco (header { color: #fff }), entao qualquer item que escape da regra
+     dos filhos aparece branco sobre o fundo branco do painel · texto
+     invisivel. Com a cor aqui, o pior caso herdado ja e escuro. */
+  color: #0b3a66;
     background: rgba(255, 255, 255, 0.94);
     color: #0a2a4a;
     backdrop-filter: none !important;
