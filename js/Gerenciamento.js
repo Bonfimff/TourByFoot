@@ -4290,9 +4290,10 @@ const carregarAgendamentosDoBanco = async () => {
   // "o que entrou esta semana" via o que vai acontecer nela.
   const dateField = filterDateField?.value === 'reserva' ? 'reserva' : 'tour';
   const clientFilter = textoDeBusca(filterClientName?.value || '');
-  // O mesmo campo serve para nome e para celular: se o que foi digitado tem
-  // digito, tambem vale como busca de telefone. Compara so os digitos, senao
-  // "(21) 99999-8888" nunca casaria com "21999998888".
+  // O mesmo campo serve para nome, celular e numero da reserva: se o que foi
+  // digitado tem digito, tambem vale como busca de telefone e de numero.
+  // Compara so os digitos, senao "(21) 99999-8888" nunca casaria com
+  // "21999998888".
   const clientDigits = clientFilter.replace(/\D/g, '');
   const tourCidadeMap = cityFilter ? await getTourCidadeMap() : null;
 
@@ -4344,9 +4345,15 @@ const carregarAgendamentosDoBanco = async () => {
       if (cityFilter && tourCidadeMap[String(ag.tour || '').trim().toLowerCase()] !== cityFilter) return false;
       if (clientFilter) {
         const achouNome = textoDeBusca(ag.cliente).includes(clientFilter);
-        const achouCelular = !!clientDigits
+        // Telefone so entra na busca a partir de 4 digitos. Com menos que
+        // isso, procurar a reserva 7 trazia junto todo mundo com 7 no
+        // telefone · numero curto vale como numero de reserva.
+        const achouCelular = clientDigits.length >= 4
           && String(ag.celular || '').replace(/\D/g, '').includes(clientDigits);
-        if (!achouNome && !achouCelular) return false;
+        // Numero da reserva casa inteiro, nao por pedaco: digitar "1" tem que
+        // trazer a reserva 1, e nao tambem a 10, a 21 e a 100.
+        const achouNumero = !!clientDigits && String(ag.id) === clientDigits;
+        if (!achouNome && !achouCelular && !achouNumero) return false;
       }
       return true;
     });
