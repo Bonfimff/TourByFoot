@@ -4268,6 +4268,17 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const statusLabel = `${ui.reservation_status_prefix || 'Status:'} ${statusText}`;
 
             const normalizeText = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            // A reserva guarda o nome oficial do tour (em portugues) · e ele que
+            // identifica o passeio no banco. Para mostrar, troca pelo nome
+            // cadastrado no idioma da pagina, como os cards ja fazem.
+            const nomeDoTourNaLista = (nomeOficial) => {
+                const bruto = String(nomeOficial || '').trim();
+                if (!bruto) return '·';
+                if (typeof window.tourNomeNoIdioma !== 'function') return bruto;
+                const tours = Array.isArray(getTours()) ? getTours() : [];
+                const achado = tours.find((t) => normalizeTourKey(t.name || t.nome_tour) === normalizeTourKey(bruto));
+                return achado ? window.tourNomeNoIdioma(achado, currentLang) : bruto;
+            };
             const findTourMapUrl = (reservationTourName) => {
                 const tours = Array.isArray(getTours()) ? getTours() : [];
                 const normalizedReservationTour = normalizeText(reservationTourName);
@@ -4301,7 +4312,7 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const showActions = !(isCancelled || isFinalized);
             return `
             <div class="my-reservations-item" data-reservation-id="${escapeHtml(String(r.id || ''))}">
-                <strong class="my-reservations-tour">${escapeHtml(r.tour || '·')}</strong>
+                <strong class="my-reservations-tour">${escapeHtml(nomeDoTourNaLista(r.tour))}</strong>
                 <span class="my-reservations-date">${ui.reservation_list_date_label || 'Data'}: ${escapeHtml(r.data || '·')}</span>
                 ${r.hora ? `<span class="my-reservations-detail">${ui.reservation_list_time_label || 'Hora'}: ${escapeHtml(r.hora)}</span>` : ''}
                 ${r.idioma ? `<span class="my-reservations-detail">${ui.reservation_list_language_label || 'Idioma'}: ${escapeHtml(r.idioma)}</span>` : ''}
@@ -5358,7 +5369,16 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             }
 
             reservationTour.value = tourName;
-            if (reservationTourDisplay) reservationTourDisplay.textContent = tourName;
+            // Caixa "Tour selecionado": mostra o nome cadastrado para o idioma
+            // da pagina (traducoes[idioma].nome), caindo no nome em portugues
+            // quando aquele idioma nao tem nome proprio. O campo de verdade
+            // (reservationTour, acima) continua com o nome oficial · e ele que
+            // identifica o tour na reserva.
+            if (reservationTourDisplay) {
+                reservationTourDisplay.textContent = (typeof window.tourNomeNoIdioma === 'function' && matchedTour)
+                    ? window.tourNomeNoIdioma(matchedTour, currentLang)
+                    : tourName;
+            }
             reservationName.value = userName || '';
             reservationDate.value = '';
             if (calendarDisplay) calendarDisplay.querySelector('.res-date-display-text').textContent = formatDateDisplay('');
