@@ -4290,6 +4290,10 @@ const carregarAgendamentosDoBanco = async () => {
   // "o que entrou esta semana" via o que vai acontecer nela.
   const dateField = filterDateField?.value === 'reserva' ? 'reserva' : 'tour';
   const clientFilter = textoDeBusca(filterClientName?.value || '');
+  // O mesmo campo serve para nome e para celular: se o que foi digitado tem
+  // digito, tambem vale como busca de telefone. Compara so os digitos, senao
+  // "(21) 99999-8888" nunca casaria com "21999998888".
+  const clientDigits = clientFilter.replace(/\D/g, '');
   const tourCidadeMap = cityFilter ? await getTourCidadeMap() : null;
 
   try {
@@ -4338,7 +4342,12 @@ const carregarAgendamentosDoBanco = async () => {
       if (tourFilter !== 'all' && ag.tour !== tourFilter) return false;
       if (modalityFilter !== 'all' && (ag.modalidade || 'free') !== modalityFilter) return false;
       if (cityFilter && tourCidadeMap[String(ag.tour || '').trim().toLowerCase()] !== cityFilter) return false;
-      if (clientFilter && !textoDeBusca(ag.cliente).includes(clientFilter)) return false;
+      if (clientFilter) {
+        const achouNome = textoDeBusca(ag.cliente).includes(clientFilter);
+        const achouCelular = !!clientDigits
+          && String(ag.celular || '').replace(/\D/g, '').includes(clientDigits);
+        if (!achouNome && !achouCelular) return false;
+      }
       return true;
     });
 
