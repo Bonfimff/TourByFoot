@@ -6374,6 +6374,54 @@ const setupRolesControls = () => {
 };
 
 
+// Opcoes de tour do formulario de reserva. Vem sempre do cadastro
+// (Gerenciamento da Pagina), nunca de uma lista escrita aqui: lista fixa
+// envelhece calada · tour novo nao aparece e tour renomeado continua com o
+// nome antigo. Agrupadas por cidade, porque hoje sao mais de vinte.
+// `extras` sao nomes que so existem em reserva (tour excluido do cadastro, ou
+// reserva vinda de fora): entram em "Fora do cadastro", senao editar essa
+// reserva apagaria o tour dela sem ninguem perceber.
+const preencherSelectDeTours = (select, selecionado, extras = []) => {
+  if (!select) return;
+
+  const cadastrados = getPageTours()
+    .map((t) => ({ nome: String(t.name || '').trim(), cidade: String(t.cidade || '').trim() }))
+    .filter((t) => t.nome);
+  const conhecidos = new Set(cadastrados.map((t) => t.nome));
+  const foraDoCadastro = [...new Set((extras || []).map((n) => String(n || '').trim()))]
+    .filter((nome) => nome && !conhecidos.has(nome));
+
+  const opcao = (nome) => `
+        <option value="${escapeHtml(nome)}"${nome === selecionado ? ' selected' : ''}>${escapeHtml(nome)}</option>`;
+
+  const porCidade = new Map();
+  cadastrados.forEach(({ nome, cidade }) => {
+    const chave = cidade || 'Outros';
+    if (!porCidade.has(chave)) porCidade.set(chave, []);
+    porCidade.get(chave).push(nome);
+  });
+
+  const grupos = [...porCidade.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'))
+    .map(([cidade, nomes]) => `
+      <optgroup label="${escapeHtml(cidade)}">${nomes
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(opcao).join('')}
+      </optgroup>`).join('');
+
+  const antigos = foraDoCadastro.length
+    ? `
+      <optgroup label="Fora do cadastro">${foraDoCadastro
+      .sort((a, b) => a.localeCompare(b, 'pt-BR'))
+      .map(opcao).join('')}
+      </optgroup>`
+    : '';
+
+  select.innerHTML = '<option value="">Selecione um tour</option>' + grupos + antigos;
+  // O innerHTML acima recria as opcoes, entao a selecao precisa ser reposta.
+  select.value = selecionado;
+};
+
 const openEditModalFromBackend = (ag) => {
   if (!currentUserPermissions?.manageReservas) {
     console.warn('Permissão negada para editar reservas:', ag?.id);
@@ -6402,22 +6450,15 @@ const openEditModalFromBackend = (ag) => {
   const modalDelete = document.getElementById('modalDelete');
 
   if (modalTour) {
-    // carregar opções de tour (mesmo conjunto usado em openEditModal)
-    const localTours = getReservations().map(r => r.tour).filter(Boolean);
-    const baseTours = [
-      'Centro Histórico',
-      'Santa Teresa',
-      'Pedra do Sal: Samba e Herança Afrobrasileira',
-      'Copacabana e Ipanema',
-      'Favela Tour (Morro Dona Marta)',
-      'Tour das Praias',
-      'Tour Cultural do Centro'
-    ];
-    const tours = [...new Set([...baseTours, ...localTours, ag.tour].filter(Boolean))];
-
-    const selectedTour = ag.tour || '';
-    modalTour.innerHTML = '<option value="">Selecione um tour</option>' + tours.map(t => `\n        <option value="${t}"${t === selectedTour ? ' selected' : ''}>${t}</option>`).join('');
-    modalTour.value = selectedTour;
+    preencherSelectDeTours(modalTour, ag.tour || '', [ag.tour]);
+    // O cache local do cadastro pode estar velho (ou vazio, se o admin abriu
+    // direto em Reservas): busca a lista atual e refaz as opcoes, mantendo o
+    // tour que esta escolhido.
+    fetchPageToursFromBackend().then((remotos) => {
+      if (Array.isArray(remotos)) {
+        preencherSelectDeTours(modalTour, modalTour.value || ag.tour || '', [ag.tour]);
+      }
+    });
   }
 
   pendingUpdateId = ag.id || null;
@@ -6725,39 +6766,9 @@ const initReservationManagement = () => {
       .filter(Boolean);
     const languages = [...new Set([...indexLanguages, ...reservationLanguages])].sort();
 
-    if (modalTour) {
-      const current = modalTour.value;
-      const opcao = (nome) => `
-        <option value="${escapeHtml(nome)}"${nome === current ? ' selected' : ''}>${escapeHtml(nome)}</option>`;
-
-      const porCidade = new Map();
-      cadastrados.forEach(({ nome, cidade }) => {
-        const chave = cidade || 'Outros';
-        if (!porCidade.has(chave)) porCidade.set(chave, []);
-        porCidade.get(chave).push(nome);
-      });
-
-      const grupos = [...porCidade.entries()]
-        .sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'))
-        .map(([cidade, nomes]) => `
-      <optgroup label="${escapeHtml(cidade)}">${nomes
-          .sort((a, b) => a.localeCompare(b, 'pt-BR'))
-          .map(opcao).join('')}
-      </optgroup>`).join('');
-
-      const antigos = soEmReservas.length
-        ? `
-      <optgroup label="Fora do cadastro">${soEmReservas
-            .sort((a, b) => a.localeCompare(b, 'pt-BR'))
-            .map(opcao).join('')}
-      </optgroup>`
-        : '';
-
-      modalTour.innerHTML = '<option value="">Selecione um tour</option>' + grupos + antigos;
-      // O innerHTML acima recria as opções, então a seleção precisa ser
-      // reposta: sem isto, reabrir o modal perderia o tour já escolhido.
-      modalTour.value = current;
-    }
+    // Mesma montagem usada ao abrir a reserva pelo banco · uma funcao so,
+    // para as duas listas nao voltarem a divergir.
+    preencherSelectDeTours(modalTour, modalTour?.value || '', soEmReservas);
 
     if (modalLanguage) {
       const current = modalLanguage.value;
