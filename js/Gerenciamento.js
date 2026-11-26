@@ -7173,6 +7173,9 @@ const initReservationManagement = () => {
         case 'Finalizado':
           statusStyle = 'color: #16a34a;';
           break;
+        case 'Rejeitado':
+          statusStyle = 'color: #9f1239;';
+          break;
         default:
           statusStyle = 'color: #374151;';
       }

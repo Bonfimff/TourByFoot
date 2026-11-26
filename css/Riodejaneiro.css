@@ -1970,6 +1970,11 @@ body.modal-open > :not(.login-modal-overlay):not(.register-modal-overlay):not(.a
   color: #842029;
 }
 
+.my-reservations-status--rejeitado {
+  background: #ffe4e6;
+  color: #9f1239;
+}
+
 .my-reservations-actions {
   margin-top: 0.55rem;
   display: flex;

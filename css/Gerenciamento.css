@@ -1102,6 +1102,13 @@ tr.tours-mais-clicados-extra.hidden {
   color: #dc2626;
 }
 
+/* Rejeitado: vinho, para nao se confundir com o vermelho de Cancelado ·
+   sao desfechos diferentes (a reserva foi recusada, nao desmarcada). */
+.status-badge.rejeitado {
+  background: #ffe4e6;
+  color: #9f1239;
+}
+
 /* Modal */
 .modal {
   position: fixed;
@@ -3624,6 +3631,11 @@ section,
   color: #842029;
 }
 
+.my-reservations-status--rejeitado {
+  background: #ffe4e6;
+  color: #9f1239;
+}
+
 .my-reservations-actions {
   margin-top: 0.55rem;
   display: flex;
@@ -5997,6 +6009,10 @@ section,
 
   #reservationsTableSection .reservas-tabela tr.reserva-status-cancelado td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
     color: #dc2626 !important;
+  }
+
+  #reservationsTableSection .reservas-tabela tr.reserva-status-rejeitado td:is(:nth-child(2), :nth-child(3), :nth-child(6)) {
+    color: #9f1239 !important;
   }
 }
 

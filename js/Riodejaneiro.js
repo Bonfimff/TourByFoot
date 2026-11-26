@@ -4522,13 +4522,18 @@ window.__tourDirectLinkId = new URLSearchParams(window.location.search).get('tou
             const isPending = /pendente|pending|pendiente|en attente|in attesa|待定/i.test(statusRaw);
             const isConfirmed = /confirmado|confirmed|confirmé|confermato|已确认/i.test(statusRaw);
             const isCancelled = /cancelado|canceled|annulé|anulado|已取消|取消/i.test(statusRaw);
+            // "Rejeitado" vem antes de cancelado na checagem porque sao
+            // desfechos diferentes: a reserva foi recusada, nao desmarcada.
+            const isRejected = /rejeitado|rejected|rejeté|rechazado|rifiutato|已拒绝/i.test(statusRaw);
             const statusText = isPending
                 ? (ui.reservation_status_pending || 'Confirmação pendente')
                 : isConfirmed
                     ? (ui.reservation_status_confirmed || 'Confirmado')
-                    : isCancelled
-                        ? (ui.reservation_status_cancelled || 'Cancelado')
-                        : escapeHtml(statusRaw);
+                    : isRejected
+                        ? (ui.reservation_status_rejected || 'Rejeitado')
+                        : isCancelled
+                            ? (ui.reservation_status_cancelled || 'Cancelado')
+                            : escapeHtml(statusRaw);
             const statusLabel = `${ui.reservation_status_prefix || 'Status:'} ${statusText}`;
 
             const normalizeText = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
