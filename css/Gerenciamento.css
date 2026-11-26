@@ -747,7 +747,15 @@ body {
   }
 }
 
-@media (min-width: 1367px), (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 1367px), (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  /* Teto de largura so na tela grande, onde os filtros ficam lado a lado:
+     eles dividem a linha por igual, mas o que sobra sozinho na ultima linha
+     (hoje o Status) esticava de ponta a ponta e destoava dos demais. No
+     celular cada filtro ocupa a largura toda, como antes. */
+  #reservationsTableSection .filtro-reservas-grid > label {
+    max-width: 260px;
+  }
+
   .profile-menu .profile-dropdown {
     display: none;
   }
