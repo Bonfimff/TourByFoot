@@ -121,6 +121,13 @@
                 </div>
                 <div class="filtro-reservas-grid" style="margin-top:0.75rem;">
                     <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Filtrar datas por
+                        <select id="filterDateField" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);">
+                            <option value="tour">Dia do tour</option>
+                            <option value="reserva">Data da reserva</option>
+                        </select>
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
                         Data inicial
                         <input type="date" id="filterFrom" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);" />
                     </label>
@@ -152,6 +159,10 @@
                             <option value="privado">Privado</option>
                             <option value="transfer">Transfer</option>
                         </select>
+                    </label>
+                    <label style="display:flex; flex-direction:column; font-size:0.85rem;">
+                        Cliente
+                        <input type="text" id="filterClientName" placeholder="Nome do cliente" style="padding:0.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.15);" />
                     </label>
                     <label style="display:flex; flex-direction:column; font-size:0.85rem;">
                         Status
@@ -1567,7 +1578,7 @@
     <script src="../js/tour-nome.js?v=1"></script>
     <script src="../js/Riodejaneiro.js?v=115"></script>
     <script src="../js/color-alpha-picker.js?v=1"></script>
-    <script src="../js/Gerenciamento.js?v=145"></script>
+    <script src="../js/Gerenciamento.js?v=147"></script>
     <script src="/js/pwa.js?v=1" data-sugerir-instalacao></script>
 </body>
 </html>

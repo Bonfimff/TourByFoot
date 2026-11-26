@@ -546,6 +546,12 @@ const normalizeRoleName = (role) => {
 // Mesmo critério do servidor (_chave_role): o nome do nível é salvo como foi
 // digitado ("gerente_Lençóis_Maranhenses") e o papel do usuário vem em
 // minúsculas · sem acento, minúsculo e com "_" os dois lados batem.
+// Comparacao de texto digitado com o que veio do banco (filtro por nome de
+// cliente): sem acento e em minusculas, senao procurar "jose" nao acha "Jose".
+const textoDeBusca = (valor) => String(valor || '')
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .trim().toLowerCase();
+
 const chaveDaRole = (role) => {
   const texto = String(role || '')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -4270,6 +4276,8 @@ const carregarAgendamentosDoBanco = async () => {
   const filterStatus = document.getElementById('filterStatus');
   const filterModality = document.getElementById('filterModality');
   const filterCity = document.getElementById('filterCity');
+  const filterDateField = document.getElementById('filterDateField');
+  const filterClientName = document.getElementById('filterClientName');
 
   const fromDate = filterFrom?.value ? new Date(filterFrom.value) : null;
   const toDate = filterTo?.value ? new Date(filterTo.value) : null;
@@ -4277,6 +4285,11 @@ const carregarAgendamentosDoBanco = async () => {
   const statusFilter = filterStatus?.value || 'all';
   const modalityFilter = filterModality?.value || 'all';
   const cityFilter = filterCity?.value || '';
+  // Qual data o periodo compara: o dia do passeio ou o dia em que a reserva
+  // foi feita. Eram coisas diferentes sem jeito de separar · quem queria ver
+  // "o que entrou esta semana" via o que vai acontecer nela.
+  const dateField = filterDateField?.value === 'reserva' ? 'reserva' : 'tour';
+  const clientFilter = textoDeBusca(filterClientName?.value || '');
   const tourCidadeMap = cityFilter ? await getTourCidadeMap() : null;
 
   try {
@@ -4304,12 +4317,15 @@ const carregarAgendamentosDoBanco = async () => {
     tableBodyElement.innerHTML = '';
 
     let filtered = agendamentos.filter(ag => {
+      // "data" e o dia do passeio (dd/mm/aaaa); "criado_em" e quando a reserva
+      // foi feita (dd/mm/aaaa hh:mm) · so a parte da data interessa aqui.
+      const dataBruta = dateField === 'reserva'
+        ? String(ag.criado_em || '').slice(0, 10)
+        : String(ag.data || '');
       let agDate = null;
-      if (ag.data) {
-        const parts = ag.data.split('/');
-        if (parts.length === 3) {
-          agDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-        }
+      const parts = dataBruta.split('/');
+      if (parts.length === 3) {
+        agDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
       }
 
       if (fromDate && agDate && agDate < fromDate) return false;
@@ -4322,6 +4338,7 @@ const carregarAgendamentosDoBanco = async () => {
       if (tourFilter !== 'all' && ag.tour !== tourFilter) return false;
       if (modalityFilter !== 'all' && (ag.modalidade || 'free') !== modalityFilter) return false;
       if (cityFilter && tourCidadeMap[String(ag.tour || '').trim().toLowerCase()] !== cityFilter) return false;
+      if (clientFilter && !textoDeBusca(ag.cliente).includes(clientFilter)) return false;
       return true;
     });
 
@@ -6496,6 +6513,8 @@ const initReservationManagement = () => {
   const filterStatus = document.getElementById('filterStatus');
   const filterModality = document.getElementById('filterModality');
   const filterCity = document.getElementById('filterCity');
+  const filterDateField = document.getElementById('filterDateField');
+  const filterClientName = document.getElementById('filterClientName');
   const addReservationBtn = document.getElementById('addReservation');
   const modal = document.getElementById('reservationModal');
   const modalTour = document.getElementById('modalTour');
@@ -6620,6 +6639,8 @@ const initReservationManagement = () => {
   if (filterTour) filterTour.value = 'all';
   if (filterModality) filterModality.value = 'all';
   if (filterCity) filterCity.value = '';
+  if (filterDateField) filterDateField.value = 'tour';
+  if (filterClientName) filterClientName.value = '';
 
   let activeEditIndex = null;
   let isAdding = false;
@@ -7245,7 +7266,7 @@ const initReservationManagement = () => {
   };
 
   const attachFilters = () => {
-    [filterFrom, filterTo, filterStatus, filterTour, filterModality, filterCity].forEach(el => {
+    [filterFrom, filterTo, filterStatus, filterTour, filterModality, filterCity, filterDateField, filterClientName].forEach(el => {
       if (!el) return;
       el.addEventListener('change', carregarAgendamentosDoBanco);
     });
